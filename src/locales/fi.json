@@ -1,0 +1,19 @@
+{
+  "#page.title": "Tilikausi",
+  "#control.cooperativepicker.placeholder": "Valitse yhtiö",
+  "#control.fiscalyearpicker.placeholder": "Valitse tilikausi",
+  "#button.lockfydata": "Lukitse tilikauden tiedot",
+  "#button.copyfy": "Kopioi tilikausi",
+  "#button.addfy": "Lisää tilikausi",
+  "#button.cancel": "Peruuta",
+  "#button.apply": "Käytä",
+  "#control.quickfilter.myown": "OMAT YHTIÖT",
+  "#control.quickfilter.all": "KAIKKI",
+  "#info.selectcooperative": "Valitse taloyhtiö",
+  "#table.generalinfo.cooperative": "Taloyhtiö",
+  "#table.generalinfo.startingdate": "Aloituspäivä",
+  "#table.generalinfo.endingdate": "Päättymispäivä",
+  "#table.generalinfo.closed": "Tiedot lukittu",
+  "#table.generalinfo.owner": "Omistaja",
+  "#table.generalinfo.action": "Toiminto"
+}

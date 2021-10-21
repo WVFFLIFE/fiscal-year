@@ -1,0 +1,19 @@
+{
+  "#page.title": "Fiscal Year",
+  "#control.cooperativepicker.placeholder": "Select cooperative",
+  "#control.fiscalyearpicker.placeholder": "Select fiscal year",
+  "#button.lockfydata": "Lock Fiscal Year Data",
+  "#button.copyfy": "Copy Fiscal Year",
+  "#button.addfy": "Add Fiscal Year",
+  "#button.cancel": "Cancel",
+  "#button.apply": "Apply",
+  "#control.quickfilter.myown": "My own",
+  "#control.quickfilter.all": "All",
+  "#info.selectcooperative": "Please select Cooperative(s)",
+  "#table.generalinfo.cooperative": "Cooperative",
+  "#table.generalinfo.startingdate": "Starting date",
+  "#table.generalinfo.endingdate": "Ending date",
+  "#table.generalinfo.closed": "Closed",
+  "#table.generalinfo.owner": "Owner",
+  "#table.generalinfo.action": "Action"
+}

@@ -1,26 +1,27 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { useCallback, useState, SyntheticEvent } from 'react';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+import SideBar from 'components/SideBar';
+import { RootContainer } from 'components/Styled';
+import FiscalYear from 'tabs/FiscalYear';
+
+const App = () => {
+  const [selectedTab, setSelectedTab] = useState('fiscal-year');
+
+  const handleChangeCurrentTab = useCallback(
+    (e: SyntheticEvent, tab: string) => {
+      setSelectedTab(tab);
+    },
+    []
   );
-}
+
+  return (
+    <>
+      <SideBar selectedTab={selectedTab} onChangeTab={handleChangeCurrentTab} />
+      <RootContainer>
+        {selectedTab === 'fiscal-year' && <FiscalYear />}
+      </RootContainer>
+    </>
+  );
+};
 
 export default App;

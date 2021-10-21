@@ -1,0 +1,6 @@
+# Ignore everything:
+/*
+/src/assets
+
+# Except src:
+!/src

@@ -1,17 +1,43 @@
+import 'react-app-polyfill/ie11';
+import 'react-app-polyfill/stable';
+
 import React from 'react';
 import ReactDOM from 'react-dom';
+import WebFont from 'webfontloader';
+
+import 'configs/i18n';
+import 'assets/fonts/fonts.css';
 import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
+import theme from 'configs/theme';
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+declare global {
+  interface Window {
+    USER_LANGUAGE_CODE: number;
+  }
+}
+
+WebFont.load({
+  active: launch,
+  inactive: launch,
+  google: {
+    families: ['Lato:300,400,500,700'],
+  },
+  custom: {
+    families: ['Proxima Nova'],
+  },
+});
+
+async function launch() {
+  const App = (await import('./App')).default;
+
+  ReactDOM.render(
+    <ThemeProvider theme={theme}>
+      <StyledEngineProvider injectFirst>
+        <App />
+      </StyledEngineProvider>
+    </ThemeProvider>,
+    document.getElementById('root')
+  );
+}
