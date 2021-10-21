@@ -17,3 +17,7 @@ export { default as SortArrows } from './SortArrows';
 export { default as EditIcon } from './EditIcon';
 export { default as CalendarIcon } from './CalendarIcon';
 export { default as RoundCheckIcon } from './RoundCheckIcon';
+export { default as ArrowLeftIcon } from './ArrowLeftIcon';
+export { default as ArrowRightIcon } from './ArrowRightIcon';
+export { default as DoubleArrowsLeftIcon } from './DoubleArrowsLeftIcon';
+export { default as DoubleArrowsRightIcon } from './DoubleArrowsRightIcon';

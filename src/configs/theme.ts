@@ -16,6 +16,7 @@ declare module '@mui/material' {
     };
     size: {
       sidebarWidth: number;
+      calendarWidth: number;
       pickerHeight: number;
     };
   }
@@ -35,6 +36,7 @@ declare module '@mui/material' {
     size?: {
       sidebarWidth?: number;
       pickerHeight?: number;
+      calendarWidth?: number;
     };
   }
 }
@@ -58,6 +60,7 @@ const themeInstance = createTheme({
   size: {
     sidebarWidth: 80,
     pickerHeight: 40,
+    calendarWidth: 210,
   },
   spacing: 5,
 });

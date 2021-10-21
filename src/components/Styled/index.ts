@@ -83,9 +83,16 @@ export const CancelButton = styled(ButtonShape)(({ theme }) => ({
 }));
 
 export const IconButton = styled(Button)(() => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
   minWidth: 'auto',
   padding: 6,
   borderRadius: '50%',
+}));
+
+export const SmallIconButton = styled(IconButton)(() => ({
+  padding: 3,
 }));
 
 const DefaultTableCell = styled(TableCell)(() => ({
@@ -134,5 +141,25 @@ export const ActionButton = styled(Button)(({ theme }) => ({
     opacity: 1,
     background: theme.color.greyBorder,
     color: '#fff',
+  },
+}));
+
+export const DateBlock = styled(Button)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  minWidth: 0,
+  padding: 0,
+  width: theme.size.calendarWidth / 3,
+  height: 50,
+
+  fontSize: 14,
+  fontFamily: 'Lato',
+  color: 'rgba(51, 51, 51, 1)',
+  textTransform: 'capitalize',
+  cursor: 'pointer',
+
+  '&:hover': {
+    background: 'rgba(34, 64, 96, 0.1)',
   },
 }));

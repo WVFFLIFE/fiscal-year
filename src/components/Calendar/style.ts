@@ -2,6 +2,7 @@ import { makeStyles } from '@mui/styles';
 
 export const useStyles = makeStyles((theme) => ({
   root: {
+    width: theme.size.calendarWidth,
     '&:focus': {
       outline: 0,
       border: 0,

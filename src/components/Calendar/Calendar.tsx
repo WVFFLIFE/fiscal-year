@@ -1,4 +1,4 @@
-import { KeyboardEvent, useRef } from 'react';
+import { KeyboardEvent } from 'react';
 import {
   getDaysInMonth,
   getDate,
@@ -11,16 +11,12 @@ import {
   isToday,
   startOfDay,
 } from 'date-fns';
-import { enGB, fi } from 'date-fns/locale';
+import { getLocale } from 'utils';
 
 import Button from '@mui/material/Button';
 
 import clsx from 'clsx';
 import { useStyles } from './style';
-
-function getLocale() {
-  return window.USER_LANGUAGE_CODE === 1035 ? fi : enGB;
-}
 
 function getShortWeeks() {
   const locale = getLocale();
