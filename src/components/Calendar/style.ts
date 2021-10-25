@@ -59,6 +59,12 @@ export const useStyles = makeStyles((theme) => ({
     fontWeight: 700,
     color: '#000',
   },
+  picked: {
+    background: theme.color.transparentBlue,
+    '&:hover': {
+      background: theme.color.transparentBlue,
+    },
+  },
   selectedDay: {
     fontWeight: 400,
     background: theme.color.darkBlue,

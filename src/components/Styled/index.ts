@@ -152,6 +152,9 @@ export const DateBlock = styled(Button)(({ theme }) => ({
   padding: 0,
   width: theme.size.calendarWidth / 3,
   height: 50,
+  borderRadius: 0,
+
+  transition: 'none',
 
   fontSize: 14,
   fontFamily: 'Lato',

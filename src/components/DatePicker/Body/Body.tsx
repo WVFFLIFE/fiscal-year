@@ -1,16 +1,21 @@
-import { useState } from 'react';
+import { useState, KeyboardEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import { setMonth, setYear } from 'date-fns';
+import { setMonth, setYear, getMonth, getYear } from 'date-fns';
 
 import Control, { CalendarViewType } from './ControlPanel';
-import Calendar, { CalendarProps } from 'components/Calendar';
+import Calendar from 'components/Calendar';
 import MonthsView from './MonthsView';
 import DecadeView from './DecadeView';
 import { ApplyButton, CancelButton } from 'components/Styled';
 
 import { useStyles } from './style';
 
-interface BodyProps extends CalendarProps {
+interface BodyProps {
+  date: Date | null;
+  min?: Date;
+  max?: Date;
+  disabled?: boolean;
+  onChange(date: Date | null): void;
   onClose(): void;
 }
 
@@ -25,7 +30,7 @@ const Body: React.FC<BodyProps> = ({
   const classes = useStyles();
   const { t } = useTranslation();
 
-  const [tempDate, setTempDate] = useState(() => date);
+  const [tempDate, setTempDate] = useState(() => date || new Date());
   const [calendarView, setCalendarView] = useState<CalendarViewType>('days');
 
   const handleChangeCalendarView = (view: CalendarViewType) => {
@@ -36,18 +41,25 @@ const Body: React.FC<BodyProps> = ({
     setTempDate(date);
   };
 
-  const handleChangeMonth = (month: number) => {
-    setTempDate((prevDate) => setMonth(prevDate || new Date(), month));
+  const handleChangeMonth = (monthDate: Date) => {
+    setTempDate((prevDate) => setMonth(prevDate, getMonth(monthDate)));
     setCalendarView('days');
   };
 
-  const handleChangeYear = (year: number) => {
-    setTempDate((prevDate) => setYear(prevDate || new Date(), year));
+  const handleChangeYear = (yearDate: Date) => {
+    setTempDate((prevDate) => setYear(prevDate, getYear(yearDate)));
+    setCalendarView('months');
   };
 
   const handleApply = () => {
     onChange(tempDate);
     onClose();
+  };
+
+  const handleCalendarKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter') {
+      handleApply();
+    }
   };
 
   return (
@@ -62,14 +74,16 @@ const Body: React.FC<BodyProps> = ({
         {calendarView === 'days' && (
           <Calendar
             date={tempDate}
-            onChange={handleChangeTempDate}
-            max={max}
-            min={min}
+            selectedDate={date}
+            onChangeDate={handleChangeTempDate}
+            maxDate={max}
+            minDate={min}
             disabled={disabled}
+            onKeyDown={handleCalendarKeyDown}
           />
         )}
         {calendarView === 'months' && (
-          <MonthsView onChangeMonth={handleChangeMonth} />
+          <MonthsView date={tempDate} onChangeMonth={handleChangeMonth} />
         )}
         {calendarView === 'decade' && (
           <DecadeView date={tempDate} onChangeYear={handleChangeYear} />

@@ -169,12 +169,14 @@ const GeneralInformationTable = () => {
                   {open ? (
                     <>
                       <ActionButton
+                        disableRipple
                         className={classes.closeBtn}
                         onClick={handleResetEditableData}
                       >
                         <CloseIcon className={classes.icon} />
                       </ActionButton>
                       <ActionButton
+                        disableRipple
                         palette="darkBlue"
                         onClick={() =>
                           handleAllowEdit({ id: item.Id, startDate, endDate })
@@ -185,6 +187,7 @@ const GeneralInformationTable = () => {
                     </>
                   ) : (
                     <ActionButton
+                      disableRipple
                       palette="darkBlue"
                       onClick={() =>
                         handleAllowEdit({ id: item.Id, startDate, endDate })

@@ -1,4 +1,4 @@
-import { KeyboardEvent } from 'react';
+import { KeyboardEvent, useState, useEffect, useRef, HTMLProps } from 'react';
 import {
   getDaysInMonth,
   getDate,
@@ -103,23 +103,23 @@ function getWeeks(
   return weeks;
 }
 
-export interface CalendarProps {
+export interface CalendarProps extends HTMLProps<HTMLDivElement> {
   /**
-   * className applied to root element
-   */
-  className?: string;
-  /**
-   * Selected date in calendar
+   * Date for rendering calendar view
    */
   date: Date | null;
   /**
+   * Selected date in calendar
+   */
+  selectedDate: Date | null;
+  /**
    * Min selectable date
    */
-  min?: Date;
+  minDate?: Date;
   /**
    * Max selectable date
    */
-  max?: Date;
+  maxDate?: Date;
   /**
    * If `true` the picker is disabled
    * @default false
@@ -129,51 +129,61 @@ export interface CalendarProps {
    * Callback fired when the value (selected date) changes
    * @param date
    */
-  onChange(date: Date | null): void;
+  onChangeDate(date: Date | null): void;
 }
 
 const Calendar: React.FC<CalendarProps> = ({
   className,
   date,
-  min,
-  max,
+  selectedDate,
+  minDate,
+  maxDate,
   disabled,
-  onChange,
+  onChangeDate,
+  ...rest
 }) => {
   const classes = useStyles();
+  const pickedRef = useRef<HTMLButtonElement>(null);
 
   const defaultDate = date || new Date();
-
   const weeks = getWeeks(defaultDate);
 
-  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    e.preventDefault();
+  useEffect(() => {
+    if (pickedRef.current) {
+      pickedRef.current.focus();
+    }
+  }, [date]);
 
+  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     let d = startOfDay(defaultDate);
 
+    if (e.key.includes('Arrow') || e.key === 'Enter') {
+      e.preventDefault();
+    }
+
     if (e.key === 'ArrowUp') {
-      onChange(subDays(d, 7));
+      onChangeDate(subDays(d, 7));
       return;
     }
 
     if (e.key === 'ArrowDown') {
-      onChange(addDays(d, 7));
+      onChangeDate(addDays(d, 7));
       return;
     }
 
     if (e.key === 'ArrowLeft') {
-      onChange(subDays(d, 1));
+      onChangeDate(subDays(d, 1));
       return;
     }
 
     if (e.key === 'ArrowRight') {
-      onChange(addDays(d, 1));
+      onChangeDate(addDays(d, 1));
       return;
     }
   };
 
   return (
-    <div onKeyDown={handleKeyDown} className={clsx(classes.root, className)}>
+    <div {...rest} className={clsx(classes.root, className)}>
       <div className={classes.shortWeeksWrapper}>
         {weeksShort.map((weekShort) => (
           <div key={weekShort} className={classes.box}>
@@ -181,25 +191,31 @@ const Calendar: React.FC<CalendarProps> = ({
           </div>
         ))}
       </div>
-      <div>
+      <div onKeyDown={handleKeyDown}>
         {weeks.map((week, idx) => {
           return (
             <div key={idx} className={classes.row} role="presentation">
               {week.map((day) => {
                 const currentMonth = isSameMonth(defaultDate, day),
-                  selected = date ? isSameDay(date, day) : false,
+                  selected = selectedDate
+                    ? isSameDay(selectedDate, day)
+                    : false,
+                  picked = isSameDay(defaultDate, day),
                   today = isToday(day);
 
                 return (
                   <Button
+                    disableFocusRipple
+                    tabIndex={picked ? 0 : -1}
+                    ref={picked ? pickedRef : undefined}
                     key={day.toDateString()}
-                    tabIndex={0}
                     onClick={
-                      disabled || selected ? undefined : () => onChange(day)
+                      disabled || selected ? undefined : () => onChangeDate(day)
                     }
                     className={clsx(classes.box, classes.dayBox, {
                       [classes.notCurrentMonth]: !currentMonth,
                       [classes.today]: today,
+                      [classes.picked]: picked,
                       [classes.selectedDay]: selected,
                     })}
                   >

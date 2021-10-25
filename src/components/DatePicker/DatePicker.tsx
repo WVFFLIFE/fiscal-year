@@ -3,16 +3,23 @@ import { useState, useRef } from 'react';
 import Popover from '@mui/material/Popover';
 import Fade from '@mui/material/Fade';
 
-import { CalendarProps } from 'components/Calendar';
 import Input from './Input';
 import Body from './Body';
 
-interface DatePickerProps extends CalendarProps {
+interface DatePickerProps {
+  date: Date | null;
+  min?: Date;
+  max?: Date;
+  disabled?: boolean;
+  onChange(date: Date | null): void;
   className?: string;
 }
 
 const DatePicker: React.FC<DatePickerProps> = ({
   date,
+  min,
+  max,
+  disabled,
   onChange,
   className,
 }) => {
