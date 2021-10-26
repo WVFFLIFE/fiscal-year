@@ -150,7 +150,6 @@ const FiscalYear = () => {
         ? renderInfoBox(isSelectedCooperatives, isSelectedFiscalYear)
         : null}
       <GeneralInformationTable />
-      <Dropzone />
     </>
   );
 };
