@@ -15,7 +15,7 @@ export const PickerInput = styled(Button)(({ theme }) => ({
   cursor: 'pointer',
   transitionProperty: 'background',
   '&.Mui-focusVisible': {
-    border: `1px solid ${theme.color.lightBlue}`,
+    border: `1px solid ${theme.color.blue2}`,
   },
   '&.Mui-disabled': {
     background: theme.color.greyLight2,
@@ -65,7 +65,7 @@ export const useStyles = makeStyles((theme) => ({
     transform: 'rotate(180deg)',
   },
   focus: {
-    border: `1px solid ${theme.color.lightBlue}`,
+    border: `1px solid ${theme.color.blue2}`,
   },
   menu: {
     background: theme.color.modalBackground,

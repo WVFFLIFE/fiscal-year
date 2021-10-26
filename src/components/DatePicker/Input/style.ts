@@ -11,7 +11,7 @@ export const useStyles = makeStyles((theme) => ({
     boxShadow: 'inset 0px 1px 4px rgba(0, 0, 0, 0.15)',
   },
   focus: {
-    borderColor: theme.color.lightBlue,
+    borderColor: theme.color.blue2,
     boxShadow: 'none',
   },
   error: {

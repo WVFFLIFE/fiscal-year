@@ -1,16 +1,12 @@
 import { makeStyles } from '@mui/styles';
 
-export const useBodyStyles = makeStyles((theme) => ({
+export const useBodyStyles = makeStyles(() => ({
   wrapper: {
     padding: 12,
     background: 'rgba(248, 248, 248, 1)',
   },
   offset: {
     marginBottom: 20,
-  },
-  cooperativeItem: {
-    justifyContent: 'space-between',
-    padding: '10px 16px',
   },
   text: {
     fontSize: 14,
@@ -19,21 +15,6 @@ export const useBodyStyles = makeStyles((theme) => ({
   },
   checkboxOffset: {
     marginRight: 15,
-  },
-  closedPeriodEndDate: {
-    marginLeft: 15,
-  },
-  menuList: {
-    maxHeight: 205,
-    marginBottom: 20,
-    padding: 0,
-    overflow: 'auto',
-    overflowX: 'hidden',
-  },
-  selected: {
-    '&.Mui-selected': {
-      background: theme.color.greyLight2,
-    },
   },
   cancelBtnOffsetRight: {
     marginRight: 20,

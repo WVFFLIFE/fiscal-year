@@ -9,20 +9,19 @@ import {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MockCooperative } from 'models';
-import format from 'date-fns/format';
 import _orderBy from 'lodash/orderBy';
-import { DEFAULT_FORMAT_PATTERN, filterBySearchTerm } from 'utils';
+import { filterBySearchTerm } from 'utils';
 
 import Picker from 'components/controls/Picker';
 import PickerSearch from 'components/controls/PickerSearch';
 import Button from 'components/Button';
-import Checkbox from 'components/Checkbox';
+import CheckboxControl from 'components/CheckboxControl';
 import QuickFilter, { QuickFilterOption } from 'components/QuickFilter';
-import { Box, MenuItem, MenuList } from '@mui/material';
+import CooperativesList from './CooperativesList';
+import { Box } from '@mui/material';
 import { ApplyButton, CancelButton } from 'components/Styled';
 import { CloseIcon } from 'components/Icons';
 
-import clsx from 'clsx';
 import { useStyles, useBodyStyles } from './style';
 
 const quickFilterOptions: QuickFilterOption[] = [
@@ -126,8 +125,13 @@ const Body: React.FC<BodyProps> = ({
     onClosePicker();
   };
 
-  const handleToggleSelectAll = (cooperatives: MockCooperative[]) => {
-    setCurrentCooperative(cooperatives);
+  const handleToggleSelectAll = (
+    e: ChangeEvent<HTMLInputElement>,
+    cooperatives: MockCooperative[]
+  ) => {
+    const { checked } = e.target;
+
+    setCurrentCooperative(checked ? cooperatives : []);
   };
 
   const filteredCooperativesBySearchTerm = useMemo(() => {
@@ -167,15 +171,11 @@ const Body: React.FC<BodyProps> = ({
         paddingLeft="16px"
         paddingRight="16px"
       >
-        <span
-          className={classes.pointer}
-          onClick={() =>
-            handleToggleSelectAll(selectedAll ? [] : cooperativesList)
-          }
-        >
-          <Checkbox className={classes.checkboxOffset} checked={selectedAll} />
-          <span className={classes.text}>Select All</span>
-        </span>
+        <CheckboxControl
+          checked={selectedAll}
+          onChange={(e) => handleToggleSelectAll(e, cooperativesList)}
+          label="Select All"
+        />
         <Button
           className={classes.closeBtn}
           classes={{
@@ -186,41 +186,11 @@ const Body: React.FC<BodyProps> = ({
           label={'Clear filters'}
         />
       </Box>
-      <MenuList className={classes.menuList}>
-        {cooperativesList.map((cooperative) => {
-          const selected = currentCooperative.some(
-            (currentCooperative) => currentCooperative.Id === cooperative.Id
-          );
-
-          return (
-            <MenuItem
-              key={cooperative.Id}
-              className={clsx(classes.cooperativeItem, classes.text)}
-              onClick={() => handleClickItem(cooperative, selected)}
-              selected={selected}
-              classes={{
-                selected: classes.selected,
-              }}
-            >
-              <Box display="flex" alignItems="center">
-                <Checkbox
-                  className={classes.checkboxOffset}
-                  checked={selected}
-                />
-                {cooperative.Name}
-              </Box>
-              {cooperative.ClosedPeriodEndDate ? (
-                <span className={classes.closedPeriodEndDate}>
-                  {format(
-                    new Date(cooperative.ClosedPeriodEndDate),
-                    DEFAULT_FORMAT_PATTERN
-                  )}
-                </span>
-              ) : null}
-            </MenuItem>
-          );
-        })}
-      </MenuList>
+      <CooperativesList
+        cooperatives={cooperativesList}
+        selected={currentCooperative}
+        onClickItem={handleClickItem}
+      />
       <Box display="flex" alignItems="center" justifyContent="flex-end">
         <CancelButton
           className={classes.cancelBtnOffsetRight}

@@ -12,7 +12,7 @@ export const useStyles = makeStyles((theme) => ({
     outline: 0,
     border: '1px solid transparent',
     '&:focus': {
-      borderColor: theme.color.lightBlue,
+      borderColor: theme.color.blue2,
     },
   },
 }));

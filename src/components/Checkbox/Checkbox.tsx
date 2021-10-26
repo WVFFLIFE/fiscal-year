@@ -1,12 +1,14 @@
 import { memo } from 'react';
 
-import MuiCheckbox, { CheckboxProps } from '@mui/material/Checkbox';
+import MuiCheckbox, {
+  CheckboxProps as MuiCheckboxProps,
+} from '@mui/material/Checkbox';
 import { CheckIcon } from 'components/Icons';
 
 import clsx from 'clsx';
 import { useStyles } from './style';
 
-const Checkbox: React.FC<CheckboxProps> = (props) => {
+const Checkbox: React.FC<MuiCheckboxProps> = (props) => {
   const classes = useStyles();
 
   return (
@@ -28,4 +30,5 @@ const Checkbox: React.FC<CheckboxProps> = (props) => {
   );
 };
 
+export type CheckboxProps = MuiCheckboxProps;
 export default memo(Checkbox);

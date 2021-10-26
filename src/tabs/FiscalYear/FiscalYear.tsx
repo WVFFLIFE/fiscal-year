@@ -16,7 +16,8 @@ import { LockIcon, CopyIcon } from 'components/Icons';
 import { ApplyButton } from 'components/Styled';
 
 import GeneralInformationTable from 'components/GeneralInformationTable';
-import DatePicker from 'components/DatePicker';
+
+import Dropzone from 'components/Dropzone';
 
 import { useStyles } from './style';
 
@@ -32,10 +33,6 @@ const FiscalYear = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   const [currentDate, setCurrentDate] = useState(new Date());
-
-  const handleChangeCurrentDate = (date: Date) => {
-    setCurrentDate(date);
-  };
 
   const handleChangeSelectedFiscalYear = useCallback(
     (fiscalYear: FiscalYearModel | null) => {
@@ -153,6 +150,7 @@ const FiscalYear = () => {
         ? renderInfoBox(isSelectedCooperatives, isSelectedFiscalYear)
         : null}
       <GeneralInformationTable />
+      <Dropzone />
     </>
   );
 };
