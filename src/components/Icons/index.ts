@@ -21,3 +21,8 @@ export { default as ArrowLeftIcon } from './ArrowLeftIcon';
 export { default as ArrowRightIcon } from './ArrowRightIcon';
 export { default as DoubleArrowsLeftIcon } from './DoubleArrowsLeftIcon';
 export { default as DoubleArrowsRightIcon } from './DoubleArrowsRightIcon';
+export { default as BoldIcon } from './BoldIcon';
+export { default as ItalicIcon } from './ItalicIcon';
+export { default as UnderlineIcon } from './UnderlineIcon';
+export { default as UnorderedListIcon } from './UnorderedListIcon';
+export { default as OrderedListIcon } from './OrderedListIcon';

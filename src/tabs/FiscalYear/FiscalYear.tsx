@@ -14,10 +14,12 @@ import Button from 'components/Button';
 import AddFiscalYearButton from 'components/AddFiscalYearButton';
 import { LockIcon, CopyIcon } from 'components/Icons';
 import { ApplyButton } from 'components/Styled';
+import Input from 'components/Input';
+import Select from 'components/Select';
 
 import GeneralInformationTable from 'components/GeneralInformationTable';
 
-import Dropzone from 'components/Dropzone';
+import TextEditor from 'components/TextEditor';
 
 import { useStyles } from './style';
 
@@ -31,8 +33,12 @@ const FiscalYear = () => {
     MockCooperative[]
   >([]);
   const [searchTerm, setSearchTerm] = useState('');
-
+  const [selectValue, setSelectValue] = useState('test');
   const [currentDate, setCurrentDate] = useState(new Date());
+
+  const handleChangeSelect = (val: typeof selectValue) => {
+    setSelectValue(val);
+  };
 
   const handleChangeSelectedFiscalYear = useCallback(
     (fiscalYear: FiscalYearModel | null) => {
@@ -150,6 +156,15 @@ const FiscalYear = () => {
         ? renderInfoBox(isSelectedCooperatives, isSelectedFiscalYear)
         : null}
       <GeneralInformationTable />
+      <TextEditor />
+
+      <Input />
+
+      <Select
+        value={selectValue}
+        options={['dog', 'test', 'qwe']}
+        onChange={handleChangeSelect}
+      />
     </>
   );
 };

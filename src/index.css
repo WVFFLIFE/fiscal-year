@@ -18,12 +18,6 @@ body {
   width: 0 !important;
 }
 
-ul {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
 .cell-actions {
   opacity: 0;
 }

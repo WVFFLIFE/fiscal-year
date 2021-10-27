@@ -1,15 +1,11 @@
 import { MockCooperative } from 'models';
 
-import format from 'date-fns/format';
-import { DEFAULT_FORMAT_PATTERN } from 'utils';
+import MenuList from '@mui/material/MenuList';
+import CooperativesListItem from './CooperativesListItem';
 
-import { MenuList, MenuItem } from '@mui/material';
-import CheckboxControl from 'components/CheckboxControl';
-
-import clsx from 'clsx';
 import { useStyles } from './style';
 
-interface CooperativesListProps {
+export interface CooperativesListProps {
   cooperatives: MockCooperative[];
   selected: MockCooperative[];
   onClickItem(cooperative: MockCooperative, selected: boolean): void;
@@ -30,29 +26,12 @@ const CooperativesList: React.FC<CooperativesListProps> = ({
         );
 
         return (
-          <MenuItem
+          <CooperativesListItem
             key={cooperative.Id}
+            cooperative={cooperative}
             selected={isSelected}
-            className={clsx(classes.cooperativeItem, classes.text)}
-            classes={{
-              selected: classes.selected,
-            }}
-            onClick={() => onClickItem(cooperative, isSelected)}
-          >
-            <CheckboxControl
-              checked={isSelected}
-              label={cooperative.Name}
-              tabIndex={-1}
-            />
-            {cooperative.ClosedPeriodEndDate ? (
-              <span className={classes.closedPeriodEndDate}>
-                {format(
-                  new Date(cooperative.ClosedPeriodEndDate),
-                  DEFAULT_FORMAT_PATTERN
-                )}
-              </span>
-            ) : null}
-          </MenuItem>
+            onClick={onClickItem}
+          />
         );
       })}
     </MenuList>
