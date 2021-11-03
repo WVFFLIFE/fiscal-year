@@ -9,6 +9,7 @@ declare module '@mui/material' {
       greyBorder: string;
       greyDark: string;
       modalBackground: string;
+      greyLight1: string;
       greyLight2: string;
       transparentBlue: string;
       warning: string;
@@ -28,6 +29,7 @@ declare module '@mui/material' {
       greyBorder?: string;
       greyDark?: string;
       modalBackground?: string;
+      greyLight1?: string;
       greyLight2?: string;
       transparentBlue?: string;
       warning?: string;
@@ -53,6 +55,7 @@ const themeInstance = createTheme({
     greyDark: 'rgba(100, 121, 143, 1)',
     blue2: 'rgba(10, 141, 199, 1)',
     modalBackground: 'rgba(27, 27, 27, 0.1)',
+    greyLight1: 'rgba(230, 234, 239, 1)',
     greyLight2: 'rgba(240, 243, 247, 1)',
     transparentBlue: 'rgba(0, 166, 231, 0.1)',
     warning: 'rgba(165, 16, 16, 1)',

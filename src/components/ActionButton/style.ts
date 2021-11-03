@@ -7,6 +7,9 @@ export const useStyles = makeStyles((theme) => ({
     height: 32,
     borderRadius: 20,
   },
+  small: {
+    height: 24,
+  },
   darkBlue: {
     background: theme.color.darkBlue,
     color: '#fff',

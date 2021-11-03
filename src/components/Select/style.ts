@@ -25,4 +25,14 @@ export const useStyles = makeStyles(() => ({
     fontSize: 12,
     color: '#000',
   },
+  paper: {
+    background: '#f8f8f8',
+    borderRadius: 2,
+    boxShadow: '0px 0px 10px #D8E1E8',
+  },
+  item: {
+    padding: '10px 20px',
+    fontSize: 14,
+    fontFamily: 'Lato',
+  },
 }));

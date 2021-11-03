@@ -65,6 +65,7 @@ const GeneralInformationTable = () => {
   const [sortParams, setSortParams] = useState<SortModel>({
     order: 'asc',
     orderBy: 'StartDate',
+    type: 'date',
   });
   const [editableData, setEditableData] = useState<EditableDataModel>({
     id: null,
@@ -81,6 +82,7 @@ const GeneralInformationTable = () => {
             : 'asc'
           : 'asc',
       orderBy,
+      type: 'string',
     }));
   };
 

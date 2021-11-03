@@ -13,13 +13,15 @@ export interface QuickFilterOption {
 
 export interface QuickFilterProps {
   className?: string;
+  itemClassName?: string;
   options: QuickFilterOption[];
-  active: string;
+  active: string | null;
   onChange(active: string): void;
 }
 
 const QuickFilter: React.FC<QuickFilterProps> = ({
   className,
+  itemClassName,
   options,
   active,
   onChange,
@@ -35,7 +37,7 @@ const QuickFilter: React.FC<QuickFilterProps> = ({
         return (
           <Button
             key={option.id}
-            className={clsx(classes.item, {
+            className={clsx(classes.item, itemClassName, {
               [classes.activeItem]: isActive,
             })}
             disabled={isActive}

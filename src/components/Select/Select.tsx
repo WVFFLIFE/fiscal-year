@@ -56,12 +56,17 @@ const Select = <T extends Option | string | number>(props: SelectProps<T>) => {
         icon: classes.icon,
         select: classes.select,
       }}
+      MenuProps={{
+        PaperProps: {
+          className: classes.paper,
+        },
+      }}
     >
       {options.map((option) => {
         const val = getValue(option);
         const label = getLabel(option);
         return (
-          <MenuItem key={val} value={val}>
+          <MenuItem key={val} value={val} className={classes.item}>
             {label}
           </MenuItem>
         );

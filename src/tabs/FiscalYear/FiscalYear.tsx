@@ -14,12 +14,8 @@ import Button from 'components/Button';
 import AddFiscalYearButton from 'components/AddFiscalYearButton';
 import { LockIcon, CopyIcon } from 'components/Icons';
 import { ApplyButton } from 'components/Styled';
-import Input from 'components/Input';
-import Select from 'components/Select';
-
-import GeneralInformationTable from 'components/GeneralInformationTable';
-
-import TextEditor from 'components/TextEditor';
+import Tabs from 'components/Tabs';
+import DocumentsTable from 'components/DocumentsTable';
 
 import { useStyles } from './style';
 
@@ -155,16 +151,7 @@ const FiscalYear = () => {
       {hasEmptyFilters
         ? renderInfoBox(isSelectedCooperatives, isSelectedFiscalYear)
         : null}
-      <GeneralInformationTable />
-      <TextEditor />
-
-      <Input />
-
-      <Select
-        value={selectValue}
-        options={['dog', 'test', 'qwe']}
-        onChange={handleChangeSelect}
-      />
+      <Tabs />
     </>
   );
 };

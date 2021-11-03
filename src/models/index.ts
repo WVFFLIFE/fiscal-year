@@ -49,7 +49,34 @@ export interface Column {
   style?: CSSProperties;
 }
 
+export type SortParamsType = 'string' | 'date' | 'number' | 'boolean';
+
 export interface SortModel {
   order: 'asc' | 'desc';
   orderBy: string;
+  type: SortParamsType;
+}
+
+export interface AttributeHeaderModel {
+  InternalName: string;
+  DisplayName: string;
+  Type: string;
+}
+
+export interface DocumentModel {
+  Id: string;
+  Name: string;
+  Size: number;
+}
+
+export interface FolderModel {
+  Folders: FolderModel[];
+  Documents: DocumentModel[];
+}
+
+export interface FiscalYearDocumentsListResponseModel {
+  HasFolder: boolean;
+  FolderExist: boolean;
+  Headers: AttributeHeaderModel[];
+  Folder: FolderModel;
 }

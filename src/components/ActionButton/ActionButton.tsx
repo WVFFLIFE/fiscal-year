@@ -22,6 +22,9 @@ const ActionButton: React.FC<ActionButtonProps> = ({
         [classes.darkBlue]: palette === 'darkBlue',
         [classes.white]: palette === 'white',
       })}
+      classes={{
+        sizeSmall: classes.small,
+      }}
       {...rest}
     >
       {children}
