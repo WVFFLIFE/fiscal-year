@@ -1,0 +1,1 @@
+start "" "C:\Users\botma\Desktop\work\fiscal-year-view\FrontAppDeployTool.exe" perf FiscalYears premis\premis.test eysbp8YNJn build

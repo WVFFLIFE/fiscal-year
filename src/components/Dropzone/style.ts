@@ -10,18 +10,15 @@ export const useStyles = makeStyles((theme) => ({
     border: `1px dashed ${theme.color.blue2}`,
     borderRadius: 15,
     transition: 'background .15s linear',
-    cursor: 'pointer',
-    '&:hover': {
-      background: theme.color.transparentBlue,
-    },
   },
   dragActive: {
-    background: '#fff',
+    background: theme.color.transparentBlue,
   },
   text: {
     margin: 0,
     padding: 0,
     fontSize: 18,
+    fontWeight: 700,
     lineHeight: '24px',
     color: '#000',
   },

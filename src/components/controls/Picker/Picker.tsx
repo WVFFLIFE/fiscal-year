@@ -9,7 +9,9 @@ import { PickerInput, useStyles } from './style';
 interface PickerProps {
   className?: string;
   placeholder?: string;
+  disablePortal?: boolean;
   disabled?: boolean;
+  fullWidth?: boolean;
   renderValue(): string | JSX.Element | null;
   renderBody(fn: () => void): JSX.Element;
 }
@@ -18,6 +20,8 @@ const Picker: React.FC<PickerProps> = ({
   className,
   placeholder,
   disabled = false,
+  disablePortal = false,
+  fullWidth,
   renderValue,
   renderBody,
 }) => {
@@ -68,8 +72,21 @@ const Picker: React.FC<PickerProps> = ({
           />
         </div>
       </PickerInput>
-      <Menu open={open} onClose={handleClose} anchorEl={anchorEl}>
-        {renderBody(handleClose)}
+      <Menu
+        open={open}
+        onClose={handleClose}
+        anchorEl={anchorEl}
+        disablePortal={disablePortal}
+      >
+        <div
+          style={{
+            width: fullWidth
+              ? rootRef.current?.getBoundingClientRect().width
+              : 'auto',
+          }}
+        >
+          {renderBody(handleClose)}
+        </div>
       </Menu>
     </>
   );

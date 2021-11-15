@@ -1,9 +1,6 @@
 import { makeStyles } from '@mui/styles';
 
 export const useStyles = makeStyles(() => ({
-  row: {
-    marginBottom: 20,
-  },
   quickFilterItem: {
     marginRight: 0,
   },

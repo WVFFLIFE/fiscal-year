@@ -32,3 +32,7 @@ export { default as DownloadIcon } from './DownloadIcon';
 export { default as PublishedIcon } from './PublishedIcon';
 export { default as RefreshIcon } from './RefreshIcon';
 export { default as SharePointIcon } from './SharePointIcon';
+export { default as FolderIcon } from './FolderIcon';
+export { default as MinusIcon } from './MinusIcon';
+export { default as RoundQuestionIcon } from './RoundQuestionIcon';
+export { default as ErrorOutlineIcon } from './ErrorOutline';

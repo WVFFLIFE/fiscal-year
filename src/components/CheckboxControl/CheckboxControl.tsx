@@ -1,6 +1,7 @@
 import Checkbox, { CheckboxProps } from 'components/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 
+import clsx from 'clsx';
 import { useStyles } from './style';
 
 interface CheckboxControlProps extends CheckboxProps {
@@ -19,7 +20,7 @@ const CheckboxControl: React.FC<CheckboxControlProps> = ({
 
   return (
     <FormControlLabel
-      className={classes.root}
+      className={clsx(classes.root, rest.className)}
       disabled={disabled}
       control={<Checkbox checked={checked} onChange={onChange} {...rest} />}
       label={label}

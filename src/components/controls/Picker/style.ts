@@ -2,10 +2,11 @@ import Button from '@mui/material/Button';
 import { styled, makeStyles } from '@mui/styles';
 
 export const PickerInput = styled(Button)(({ theme }) => ({
-  display: 'inline-flex',
+  display: 'flex',
   alignItems: 'center',
   justifyContent: 'flex-start',
   minWidth: 250,
+  width: '100%',
   height: theme.size.pickerHeight,
   padding: `${theme.spacing(2)} ${theme.spacing(4)}`,
   background: '#fff',

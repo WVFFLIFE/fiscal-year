@@ -3,7 +3,7 @@ import { memo } from 'react';
 import MuiCheckbox, {
   CheckboxProps as MuiCheckboxProps,
 } from '@mui/material/Checkbox';
-import { CheckIcon } from 'components/Icons';
+import { CheckIcon, MinusIcon } from 'components/Icons';
 
 import clsx from 'clsx';
 import { useStyles } from './style';
@@ -23,6 +23,13 @@ const Checkbox: React.FC<MuiCheckboxProps> = (props) => {
           className={clsx(classes.checkboxIcon, classes.checkedCheckboxIcon)}
         >
           <CheckIcon className={classes.checkIcon} />
+        </span>
+      }
+      indeterminateIcon={
+        <span
+          className={clsx(classes.checkboxIcon, classes.checkedCheckboxIcon)}
+        >
+          <MinusIcon className={classes.checkIcon} />
         </span>
       }
       {...props}

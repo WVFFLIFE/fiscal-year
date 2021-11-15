@@ -1,6 +1,10 @@
 import { makeStyles } from '@mui/styles';
 
 export const useStyles = makeStyles((theme) => ({
+  centered: {
+    display: 'inline-flex',
+    alignItems: 'center',
+  },
   row: {
     '&.MuiTableRow-hover': {
       '&:hover': {
@@ -36,5 +40,18 @@ export const useStyles = makeStyles((theme) => ({
   },
   icon: {
     fontSize: 12,
+  },
+  folderName: {
+    paddingBottom: 1,
+    borderBottom: '1px solid #000',
+  },
+  folderIcon: {
+    marginRight: 10,
+    fontSize: 16,
+    color: theme.color.green,
+  },
+  publishedIcon: {
+    fontSize: 16,
+    color: theme.color.green,
   },
 }));

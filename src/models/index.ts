@@ -1,5 +1,7 @@
 import { CSSProperties } from 'react';
 
+export type { FolderPickerItemModel } from 'components/FolderPicker';
+
 export interface BaseEntityModel {
   Id: string;
   Name: string;
@@ -79,4 +81,14 @@ export interface FiscalYearDocumentsListResponseModel {
   FolderExist: boolean;
   Headers: AttributeHeaderModel[];
   Folder: FolderModel;
+}
+
+export interface ErrorModel {
+  messages: string[];
+}
+
+export interface SelectedAttributesModel {
+  Viewing_x0020_rights: string[];
+  Information_x0020_Group: string[];
+  Service_x002f_Process: string[];
 }

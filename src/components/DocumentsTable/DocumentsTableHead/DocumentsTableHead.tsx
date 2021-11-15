@@ -55,6 +55,7 @@ interface DocumentsTableHeadProps {
   order: 'asc' | 'desc';
   orderBy: string | null;
   selected: boolean;
+  indeterminate?: boolean;
   onToggleSelectAll(e: ChangeEvent<HTMLInputElement>): void;
   onChangeSortParams(id: string, type?: SortParamsType): void;
 }
@@ -63,6 +64,7 @@ const DocumentsTableHead: React.FC<DocumentsTableHeadProps> = ({
   order,
   orderBy,
   selected,
+  indeterminate = false,
   onToggleSelectAll,
   onChangeSortParams,
 }) => {
@@ -72,10 +74,14 @@ const DocumentsTableHead: React.FC<DocumentsTableHeadProps> = ({
     <MuiTableHead>
       <MuiTableRow>
         <MuiTableCell component="th" width={40} className={classes.cell}>
-          <Checkbox onChange={onToggleSelectAll} checked={selected} />
+          <Checkbox
+            onChange={onToggleSelectAll}
+            checked={selected}
+            indeterminate={indeterminate}
+          />
         </MuiTableCell>
         <MuiTableCell
-          width={40}
+          width={50}
           component="th"
           className={classes.cell}
         ></MuiTableCell>
@@ -84,7 +90,7 @@ const DocumentsTableHead: React.FC<DocumentsTableHeadProps> = ({
           id={'Name'}
           order={order}
           orderBy={orderBy}
-          onClick={() => onChangeSortParams('Name', 'alphanumeric')}
+          onClick={() => onChangeSortParams('Name')}
         >
           Name
         </SortedTableCell>
@@ -93,7 +99,7 @@ const DocumentsTableHead: React.FC<DocumentsTableHeadProps> = ({
           id={'Service'}
           order={order}
           orderBy={orderBy}
-          onClick={() => onChangeSortParams('Service', 'alphanumeric')}
+          onClick={() => onChangeSortParams('Service')}
         >
           Service/process
         </SortedTableCell>
@@ -102,7 +108,7 @@ const DocumentsTableHead: React.FC<DocumentsTableHeadProps> = ({
           id={'InformationGroup'}
           order={order}
           orderBy={orderBy}
-          onClick={() => onChangeSortParams('InformationGroup', 'alphanumeric')}
+          onClick={() => onChangeSortParams('InformationGroup')}
         >
           Information group
         </SortedTableCell>
@@ -112,6 +118,15 @@ const DocumentsTableHead: React.FC<DocumentsTableHeadProps> = ({
           order={order}
           orderBy={orderBy}
           onClick={() => onChangeSortParams('Modified', 'date')}
+        >
+          Modified
+        </SortedTableCell>
+        <SortedTableCell
+          className={classes.cell}
+          id={'Modified'}
+          order={order}
+          orderBy={orderBy}
+          onClick={() => onChangeSortParams('Editor')}
         >
           Modified by
         </SortedTableCell>

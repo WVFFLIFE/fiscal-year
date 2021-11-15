@@ -8,12 +8,9 @@ interface ActionButtonProps extends ButtonProps {
   palette?: 'darkBlue' | 'white';
 }
 
-const ActionButton: React.FC<ActionButtonProps> = ({
-  palette = 'white',
-  className,
-  children,
-  ...rest
-}) => {
+const ActionButton: React.FC<
+  ActionButtonProps | ({ href: string } & ButtonProps<'a', ActionButtonProps>)
+> = ({ palette = 'white', className, children, ...rest }) => {
   const classes = useStyles();
 
   return (

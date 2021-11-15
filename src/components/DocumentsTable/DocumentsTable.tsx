@@ -1,7 +1,9 @@
-import { ChangeEvent, useState } from 'react';
-import { SortModel, DocumentModel } from 'models';
+import { FolderModel, DocumentModel } from 'services';
 
 import useSort from 'hooks/useSort';
+import _get from 'lodash/get';
+import { isFolder, getDeepIdsList, isPublished } from 'utils';
+import { isSelected, isIndeterminated } from './utils';
 
 import clsx from 'clsx';
 import { useStyles } from './style';
@@ -15,33 +17,54 @@ import {
 import DocumentsTableHead from './DocumentsTableHead';
 import Checkbox from 'components/Checkbox';
 import ActionButton from 'components/ActionButton';
+import Tooltip from 'components/Tooltip';
 import {
   DeleteIcon,
   EditIcon,
   DownloadIcon,
   SharePointIcon,
+  FolderIcon,
+  PublishedIcon,
 } from 'components/Icons';
 
 interface DocumentsTableProps {
-  documents: DocumentModel[];
+  list: (FolderModel | DocumentModel)[];
+  idsList: string[];
+  selected: string[];
+  saveFile(id: string): Promise<void>;
+  handleChangeActiveFolder(folder: FolderModel): void;
+  handleChangeSelectedItems(
+    item: FolderModel | DocumentModel,
+    folder: boolean
+  ): void;
+  handleOpenDeletConfirmationDialog(entity: {
+    id: string;
+    type: 'doc' | 'folder';
+  }): void;
 }
 
-const DocumentsTable: React.FC<DocumentsTableProps> = ({ documents }) => {
+const DocumentsTable: React.FC<DocumentsTableProps> = ({
+  list,
+  idsList,
+  selected,
+  saveFile,
+  handleChangeActiveFolder,
+  handleChangeSelectedItems,
+  handleOpenDeletConfirmationDialog,
+}) => {
   const classes = useStyles();
 
-  const { list, sortParams, onChangeSortParams } = useSort(documents, {
+  const {
+    list: sortedList,
+    sortParams,
+    onChangeSortParams,
+  } = useSort(list, {
     order: 'asc',
     orderBy: 'Name',
   });
-  const [selectedRows, setSelectedRows] = useState<string[]>([]);
 
-  const handleSelectRow = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name: id, checked } = e.target;
-
-    setSelectedRows((prevState) =>
-      checked ? prevState.filter((item) => item !== id) : prevState.concat(id)
-    );
-  };
+  const selectedAll = isSelected(selected, idsList);
+  const indeterminatedAll = !selectedAll && isIndeterminated(selected, idsList);
 
   return (
     <MuiTable>
@@ -50,47 +73,116 @@ const DocumentsTable: React.FC<DocumentsTableProps> = ({ documents }) => {
         orderBy={sortParams.orderBy}
         onChangeSortParams={onChangeSortParams}
         onToggleSelectAll={() => {}}
-        selected={false}
+        selected={selectedAll}
+        indeterminate={indeterminatedAll}
       />
       <MuiTableBody>
-        {list.map((item) => {
-          const selected = selectedRows.includes(item.Id);
+        {sortedList.map((item) => {
+          const folder = isFolder(item);
+          const published = isPublished(item);
+          const itemIdsList = getDeepIdsList(item);
+          const isItemSelected = isSelected(selected, itemIdsList);
+          const indeterminate =
+            folder &&
+            !isItemSelected &&
+            isIndeterminated(selected, itemIdsList);
+          const entity = {
+            id: item.Id,
+            type: folder ? ('folder' as const) : ('doc' as const),
+          };
 
           return (
             <MuiTableRow
               key={item.Id}
               className={classes.row}
               hover
-              selected={selected}
+              selected={isItemSelected}
             >
               <MuiTableCell className={classes.cell}>
                 <Checkbox
                   name={item.Id}
-                  checked={selected}
-                  onChange={handleSelectRow}
+                  checked={isItemSelected}
+                  indeterminate={indeterminate}
+                  onChange={() =>
+                    handleChangeSelectedItems(item, !isItemSelected)
+                  }
                 />
               </MuiTableCell>
-              <MuiTableCell className={classes.cell}></MuiTableCell>
-              <MuiTableCell className={classes.cell}>{item.Name}</MuiTableCell>
-              <MuiTableCell className={classes.cell}></MuiTableCell>
-              <MuiTableCell className={classes.cell}></MuiTableCell>
-              <MuiTableCell className={classes.cell}></MuiTableCell>
+              <MuiTableCell className={classes.cell}>
+                {published ? (
+                  <Tooltip
+                    arrow
+                    title={'Published to portal'}
+                    placement="top-start"
+                  >
+                    <PublishedIcon className={classes.publishedIcon} />
+                  </Tooltip>
+                ) : null}
+              </MuiTableCell>
+              <MuiTableCell className={classes.cell}>
+                <span
+                  className={classes.centered}
+                  onClick={
+                    folder
+                      ? () => handleChangeActiveFolder(item as FolderModel)
+                      : undefined
+                  }
+                >
+                  {folder && <FolderIcon className={classes.folderIcon} />}
+                  <span
+                    className={clsx({
+                      [classes.folderName]: folder,
+                    })}
+                  >
+                    {item.Name}
+                  </span>
+                </span>
+              </MuiTableCell>
+              <MuiTableCell className={classes.cell}>
+                {_get(item, 'Values.Service_x002f_Process')}
+              </MuiTableCell>
+              <MuiTableCell className={classes.cell}>
+                {_get(item, 'Values.Information_x0020_Group')}
+              </MuiTableCell>
+              <MuiTableCell className={classes.cell}>
+                {_get(item, 'Values.Modified')}
+              </MuiTableCell>
+              <MuiTableCell className={classes.cell}>
+                {_get(item, 'Values.Editor')}
+              </MuiTableCell>
               <MuiTableCell className={classes.cell}>
                 <div
                   className={clsx(classes.actionBtnsWrapper, 'cell-actions')}
                 >
-                  <ActionButton className={classes.btn} size="small">
+                  <ActionButton
+                    className={classes.btn}
+                    size="small"
+                    onClick={() => handleOpenDeletConfirmationDialog(entity)}
+                  >
                     <DeleteIcon className={classes.icon} />
                   </ActionButton>
                   <ActionButton className={classes.btn} size="small">
                     <EditIcon className={classes.icon} />
                   </ActionButton>
-                  <ActionButton className={classes.btn} size="small">
-                    <DownloadIcon className={classes.icon} />
-                  </ActionButton>
-                  <ActionButton className={classes.btn} size="small">
-                    <SharePointIcon className={classes.icon} />
-                  </ActionButton>
+                  {!folder && (
+                    <ActionButton
+                      className={classes.btn}
+                      size="small"
+                      onClick={() => saveFile(item.Id)}
+                    >
+                      <DownloadIcon className={classes.icon} />
+                    </ActionButton>
+                  )}
+                  {folder && (
+                    <ActionButton
+                      className={classes.btn}
+                      size="small"
+                      href={(item as FolderModel).Url}
+                      target="_blank"
+                    >
+                      <SharePointIcon className={classes.icon} />
+                    </ActionButton>
+                  )}
                 </div>
               </MuiTableCell>
             </MuiTableRow>

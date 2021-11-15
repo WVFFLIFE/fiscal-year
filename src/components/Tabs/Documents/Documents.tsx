@@ -1,10 +1,12 @@
-import { useState, useCallback } from 'react';
+import useDocumentsData from './useDocumentsData';
 
 import Box from '@mui/material/Box';
 import QuickFilter, { QuickFilterOption } from 'components/QuickFilter';
 import ActionButton from 'components/ActionButton';
+import Breadcrumbs from './Breadcrumbs';
+import DeleteConfirmation from 'components/DeleteConfirmation';
+import Dialog from 'components/Dialog';
 import {
-  HomeIcon,
   EditIcon,
   DeleteIcon,
   DownloadIcon,
@@ -14,6 +16,7 @@ import {
   PlusIcon,
 } from 'components/Icons';
 import DocumentsTable from 'components/DocumentsTable';
+import UploadForm from './UploadForm';
 
 import { useStyles } from './style';
 
@@ -25,67 +28,119 @@ const options: QuickFilterOption[] = [
 const Documents = () => {
   const classes = useStyles();
 
-  const [activeFilter, setActiveFilter] = useState<string | null>(null);
-
-  const handleChangeActiveFilter = useCallback((newFilter: string) => {
-    setActiveFilter(newFilter);
-  }, []);
+  const {
+    list,
+    breadcrumbsList,
+    rootFolder,
+    selectedItems,
+    deepIdsList,
+    openUploadForm,
+    quickFilter,
+    deleteConfirmationState,
+    saveFile,
+    deleteEntity,
+    fetchFolders,
+    handleChangeActiveFolder,
+    handleChangeQuickFilter,
+    handleChangeSelectedItems,
+    handleOpenUploadForm,
+    handleCloseUploadForm,
+    handleInitDeleteEntity,
+    handleOpenDeleteConfirmationDialog,
+    handleSelectBreadcrumbsFolder,
+    handleCloseDeleteConfirmationDialog,
+  } = useDocumentsData();
 
   return (
     <Box>
-      <Box className={classes.row}>
-        <HomeIcon className={classes.icon} />
-      </Box>
+      <Breadcrumbs
+        list={breadcrumbsList}
+        selectItem={handleSelectBreadcrumbsFolder}
+      />
       <Box
         display="flex"
-        justifyContent="flex-end"
+        justifyContent="space-between"
         alignItems="center"
-        className={classes.row}
+        marginBottom="20px"
       >
-        <QuickFilter
-          itemClassName={classes.quickFilterItem}
-          active={activeFilter}
-          options={options}
-          onChange={handleChangeActiveFilter}
-        />
-        <Box marginLeft="40px">
-          <ActionButton className={classes.actionBtn} disabled>
-            <EditIcon className={classes.actionIcon} />
-          </ActionButton>
-          <ActionButton className={classes.actionBtn} disabled>
-            <DeleteIcon className={classes.actionIcon} />
-          </ActionButton>
-          <ActionButton className={classes.actionBtn} disabled>
-            <DownloadIcon className={classes.actionIcon} />
-          </ActionButton>
-          <ActionButton className={classes.actionBtn} disabled>
-            <PublishedIcon className={classes.actionIcon} />
-          </ActionButton>
-          <ActionButton className={classes.actionBtn}>
-            <RefreshIcon className={classes.actionIcon} />
-          </ActionButton>
-          <ActionButton className={classes.actionBtn}>
-            <SharePointIcon className={classes.actionIcon} />
-          </ActionButton>
-          <ActionButton className={classes.actionBtn} palette="darkBlue">
-            <PlusIcon className={classes.actionIcon} />
-          </ActionButton>
+        <Box></Box>
+        <Box display="flex" alignItems="center">
+          <QuickFilter
+            itemClassName={classes.quickFilterItem}
+            active={quickFilter}
+            options={options}
+            onChange={handleChangeQuickFilter}
+          />
+          <Box marginLeft="40px">
+            <ActionButton className={classes.actionBtn} disabled>
+              <EditIcon className={classes.actionIcon} />
+            </ActionButton>
+            <ActionButton className={classes.actionBtn} disabled>
+              <DeleteIcon className={classes.actionIcon} />
+            </ActionButton>
+            <ActionButton className={classes.actionBtn} disabled>
+              <DownloadIcon className={classes.actionIcon} />
+            </ActionButton>
+            <ActionButton className={classes.actionBtn} disabled>
+              <PublishedIcon className={classes.actionIcon} />
+            </ActionButton>
+            <ActionButton className={classes.actionBtn}>
+              <RefreshIcon className={classes.actionIcon} />
+            </ActionButton>
+            <ActionButton className={classes.actionBtn}>
+              <SharePointIcon className={classes.actionIcon} />
+            </ActionButton>
+            <ActionButton
+              className={classes.actionBtn}
+              palette="darkBlue"
+              onClick={handleOpenUploadForm}
+            >
+              <PlusIcon className={classes.actionIcon} />
+            </ActionButton>
+          </Box>
         </Box>
       </Box>
       <DocumentsTable
-        documents={[
-          {
-            Id: 'q',
-            Name: 'doc1',
-            Size: 1504,
-          },
-          {
-            Id: 'asd',
-            Name: 'asc',
-            Size: 2000,
-          },
-        ]}
+        list={list}
+        idsList={deepIdsList}
+        selected={selectedItems}
+        handleChangeActiveFolder={handleChangeActiveFolder}
+        handleChangeSelectedItems={handleChangeSelectedItems}
+        handleOpenDeletConfirmationDialog={handleOpenDeleteConfirmationDialog}
+        saveFile={saveFile}
       />
+      <Dialog
+        open={openUploadForm}
+        handleClose={handleCloseUploadForm}
+        maxWidth="sm"
+      >
+        {rootFolder ? (
+          <UploadForm
+            rootFolder={rootFolder}
+            fetchFolders={fetchFolders}
+            onClose={handleCloseUploadForm}
+          />
+        ) : null}
+      </Dialog>
+      <Dialog
+        open={deleteConfirmationState.open}
+        handleClose={handleCloseDeleteConfirmationDialog}
+        maxWidth="xs"
+        TransitionProps={{
+          onExited: handleInitDeleteEntity,
+        }}
+      >
+        <DeleteConfirmation
+          entity={
+            deleteConfirmationState.entity?.type === 'doc'
+              ? 'document'
+              : 'folder'
+          }
+          apply={deleteEntity}
+          cancel={handleCloseDeleteConfirmationDialog}
+          loading={deleteConfirmationState.loading}
+        />
+      </Dialog>
     </Box>
   );
 };

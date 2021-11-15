@@ -1,6 +1,7 @@
 import Button from '@mui/material/Button';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
+import MuiIconButton from '@mui/material/IconButton';
 
 import { styled } from '@mui/styles';
 import { alpha } from '@mui/material/styles';
@@ -82,12 +83,12 @@ export const CancelButton = styled(ButtonShape)(({ theme }) => ({
   filter: 'drop-shadow(0px 2px 7px rgba(151, 151, 151, 0.4))',
 }));
 
-export const IconButton = styled(Button)(() => ({
+export const IconButton = styled(MuiIconButton)(() => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
   minWidth: 'auto',
-  padding: 6,
+  padding: 3,
   borderRadius: '50%',
 }));
 

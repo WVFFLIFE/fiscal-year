@@ -27,7 +27,6 @@ export const useStyles = makeStyles((theme) => ({
   activeItem: {
     background: theme.color.greyDark,
     color: '#fff',
-    cursor: 'default',
     '&:hover': {
       background: theme.color.greyDark,
       color: '#fff',

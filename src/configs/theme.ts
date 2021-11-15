@@ -14,6 +14,8 @@ declare module '@mui/material' {
       transparentBlue: string;
       warning: string;
       blue2: string;
+      green: string;
+      red: string;
     };
     size: {
       sidebarWidth: number;
@@ -34,6 +36,8 @@ declare module '@mui/material' {
       transparentBlue?: string;
       warning?: string;
       blue2?: string;
+      green?: string;
+      red?: string;
     };
     size?: {
       sidebarWidth?: number;
@@ -59,6 +63,8 @@ const themeInstance = createTheme({
     greyLight2: 'rgba(240, 243, 247, 1)',
     transparentBlue: 'rgba(0, 166, 231, 0.1)',
     warning: 'rgba(165, 16, 16, 1)',
+    green: 'rgba(33, 141, 122, 1)',
+    red: 'rgba(219, 0, 65, 1)',
   },
   size: {
     sidebarWidth: 80,

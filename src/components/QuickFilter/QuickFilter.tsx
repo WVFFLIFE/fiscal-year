@@ -9,6 +9,7 @@ import { useStyles } from './style';
 export interface QuickFilterOption {
   id: string;
   label: string;
+  disabled?: boolean;
 }
 
 export interface QuickFilterProps {
@@ -16,6 +17,7 @@ export interface QuickFilterProps {
   itemClassName?: string;
   options: QuickFilterOption[];
   active: string | null;
+  disabled?: boolean;
   onChange(active: string): void;
 }
 
@@ -23,6 +25,7 @@ const QuickFilter: React.FC<QuickFilterProps> = ({
   className,
   itemClassName,
   options,
+  disabled = false,
   active,
   onChange,
 }) => {
@@ -33,6 +36,7 @@ const QuickFilter: React.FC<QuickFilterProps> = ({
     <div className={clsx(classes.root, className)}>
       {options.map((option) => {
         const isActive = option.id === active;
+        const disabledOption = option.disabled || disabled;
 
         return (
           <Button
@@ -40,8 +44,8 @@ const QuickFilter: React.FC<QuickFilterProps> = ({
             className={clsx(classes.item, itemClassName, {
               [classes.activeItem]: isActive,
             })}
-            disabled={isActive}
-            onClick={isActive ? undefined : () => onChange(option.id)}
+            disabled={disabledOption}
+            onClick={disabledOption ? undefined : () => onChange(option.id)}
           >
             <span className={classes.label}>{t(option.label)}</span>
           </Button>
