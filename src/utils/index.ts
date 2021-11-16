@@ -2,8 +2,10 @@ import { DocumentModel, FolderModel, SettledResponse } from 'services';
 
 import { enGB, fi } from 'date-fns/locale';
 import { format } from 'date-fns';
-import _has from 'lodash/has';
 import _get from 'lodash/get';
+
+export { default as isFolder } from './isFolder';
+export { default as buildFlatList } from './buildFlatList';
 
 export const DEFAULT_FORMAT_PATTERN = 'd.M.yyyy';
 
@@ -48,30 +50,8 @@ export function getMonthsList() {
   return months;
 }
 
-export function isFolder(item: FolderModel | DocumentModel) {
-  return _has(item, 'Documents');
-}
-
 export function getIdsList<T extends { Id: string }>(list: T[]) {
   return list.map((item) => item.Id);
-}
-
-export function getDeepIdsList(item: FolderModel | DocumentModel) {
-  let list = [];
-
-  if (isFolder(item)) {
-    let itemList = [
-      ...(item as FolderModel).Folders,
-      ...(item as FolderModel).Documents,
-    ];
-
-    list.push(item.Id);
-    itemList.forEach((item) => list.push(...getDeepIdsList(item)));
-  } else {
-    list.push(item.Id);
-  }
-
-  return list;
 }
 
 export function isPublished(item: FolderModel | DocumentModel) {

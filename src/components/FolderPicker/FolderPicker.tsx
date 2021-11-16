@@ -5,12 +5,13 @@ export interface FolderPickerItemModel {
   id: string;
   name: string;
   folders: FolderPickerItemModel[];
+  depth: number;
 }
 
 export interface SelectedFolder {
   id: string;
   name: string;
-  sub: boolean;
+  depth: number;
 }
 
 interface FolderPickerProps {

@@ -1,17 +1,12 @@
-import { useMemo, useEffect, useCallback, useState } from 'react';
-
+import { useMemo, useEffect, useCallback, useState, ChangeEvent } from 'react';
+import { EntityModel } from 'models';
 import Services, { FolderModel, DocumentModel } from 'services';
 
 import { saveAs } from 'file-saver';
 import _first from 'lodash/first';
 import _last from 'lodash/last';
-import { getDeepIdsList, isPublished } from 'utils';
-import { prepareData, limitFoldersDepth } from './utils';
-
-interface EntityModel {
-  id: string;
-  type: 'doc' | 'folder';
-}
+import { isPublished } from 'utils';
+import { prepareData, limitFoldersDepth, countEntitiesAmount } from './utils';
 
 interface DeleteConfirmationStateModel {
   open: boolean;
@@ -22,7 +17,9 @@ interface DeleteConfirmationStateModel {
 const useDocumentsData = () => {
   const [breadcrumbsList, setBreadcrumbsList] = useState<FolderModel[]>([]);
   const [quickFilter, setQuickFilter] = useState<string | null>(null);
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [selectedItems, setSelectedItems] = useState<
+    (DocumentModel | FolderModel)[]
+  >([]);
   const [openUploadForm, setOpenUploadForm] = useState(false);
   const [deleteConfirmationState, setDeleteConfirmationState] =
     useState<DeleteConfirmationStateModel>({
@@ -30,9 +27,30 @@ const useDocumentsData = () => {
       entity: null,
       loading: false,
     });
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
 
   const rootFolder = _first(breadcrumbsList) || null;
   const activeFolder = _last(breadcrumbsList) || null;
+
+  const filteredActiveFolder = useMemo(() => {
+    if (!quickFilter) return activeFolder;
+    return activeFolder
+      ? {
+          ...activeFolder,
+          Documents: activeFolder.Documents.filter((doc) =>
+            quickFilter === 'published' ? isPublished(doc) : !isPublished(doc)
+          ),
+        }
+      : undefined;
+  }, [activeFolder, quickFilter]);
+
+  const list = useMemo(() => {
+    return filteredActiveFolder ? prepareData(filteredActiveFolder) : [];
+  }, [filteredActiveFolder]);
+
+  const amount = useMemo(() => {
+    return countEntitiesAmount(selectedItems);
+  }, [selectedItems]);
 
   const fetchFolders = async () => {
     const res = await Services.getDocumentsList(
@@ -101,13 +119,23 @@ const useDocumentsData = () => {
     item: FolderModel | DocumentModel,
     selected: boolean
   ) => {
-    const selectedItems = getDeepIdsList(item);
+    setSelectedItems((prevState) => {
+      return selected
+        ? prevState.concat(item)
+        : prevState.filter((prevItem) => prevItem.Id !== item.Id);
+    });
+  };
 
-    setSelectedItems((prevState) =>
-      selected
-        ? prevState.concat(selectedItems)
-        : prevState.filter((item) => !selectedItems.includes(item))
-    );
+  const handleSelectAll = (e: ChangeEvent<HTMLInputElement>) => {
+    if (filteredActiveFolder) {
+      const { checked } = e.target;
+
+      setSelectedItems(
+        checked
+          ? [...filteredActiveFolder.Documents, ...filteredActiveFolder.Folders]
+          : []
+      );
+    }
   };
 
   const deleteEntity = async () => {
@@ -137,20 +165,16 @@ const useDocumentsData = () => {
     }
   };
 
+  const handleShowSuccessDialog = () => setShowSuccessDialog(true);
+  const handleCloseSuccessDialog = () => setShowSuccessDialog(false);
   const handleOpenUploadForm = () => setOpenUploadForm(true);
-  const handleCloseUploadForm = () => setOpenUploadForm(false);
+  const handleCloseUploadForm = (val?: string) => {
+    setOpenUploadForm(false);
 
-  const filteredActiveFolder = useMemo(() => {
-    if (!quickFilter) return activeFolder;
-    return activeFolder
-      ? {
-          ...activeFolder,
-          Documents: activeFolder.Documents.filter((doc) =>
-            quickFilter === 'published' ? isPublished(doc) : !isPublished(doc)
-          ),
-        }
-      : undefined;
-  }, [activeFolder, quickFilter]);
+    if (val === 'success') {
+      handleShowSuccessDialog();
+    }
+  };
 
   const saveFile = async (fileId: string) => {
     const res = await Services.documentDownload(fileId);
@@ -164,22 +188,20 @@ const useDocumentsData = () => {
     fetchFolders();
   }, []);
 
-  const list = useMemo(() => {
-    return filteredActiveFolder ? prepareData(filteredActiveFolder) : [];
-  }, [filteredActiveFolder]);
-
-  const deepIdsList = useMemo(() => {
-    return filteredActiveFolder ? getDeepIdsList(filteredActiveFolder) : [];
-  }, [filteredActiveFolder]);
+  useEffect(() => {
+    setSelectedItems([]);
+  }, [filteredActiveFolder, quickFilter]);
 
   return {
     rootFolder,
-    selectedItems,
+    activeFolder: filteredActiveFolder,
     openUploadForm,
+    showSuccessDialog,
     list,
+    amount,
+    selectedItems,
     breadcrumbsList,
     deleteConfirmationState,
-    deepIdsList,
     quickFilter,
     saveFile,
     deleteEntity,
@@ -193,6 +215,9 @@ const useDocumentsData = () => {
     handleSelectBreadcrumbsFolder,
     handleChangeActiveFolder,
     handleChangeQuickFilter,
+    handleShowSuccessDialog,
+    handleCloseSuccessDialog,
+    handleSelectAll,
   };
 };
 

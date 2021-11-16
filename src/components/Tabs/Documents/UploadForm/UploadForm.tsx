@@ -2,7 +2,6 @@ import useUploadFormData from './useUploadFormData';
 import { SelectedAttributesModel } from 'models';
 import { FolderModel } from 'services';
 
-import Dialog from 'components/Dialog';
 import FolderPicker from 'components/FolderPicker';
 import CheckboxControl from 'components/CheckboxControl';
 import Box from '@mui/material/Box';
@@ -12,7 +11,7 @@ import Input from 'components/Input';
 import Dropzone from 'components/Dropzone';
 import FilesList from 'components/FilesList';
 import CheckboxGroup from 'components/CheckboxGroup';
-import ErrorView from 'components/ErrorView';
+import DialogError from 'components/DialogError';
 import { PlusIcon, CloseIcon } from 'components/Icons';
 import CircularProgress from '@mui/material/CircularProgress';
 
@@ -21,7 +20,7 @@ import { useStyles } from './style';
 interface UploadFormProps {
   rootFolder: FolderModel;
   fetchFolders(): Promise<any>;
-  onClose(): void;
+  onClose(val?: string): void;
 }
 
 const UploadForm: React.FC<UploadFormProps> = ({
@@ -55,6 +54,9 @@ const UploadForm: React.FC<UploadFormProps> = ({
     initErrors,
   } = useUploadFormData(rootFolder, fetchFolders, onClose);
 
+  const disabledDeployBtn =
+    !selectedFiles.length || uploadFlag || !selectedFolder;
+
   return (
     <>
       <div>
@@ -76,7 +78,10 @@ const UploadForm: React.FC<UploadFormProps> = ({
               />
             </Box>
             <Button
-              disabled={newFolder.show || selectedFolder?.sub}
+              disabled={
+                newFolder.show ||
+                !!(selectedFolder && selectedFolder?.depth >= 2)
+              }
               onClick={handleAddNewFolder}
               className={classes.addBtn}
               classes={{
@@ -147,11 +152,11 @@ const UploadForm: React.FC<UploadFormProps> = ({
               })}
             </Box>
             <Box display="flex" alignItems="center" justifyContent="flex-end">
-              <CancelButton onClick={onClose}>Cancel</CancelButton>
+              <CancelButton onClick={() => onClose()}>Cancel</CancelButton>
               <ApplyButton
                 className={classes.uploadBtn}
                 disableRipple={uploadFlag}
-                disabled={!selectedFiles.length || uploadFlag}
+                disabled={disabledDeployBtn}
                 onClick={upload}
                 endIcon={
                   uploadFlag ? (
@@ -168,9 +173,7 @@ const UploadForm: React.FC<UploadFormProps> = ({
           </>
         )}
       </div>
-      <Dialog open={Boolean(error)} handleClose={initErrors}>
-        {error?.messages ? <ErrorView messages={error.messages} /> : null}
-      </Dialog>
+      <DialogError error={error} initError={initErrors} />
     </>
   );
 };

@@ -1,9 +1,10 @@
+import { ChangeEvent } from 'react';
 import { FolderModel, DocumentModel } from 'services';
 
 import useSort from 'hooks/useSort';
 import _get from 'lodash/get';
-import { isFolder, getDeepIdsList, isPublished } from 'utils';
-import { isSelected, isIndeterminated } from './utils';
+import { isFolder, isPublished } from 'utils';
+import { isSelectedAll, isItemSelected, isIndeterminated } from './utils';
 
 import clsx from 'clsx';
 import { useStyles } from './style';
@@ -28,9 +29,9 @@ import {
 } from 'components/Icons';
 
 interface DocumentsTableProps {
+  activeFolder: FolderModel;
   list: (FolderModel | DocumentModel)[];
-  idsList: string[];
-  selected: string[];
+  selected: (FolderModel | DocumentModel)[];
   saveFile(id: string): Promise<void>;
   handleChangeActiveFolder(folder: FolderModel): void;
   handleChangeSelectedItems(
@@ -41,15 +42,17 @@ interface DocumentsTableProps {
     id: string;
     type: 'doc' | 'folder';
   }): void;
+  handleSelectAll(e: ChangeEvent<HTMLInputElement>): void;
 }
 
 const DocumentsTable: React.FC<DocumentsTableProps> = ({
+  activeFolder,
   list,
-  idsList,
   selected,
   saveFile,
   handleChangeActiveFolder,
   handleChangeSelectedItems,
+  handleSelectAll,
   handleOpenDeletConfirmationDialog,
 }) => {
   const classes = useStyles();
@@ -63,8 +66,10 @@ const DocumentsTable: React.FC<DocumentsTableProps> = ({
     orderBy: 'Name',
   });
 
-  const selectedAll = isSelected(selected, idsList);
-  const indeterminatedAll = !selectedAll && isIndeterminated(selected, idsList);
+  const selectedAll = !!(list.length && isSelectedAll(activeFolder, selected));
+  const indeterminatedAll = selectedAll
+    ? false
+    : isIndeterminated(activeFolder, selected);
 
   return (
     <MuiTable>
@@ -72,7 +77,7 @@ const DocumentsTable: React.FC<DocumentsTableProps> = ({
         order={sortParams.order}
         orderBy={sortParams.orderBy}
         onChangeSortParams={onChangeSortParams}
-        onToggleSelectAll={() => {}}
+        onToggleSelectAll={handleSelectAll}
         selected={selectedAll}
         indeterminate={indeterminatedAll}
       />
@@ -80,12 +85,7 @@ const DocumentsTable: React.FC<DocumentsTableProps> = ({
         {sortedList.map((item) => {
           const folder = isFolder(item);
           const published = isPublished(item);
-          const itemIdsList = getDeepIdsList(item);
-          const isItemSelected = isSelected(selected, itemIdsList);
-          const indeterminate =
-            folder &&
-            !isItemSelected &&
-            isIndeterminated(selected, itemIdsList);
+          const isSelected = isItemSelected(item, selected);
           const entity = {
             id: item.Id,
             type: folder ? ('folder' as const) : ('doc' as const),
@@ -96,16 +96,13 @@ const DocumentsTable: React.FC<DocumentsTableProps> = ({
               key={item.Id}
               className={classes.row}
               hover
-              selected={isItemSelected}
+              selected={isSelected}
             >
               <MuiTableCell className={classes.cell}>
                 <Checkbox
                   name={item.Id}
-                  checked={isItemSelected}
-                  indeterminate={indeterminate}
-                  onChange={() =>
-                    handleChangeSelectedItems(item, !isItemSelected)
-                  }
+                  checked={isSelected}
+                  onChange={() => handleChangeSelectedItems(item, !isSelected)}
                 />
               </MuiTableCell>
               <MuiTableCell className={classes.cell}>

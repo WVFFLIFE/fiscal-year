@@ -1,7 +1,9 @@
+import { SelectedFolder, FolderPickerItemModel } from '../FolderPicker';
+
+import { isSelectedInChain } from '../utils';
+
 import MenuList from '@mui/material/MenuList';
 import FolderItem from '../FolderItem';
-
-import { SelectedFolder, FolderPickerItemModel } from '../FolderPicker';
 
 import { useStyles } from './style';
 
@@ -32,6 +34,7 @@ const FolderList: React.FC<FolderListProps> = ({
   return (
     <MenuList className={classes.root}>
       {options.map((item) => {
+        const open = isSelectedInChain(item, selected);
         return (
           <FolderItem
             key={item.id}
@@ -40,6 +43,7 @@ const FolderList: React.FC<FolderListProps> = ({
             saveFolderName={saveFolderName}
             onChange={handleChange}
             edit={edit}
+            open={open}
           />
         );
       })}

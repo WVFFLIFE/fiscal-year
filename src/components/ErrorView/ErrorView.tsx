@@ -10,16 +10,16 @@ const ErrorView: React.FC<ErrorViewProps> = ({ messages }) => {
   const classes = useStyles();
 
   return (
-    <div>
+    <div className={classes.root}>
       <h3 className={classes.title}>Error</h3>
       <ErrorOutlineIcon className={classes.errorIcon} />
-      <div className={classes.box}>
+      <ul className={classes.box}>
         {messages.map((message, idx) => (
-          <p key={idx} className={classes.errorDescription}>
-            {message}
-          </p>
+          <li key={idx} className={classes.errorItem}>
+            <span className={classes.errorDescription}>{message}</span>
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   );
 };

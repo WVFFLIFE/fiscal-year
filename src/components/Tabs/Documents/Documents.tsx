@@ -6,6 +6,7 @@ import ActionButton from 'components/ActionButton';
 import Breadcrumbs from './Breadcrumbs';
 import DeleteConfirmation from 'components/DeleteConfirmation';
 import Dialog from 'components/Dialog';
+import SuccessDialogView from 'components/SuccessDialogView';
 import {
   EditIcon,
   DeleteIcon,
@@ -18,6 +19,7 @@ import {
 import DocumentsTable from 'components/DocumentsTable';
 import UploadForm from './UploadForm';
 
+import clsx from 'clsx';
 import { useStyles } from './style';
 
 const options: QuickFilterOption[] = [
@@ -29,13 +31,15 @@ const Documents = () => {
   const classes = useStyles();
 
   const {
+    activeFolder,
     list,
     breadcrumbsList,
     rootFolder,
+    amount,
     selectedItems,
-    deepIdsList,
     openUploadForm,
     quickFilter,
+    showSuccessDialog,
     deleteConfirmationState,
     saveFile,
     deleteEntity,
@@ -49,6 +53,8 @@ const Documents = () => {
     handleOpenDeleteConfirmationDialog,
     handleSelectBreadcrumbsFolder,
     handleCloseDeleteConfirmationDialog,
+    handleCloseSuccessDialog,
+    handleSelectAll,
   } = useDocumentsData();
 
   return (
@@ -63,7 +69,22 @@ const Documents = () => {
         alignItems="center"
         marginBottom="20px"
       >
-        <Box></Box>
+        <Box
+          display="flex"
+          alignItems="center"
+          className={clsx(classes.amount, {
+            [classes.zeroAmount]: !amount.docs && !amount.folders,
+          })}
+        >
+          {`${amount.folders} ${amount.folders > 0 ? 'Rows' : 'Row'}`}
+          {amount.docs ? (
+            <>
+              <span className={classes.divider}></span>
+              {`${amount.docs} Documents`}
+            </>
+          ) : null}{' '}
+          selected
+        </Box>
         <Box display="flex" alignItems="center">
           <QuickFilter
             itemClassName={classes.quickFilterItem}
@@ -87,7 +108,12 @@ const Documents = () => {
             <ActionButton className={classes.actionBtn}>
               <RefreshIcon className={classes.actionIcon} />
             </ActionButton>
-            <ActionButton className={classes.actionBtn}>
+            <ActionButton
+              className={classes.actionBtn}
+              disabled={!Boolean(rootFolder?.Url)}
+              href={rootFolder?.Url}
+              target="_blank"
+            >
               <SharePointIcon className={classes.actionIcon} />
             </ActionButton>
             <ActionButton
@@ -100,15 +126,18 @@ const Documents = () => {
           </Box>
         </Box>
       </Box>
-      <DocumentsTable
-        list={list}
-        idsList={deepIdsList}
-        selected={selectedItems}
-        handleChangeActiveFolder={handleChangeActiveFolder}
-        handleChangeSelectedItems={handleChangeSelectedItems}
-        handleOpenDeletConfirmationDialog={handleOpenDeleteConfirmationDialog}
-        saveFile={saveFile}
-      />
+      {activeFolder ? (
+        <DocumentsTable
+          activeFolder={activeFolder}
+          list={list}
+          selected={selectedItems}
+          handleChangeActiveFolder={handleChangeActiveFolder}
+          handleChangeSelectedItems={handleChangeSelectedItems}
+          handleOpenDeletConfirmationDialog={handleOpenDeleteConfirmationDialog}
+          handleSelectAll={handleSelectAll}
+          saveFile={saveFile}
+        />
+      ) : null}
       <Dialog
         open={openUploadForm}
         handleClose={handleCloseUploadForm}
@@ -140,6 +169,13 @@ const Documents = () => {
           cancel={handleCloseDeleteConfirmationDialog}
           loading={deleteConfirmationState.loading}
         />
+      </Dialog>
+      <Dialog
+        open={showSuccessDialog}
+        maxWidth="xs"
+        handleClose={handleCloseSuccessDialog}
+      >
+        <SuccessDialogView />
       </Dialog>
     </Box>
   );

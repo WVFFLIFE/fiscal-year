@@ -17,17 +17,25 @@ export const useStyles = makeStyles((theme) => ({
     textAlign: 'center',
   },
   box: {
+    margin: 0,
+    padding: 0,
+    listStyle: 'none',
     marginTop: 30,
-    padding: 10,
-    background: theme.color.greyLight1,
   },
   errorIcon: {
     fontSize: 48,
     color: theme.color.red,
   },
-  errorDescription: {
+  errorItem: {
     margin: 0,
     marginBottom: 15,
+    padding: 10,
+    background: theme.color.greyLight1,
+    '&:last-child': {
+      marginBottom: 0,
+    },
+  },
+  errorDescription: {
     fontSize: 16,
     fontFamily: 'Lato',
     color: 'rgba(48, 52, 75, 1)',

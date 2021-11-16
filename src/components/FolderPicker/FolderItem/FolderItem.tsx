@@ -2,6 +2,8 @@ import { useState, MouseEvent, ChangeEvent } from 'react';
 
 import { SelectedFolder, FolderPickerItemModel } from '../FolderPicker';
 
+import { isSelectedInChain } from '../utils';
+
 import CircularProgress from '@mui/material/CircularProgress';
 import MenuItem from '@mui/material/MenuItem';
 import Collapse from '@mui/material/Collapse';
@@ -23,20 +25,20 @@ interface FolderItemProps {
   folder: FolderPickerItemModel;
   selected: SelectedFolder | null;
   saveFolderName(id: string, name: string): Promise<any>;
-  sub?: boolean;
+  open: boolean;
 }
 
 const FolderItem: React.FC<FolderItemProps> = ({
+  open: defaultOpen,
   edit,
   onChange,
   folder,
   selected,
-  sub = false,
   saveFolderName,
 }) => {
   const classes = useStyles();
 
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
   const [folderName, setFolderName] = useState(folder.name);
   const [editMode, setEditMode] = useState(false);
   const [showEditBtn, setShowEditBtn] = useState(false);
@@ -55,7 +57,7 @@ const FolderItem: React.FC<FolderItemProps> = ({
   const handleClickMenuItem = (e: MouseEvent<HTMLLIElement>) => {
     stopPropagate(e);
 
-    onChange({ id: folder.id, name: folder.name, sub });
+    onChange({ id: folder.id, name: folder.name, depth: folder.depth });
   };
 
   const handleMouseOver = (e: MouseEvent<HTMLLIElement>) => {
@@ -94,18 +96,21 @@ const FolderItem: React.FC<FolderItemProps> = ({
   };
 
   const hasSubFolders = !!folder.folders.length;
+  const isRoot = folder.depth === 0;
+  const isSelected = folder.id === selected?.id;
 
   return (
     <>
       <MenuItem
-        className={clsx(classes.item, {
-          [classes.sub]: sub,
-        })}
+        className={classes.item}
+        style={{ paddingLeft: 20 * (folder.depth + 1) }}
         disableRipple={loading}
+        disabled={loading}
+        selected={isSelected}
         onClick={loading ? undefined : handleClickMenuItem}
         onMouseDown={stopPropagate}
-        onMouseOver={edit ? handleMouseOver : undefined}
-        onMouseOut={edit ? handleMouseOut : undefined}
+        onMouseOver={edit && !isRoot ? handleMouseOver : undefined}
+        onMouseOut={edit && !isRoot ? handleMouseOut : undefined}
       >
         <div className={clsx(classes.wrapper, classes.spaceBetween)}>
           <div className={clsx(classes.wrapper, classes.f1)}>
@@ -152,7 +157,7 @@ const FolderItem: React.FC<FolderItemProps> = ({
                 </Button>
               </div>
             )
-          ) : (
+          ) : !isRoot ? (
             <Button
               onClick={handleSetEditMode}
               onMouseDown={stopPropagate}
@@ -162,7 +167,7 @@ const FolderItem: React.FC<FolderItemProps> = ({
             >
               <EditIcon className={classes.itemIcon} />
             </Button>
-          )}
+          ) : null}
         </div>
       </MenuItem>
       {hasSubFolders ? (
@@ -174,9 +179,10 @@ const FolderItem: React.FC<FolderItemProps> = ({
         >
           <ul className={classes.reset}>
             {folder.folders.map((subFolder) => {
+              const open = isSelectedInChain(subFolder, selected);
               return (
                 <FolderItem
-                  sub
+                  open={open}
                   edit={edit}
                   key={subFolder.id}
                   folder={subFolder}

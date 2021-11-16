@@ -4,7 +4,11 @@ import {
   SelectedAttributesModel,
   FolderPickerItemModel,
 } from 'models';
-import Services, { MettadataAttributeModel, FolderModel } from 'services';
+import Services, {
+  MettadataAttributeModel,
+  FolderModel,
+  SettledResponse,
+} from 'services';
 import { SelectedFolder } from 'components/FolderPicker';
 import _uniqBy from 'lodash/uniqBy';
 import { getErrorsList } from 'utils';
@@ -19,7 +23,7 @@ interface State {
   overwrite: boolean;
 }
 
-interface NewFoldeModel {
+interface NewFolderModel {
   show: boolean;
   name: string;
 }
@@ -35,10 +39,16 @@ function readFile(file: File): Promise<string> {
   });
 }
 
+function isAnySucceed(res: SettledResponse) {
+  return res.some(
+    (item) => item.status === 'fulfilled' && item.value.IsSuccess
+  );
+}
+
 const useUploadFormData = (
   rootFolder: FolderModel,
   fetchFolders: () => Promise<void>,
-  onClose: () => void
+  onClose: (val?: string) => void
 ) => {
   const [state, setState] = useState<State>({
     attributes: [],
@@ -48,7 +58,7 @@ const useUploadFormData = (
     overwrite: false,
     uploadFlag: false,
   });
-  const [newFolder, setNewFolder] = useState<NewFoldeModel>({
+  const [newFolder, setNewFolder] = useState<NewFolderModel>({
     name: '',
     show: false,
   });
@@ -63,7 +73,6 @@ const useUploadFormData = (
   const setError = (messages: string | string[]) => {
     setState((prevState) => ({
       ...prevState,
-      attributes: [],
       error: { messages: Array.isArray(messages) ? messages : [messages] },
       loading: false,
     }));
@@ -194,14 +203,25 @@ const useUploadFormData = (
   };
 
   const uploadDocs = async (parentFolderId: string) => {
-    const res = await Promise.allSettled(
-      selectedFiles.map((file) => uploadDoc(file, parentFolderId))
-    );
+    try {
+      const res = await Promise.allSettled(
+        selectedFiles.map((file) => uploadDoc(file, parentFolderId))
+      );
 
-    const errors = getErrorsList(res);
+      if (isAnySucceed(res)) {
+        await fetchFolders();
+      }
 
-    if (errors.length) {
-      setError(errors);
+      const errors = getErrorsList(res);
+
+      if (errors.length) {
+        setError(errors);
+      } else {
+        onClose('success');
+      }
+    } catch (err) {
+      console.error(err);
+      setError([String(err)]);
     }
   };
 
@@ -222,34 +242,34 @@ const useUploadFormData = (
   };
 
   const upload = async () => {
-    try {
-      setState((prevState) => ({
-        ...prevState,
-        uploadFlag: true,
-      }));
+    if (state.selectedFolder?.id) {
+      try {
+        setState((prevState) => ({
+          ...prevState,
+          uploadFlag: true,
+        }));
 
-      const parentFolderId = state.selectedFolder
-        ? state.selectedFolder.id
-        : rootFolder.Id;
+        const parentFolderId = state.selectedFolder.id;
 
-      if (newFolder.name && newFolder.show) {
-        await createFolderAndUpload(parentFolderId);
-      } else {
-        await uploadDocs(parentFolderId);
+        if (newFolder.name && newFolder.show) {
+          await createFolderAndUpload(parentFolderId);
+        } else {
+          await uploadDocs(parentFolderId);
+        }
+
+        setState((prevState) => ({
+          ...prevState,
+          uploadFlag: false,
+        }));
+      } catch (err) {
+        console.error(err);
+
+        setState((prevState) => ({
+          ...prevState,
+          error: { messages: [String(err)] },
+          uploadFlag: false,
+        }));
       }
-
-      setState((prevState) => ({
-        ...prevState,
-        uploadFlag: false,
-      }));
-    } catch (err) {
-      console.error(err);
-
-      setState((prevState) => ({
-        ...prevState,
-        error: { messages: [String(err)] },
-        uploadFlag: false,
-      }));
     }
   };
 
@@ -278,13 +298,13 @@ const useUploadFormData = (
   }, []);
 
   useEffect(() => {
-    if (state.selectedFolder?.sub) {
+    if (state.selectedFolder && state.selectedFolder.depth >= 2) {
       handleRemoveNewFolder();
     }
   }, [state.selectedFolder]);
 
   const foldersOptions: FolderPickerItemModel[] = useMemo(() => {
-    return transformFolders(rootFolder.Folders);
+    return transformFolders([rootFolder]);
   }, [rootFolder]);
 
   return {

@@ -1,22 +1,30 @@
-function notEmpty(list: any[]) {
-  return !!list.length;
+import { DocumentModel, FolderModel } from 'services';
+
+export function isSelectedAll(
+  activeFolder: FolderModel,
+  selected: (FolderModel | DocumentModel)[]
+) {
+  return [...activeFolder.Folders, ...activeFolder.Documents].every(
+    (entity) => {
+      return selected.some((selectedEntity) => selectedEntity.Id === entity.Id);
+    }
+  );
 }
 
-export function isSelected(selectedList: string[], itemIdsList: string[]) {
-  return (
-    notEmpty(selectedList) &&
-    notEmpty(itemIdsList) &&
-    itemIdsList.every((itemId) => selectedList.includes(itemId))
-  );
+export function isItemSelected(
+  item: DocumentModel | FolderModel,
+  selected: (FolderModel | DocumentModel)[]
+) {
+  return selected.some((selectedItem) => {
+    return selectedItem.Id === item.Id;
+  });
 }
 
 export function isIndeterminated(
-  selectedList: string[],
-  itemIdsList: string[]
+  activeFolder: FolderModel,
+  selected: (FolderModel | DocumentModel)[]
 ) {
-  return (
-    notEmpty(selectedList) &&
-    notEmpty(itemIdsList) &&
-    itemIdsList.some((itemId) => selectedList.includes(itemId))
-  );
+  return [...activeFolder.Documents, ...activeFolder.Folders].some((entity) => {
+    return selected.some((selectedEntity) => selectedEntity.Id === entity.Id);
+  });
 }

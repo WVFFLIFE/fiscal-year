@@ -92,3 +92,8 @@ export interface SelectedAttributesModel {
   Information_x0020_Group: string[];
   Service_x002f_Process: string[];
 }
+
+export interface EntityModel {
+  id: string;
+  type: 'doc' | 'folder';
+}
