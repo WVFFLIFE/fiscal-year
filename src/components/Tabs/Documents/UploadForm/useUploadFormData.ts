@@ -1,22 +1,17 @@
-import { useState, useEffect, useMemo, ChangeEvent, useCallback } from 'react';
-import {
-  ErrorModel,
-  SelectedAttributesModel,
-  FolderPickerItemModel,
-} from 'models';
+import { useState, useEffect, ChangeEvent, useCallback } from 'react';
+import { ErrorModel, SelectedAttributesModel } from 'models';
 import Services, {
   MettadataAttributeModel,
   FolderModel,
   SettledResponse,
 } from 'services';
-import { SelectedFolder } from 'components/FolderPicker';
 import _uniqBy from 'lodash/uniqBy';
 import { getErrorsList } from 'utils';
-import { transformFolders } from '../utils';
 
 interface State {
   attributes: MettadataAttributeModel[];
-  selectedFolder: SelectedFolder | null;
+  selectedFolder: FolderModel | null;
+  selectedFolderDepth: number | null;
   loading: boolean;
   uploadFlag: boolean;
   error: ErrorModel | null;
@@ -46,13 +41,13 @@ function isAnySucceed(res: SettledResponse) {
 }
 
 const useUploadFormData = (
-  rootFolder: FolderModel,
   fetchFolders: () => Promise<void>,
   onClose: (val?: string) => void
 ) => {
   const [state, setState] = useState<State>({
     attributes: [],
     selectedFolder: null,
+    selectedFolderDepth: null,
     loading: true,
     error: null,
     overwrite: false,
@@ -85,19 +80,39 @@ const useUploadFormData = (
     }));
   };
 
-  const handleChangeSelectedFolder = (newFolder: SelectedFolder) => {
+  const handleUpdateSelectedFolderName = (newFolderName: string) => {
     setState((prevState) => ({
       ...prevState,
-      selectedFolder: newFolder,
+      selectedFolder: prevState.selectedFolder
+        ? {
+            ...prevState.selectedFolder,
+            Name: newFolderName,
+          }
+        : null,
     }));
   };
 
-  const saveNewFolderName = async (id: string, name: string) => {
+  const handleChangeSelectedFolder = (
+    newFolder: FolderModel,
+    folderDepth: number
+  ) => {
+    setState((prevState) => ({
+      ...prevState,
+      selectedFolder: newFolder,
+      selectedFolderDepth: folderDepth,
+    }));
+  };
+
+  const handleSaveNewFolderName = async (
+    folderId: string,
+    newFolderName: string
+  ) => {
     try {
-      const res = await Services.folderUpdate(id, name);
+      const res = await Services.folderUpdate(folderId, newFolderName);
 
       if (res.IsSuccess) {
-        fetchFolders();
+        await fetchFolders();
+        handleUpdateSelectedFolderName(newFolderName);
       } else {
         setState((prevState) => ({
           ...prevState,
@@ -242,14 +257,14 @@ const useUploadFormData = (
   };
 
   const upload = async () => {
-    if (state.selectedFolder?.id) {
+    if (state.selectedFolder) {
       try {
         setState((prevState) => ({
           ...prevState,
           uploadFlag: true,
         }));
 
-        const parentFolderId = state.selectedFolder.id;
+        const parentFolderId = state.selectedFolder.Id;
 
         if (newFolder.name && newFolder.show) {
           await createFolderAndUpload(parentFolderId);
@@ -298,23 +313,18 @@ const useUploadFormData = (
   }, []);
 
   useEffect(() => {
-    if (state.selectedFolder && state.selectedFolder.depth >= 2) {
+    if (state.selectedFolderDepth && state.selectedFolderDepth >= 2) {
       handleRemoveNewFolder();
     }
-  }, [state.selectedFolder]);
-
-  const foldersOptions: FolderPickerItemModel[] = useMemo(() => {
-    return transformFolders([rootFolder]);
-  }, [rootFolder]);
+  }, [state.selectedFolderDepth]);
 
   return {
     ...state,
-    foldersOptions,
     selectedAttributes,
     handleChangeSelectedFolder,
     handleChangeAttribute,
     selectedFiles,
-    saveNewFolderName,
+    handleSaveNewFolderName,
     handleRemoveFile,
     newFolder,
     handleSelectFiles,

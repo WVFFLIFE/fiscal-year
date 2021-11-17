@@ -6,6 +6,7 @@ import _get from 'lodash/get';
 
 export { default as isFolder } from './isFolder';
 export { default as buildFlatList } from './buildFlatList';
+export { default as extractDocs } from './extractDocs';
 
 export const DEFAULT_FORMAT_PATTERN = 'd.M.yyyy';
 

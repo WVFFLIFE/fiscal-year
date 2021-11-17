@@ -1,5 +1,4 @@
 import { FolderModel, DocumentModel } from 'services';
-import { FolderPickerItemModel } from 'models';
 
 import isFolder from 'utils/isFolder';
 
@@ -29,21 +28,21 @@ export function prepareData(folder: FolderModel) {
   return [...folder.Folders, ...folder.Documents];
 }
 
-export function transformFolders(
-  folders: FolderModel[],
-  depth = 0
-): FolderPickerItemModel[] {
-  return folders.map((folder) => {
-    return {
-      id: folder.Id,
-      name: depth === 0 ? 'Home' : folder.Name,
-      depth,
-      folders: folder.Folders.length
-        ? transformFolders(folder.Folders, depth + 1)
-        : [],
-    };
-  });
-}
+// export function transformFolders(
+//   folders: FolderModel[],
+//   depth = 0
+// ): FolderPickerItemModel[] {
+//   return folders.map((folder) => {
+//     return {
+//       id: folder.Id,
+//       name: depth === 0 ? 'Home' : folder.Name,
+//       depth,
+//       folders: folder.Folders.length
+//         ? transformFolders(folder.Folders, depth + 1)
+//         : [],
+//     };
+//   });
+// }
 
 export function countEntitiesAmount(entities: (FolderModel | DocumentModel)[]) {
   let amount = { docs: 0, folders: 0 };

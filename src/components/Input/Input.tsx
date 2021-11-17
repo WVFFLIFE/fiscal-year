@@ -21,6 +21,11 @@ const Input = forwardRef<HTMLDivElement, TextFieldProps>(
           },
           disableUnderline: true,
         }}
+        InputLabelProps={{
+          className: classes.label,
+          focused: false,
+          disableAnimation: true,
+        }}
         variant="standard"
       >
         {children}

@@ -1,11 +1,16 @@
+import { useMemo } from 'react';
 import useUploadFormData from './useUploadFormData';
-import { SelectedAttributesModel } from 'models';
-import { FolderModel } from 'services';
+import { SelectedAttributesModel, FolderModel } from 'models';
 
 import FolderPicker from 'components/FolderPicker';
 import CheckboxControl from 'components/CheckboxControl';
 import Box from '@mui/material/Box';
-import { IconButton, ApplyButton, CancelButton } from 'components/Styled';
+import {
+  IconButton,
+  ApplyButton,
+  CancelButton,
+  InputLabel,
+} from 'components/Styled';
 import Button from 'components/Button';
 import Input from 'components/Input';
 import Dropzone from 'components/Dropzone';
@@ -40,19 +45,19 @@ const UploadForm: React.FC<UploadFormProps> = ({
     handleChangeAttribute,
     newFolder,
     selectedFolder,
+    selectedFolderDepth,
     selectedFiles,
-    foldersOptions,
     handleChangeSelectedFolder,
     handleSelectFiles,
     handleRemoveFile,
-    saveNewFolderName,
+    handleSaveNewFolderName,
     handleAddNewFolder,
     handleChangeNewFolderName,
     handleRemoveNewFolder,
     handleChangeOverwriteCheckbox,
     upload,
     initErrors,
-  } = useUploadFormData(rootFolder, fetchFolders, onClose);
+  } = useUploadFormData(fetchFolders, onClose);
 
   const disabledDeployBtn =
     !selectedFiles.length || uploadFlag || !selectedFolder;
@@ -69,18 +74,20 @@ const UploadForm: React.FC<UploadFormProps> = ({
         ) : (
           <>
             <Box marginBottom="10px">
-              <span className={classes.label}>Parent Folder Name</span>
+              <InputLabel>Parent Folder Name</InputLabel>
               <FolderPicker
-                selected={selectedFolder}
-                options={foldersOptions}
-                onChange={handleChangeSelectedFolder}
-                saveFolderName={saveNewFolderName}
+                rootFolder={rootFolder}
+                selectedFolder={selectedFolder}
+                onChangeFolder={handleChangeSelectedFolder}
+                onChangeFolderName={handleSaveNewFolderName}
               />
             </Box>
             <Button
               disabled={
-                newFolder.show ||
-                !!(selectedFolder && selectedFolder?.depth >= 2)
+                !!(
+                  newFolder.show ||
+                  (selectedFolderDepth && selectedFolderDepth >= 2)
+                )
               }
               onClick={handleAddNewFolder}
               className={classes.addBtn}
@@ -93,7 +100,7 @@ const UploadForm: React.FC<UploadFormProps> = ({
             />
             {newFolder.show ? (
               <Box>
-                <span className={classes.label}>New Folder Name</span>
+                <InputLabel>New Folder Name</InputLabel>
                 <Box display="flex" alignItems="center">
                   <Input
                     autoFocus

@@ -1,45 +1,41 @@
 import Picker from 'components/controls/Picker';
 import FolderList from './FolderList';
 
-export interface FolderPickerItemModel {
-  id: string;
-  name: string;
-  folders: FolderPickerItemModel[];
-  depth: number;
+export interface FolderModel {
+  Name: string;
+  Id: string;
+  Folders: FolderModel[];
 }
 
-export interface SelectedFolder {
-  id: string;
-  name: string;
-  depth: number;
+interface FolderPickerProps<T extends FolderModel> {
+  /**
+   * Main folder
+   */
+  rootFolder: T;
+  /**
+   * Selected folder from the list
+   * of root folder
+   */
+  selectedFolder: T | null;
+  onChangeFolder(newFolder: T, folderDepth: number): void;
+  onChangeFolderName(folderId: string, newFolderName: string): Promise<void>;
 }
 
-interface FolderPickerProps {
-  edit?: boolean;
-  options: FolderPickerItemModel[];
-  selected: SelectedFolder | null;
-  onChange(folder: SelectedFolder): void;
-  loadingId?: string | null;
-  saveFolderName(id: string, name: string): Promise<any>;
-}
-
-const FolderPicker: React.FC<FolderPickerProps> = ({
-  edit = true,
-  selected,
-  options,
-  onChange,
-  saveFolderName,
-}) => {
-  const renderValue = () => (selected ? selected.name : null);
+const FolderPicker = <T extends FolderModel>({
+  rootFolder,
+  selectedFolder,
+  onChangeFolder,
+  onChangeFolderName,
+}: FolderPickerProps<T>) => {
+  const renderValue = () => (selectedFolder ? selectedFolder.Name : null);
 
   const renderBody = (onClose: () => void) => (
     <FolderList
-      edit={edit}
-      onChange={onChange}
+      rootFolder={rootFolder}
+      selectedFolder={selectedFolder}
+      onChangeFolder={onChangeFolder}
+      onChangeFolderName={onChangeFolderName}
       onClose={onClose}
-      selected={selected}
-      options={options}
-      saveFolderName={saveFolderName}
     />
   );
 

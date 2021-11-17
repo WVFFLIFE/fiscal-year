@@ -3,6 +3,7 @@ import useDocumentsData from './useDocumentsData';
 import Box from '@mui/material/Box';
 import QuickFilter, { QuickFilterOption } from 'components/QuickFilter';
 import ActionButton from 'components/ActionButton';
+import DialogError from 'components/DialogError';
 import Breadcrumbs from './Breadcrumbs';
 import DeleteConfirmation from 'components/DeleteConfirmation';
 import Dialog from 'components/Dialog';
@@ -18,6 +19,7 @@ import {
 } from 'components/Icons';
 import DocumentsTable from 'components/DocumentsTable';
 import UploadForm from './UploadForm';
+import EditDocument from './EditDocument';
 
 import clsx from 'clsx';
 import { useStyles } from './style';
@@ -31,17 +33,21 @@ const Documents = () => {
   const classes = useStyles();
 
   const {
+    rootFolder,
     activeFolder,
     list,
+    error,
+    initError,
     breadcrumbsList,
-    rootFolder,
     amount,
     selectedItems,
     openUploadForm,
     quickFilter,
     showSuccessDialog,
     deleteConfirmationState,
+    editDocumentDialogState,
     saveFile,
+    saveSelected,
     deleteEntity,
     fetchFolders,
     handleChangeActiveFolder,
@@ -55,6 +61,9 @@ const Documents = () => {
     handleCloseDeleteConfirmationDialog,
     handleCloseSuccessDialog,
     handleSelectAll,
+    handleOpenEditDocumentDialog,
+    handleCloseEditDocumentDialog,
+    handleInitEditDocumentDialogState,
   } = useDocumentsData();
 
   return (
@@ -93,16 +102,29 @@ const Documents = () => {
             onChange={handleChangeQuickFilter}
           />
           <Box marginLeft="40px">
-            <ActionButton className={classes.actionBtn} disabled>
+            <ActionButton
+              className={classes.actionBtn}
+              disabled={!!!selectedItems.length}
+            >
               <EditIcon className={classes.actionIcon} />
             </ActionButton>
-            <ActionButton className={classes.actionBtn} disabled>
+            <ActionButton
+              className={classes.actionBtn}
+              disabled={!!!selectedItems.length}
+            >
               <DeleteIcon className={classes.actionIcon} />
             </ActionButton>
-            <ActionButton className={classes.actionBtn} disabled>
+            <ActionButton
+              className={classes.actionBtn}
+              disabled={!!!amount.docs}
+              onClick={saveSelected}
+            >
               <DownloadIcon className={classes.actionIcon} />
             </ActionButton>
-            <ActionButton className={classes.actionBtn} disabled>
+            <ActionButton
+              className={classes.actionBtn}
+              disabled={!!!amount.docs}
+            >
               <PublishedIcon className={classes.actionIcon} />
             </ActionButton>
             <ActionButton className={classes.actionBtn}>
@@ -135,6 +157,7 @@ const Documents = () => {
           handleChangeSelectedItems={handleChangeSelectedItems}
           handleOpenDeletConfirmationDialog={handleOpenDeleteConfirmationDialog}
           handleSelectAll={handleSelectAll}
+          handleOpenEditDocumentDialog={handleOpenEditDocumentDialog}
           saveFile={saveFile}
         />
       ) : null}
@@ -148,6 +171,24 @@ const Documents = () => {
             rootFolder={rootFolder}
             fetchFolders={fetchFolders}
             onClose={handleCloseUploadForm}
+          />
+        ) : null}
+      </Dialog>
+      <Dialog
+        maxWidth="sm"
+        open={editDocumentDialogState.open}
+        handleClose={handleCloseEditDocumentDialog}
+        TransitionProps={{
+          onExited: handleInitEditDocumentDialogState,
+        }}
+      >
+        {activeFolder && rootFolder && editDocumentDialogState.document ? (
+          <EditDocument
+            rootFolder={rootFolder}
+            activeFolder={activeFolder}
+            fetchFolders={fetchFolders}
+            selectedDocument={editDocumentDialogState.document}
+            onClose={handleCloseEditDocumentDialog}
           />
         ) : null}
       </Dialog>
@@ -177,6 +218,7 @@ const Documents = () => {
       >
         <SuccessDialogView />
       </Dialog>
+      <DialogError error={error} initError={initError} />
     </Box>
   );
 };

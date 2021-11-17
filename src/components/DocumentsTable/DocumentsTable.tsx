@@ -32,7 +32,7 @@ interface DocumentsTableProps {
   activeFolder: FolderModel;
   list: (FolderModel | DocumentModel)[];
   selected: (FolderModel | DocumentModel)[];
-  saveFile(id: string): Promise<void>;
+  saveFile(id: string): Promise<any>;
   handleChangeActiveFolder(folder: FolderModel): void;
   handleChangeSelectedItems(
     item: FolderModel | DocumentModel,
@@ -43,6 +43,7 @@ interface DocumentsTableProps {
     type: 'doc' | 'folder';
   }): void;
   handleSelectAll(e: ChangeEvent<HTMLInputElement>): void;
+  handleOpenEditDocumentDialog(document: DocumentModel): void;
 }
 
 const DocumentsTable: React.FC<DocumentsTableProps> = ({
@@ -54,6 +55,7 @@ const DocumentsTable: React.FC<DocumentsTableProps> = ({
   handleChangeSelectedItems,
   handleSelectAll,
   handleOpenDeletConfirmationDialog,
+  handleOpenEditDocumentDialog,
 }) => {
   const classes = useStyles();
 
@@ -158,7 +160,15 @@ const DocumentsTable: React.FC<DocumentsTableProps> = ({
                   >
                     <DeleteIcon className={classes.icon} />
                   </ActionButton>
-                  <ActionButton className={classes.btn} size="small">
+                  <ActionButton
+                    className={classes.btn}
+                    size="small"
+                    onClick={() =>
+                      folder
+                        ? () => {}
+                        : handleOpenEditDocumentDialog(item as DocumentModel)
+                    }
+                  >
                     <EditIcon className={classes.icon} />
                   </ActionButton>
                   {!folder && (

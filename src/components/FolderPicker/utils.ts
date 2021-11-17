@@ -1,14 +1,11 @@
-import { FolderPickerItemModel, SelectedFolder } from './FolderPicker';
+import { FolderModel } from './FolderPicker';
 
-export function isSelectedInChain(
-  item: FolderPickerItemModel,
-  selected: SelectedFolder | null
+export function isChild(
+  rootFolder: FolderModel,
+  selectedFolder: FolderModel | null
 ): boolean {
-  if (!selected) return false;
+  if (!selectedFolder) return false;
+  if (rootFolder.Id === selectedFolder.Id) return true;
 
-  return item.folders.some((item) => {
-    if (item.id === selected.id) return true;
-
-    return isSelectedInChain(item, selected);
-  });
+  return rootFolder.Folders.some((folder) => isChild(folder, selectedFolder));
 }

@@ -43,20 +43,11 @@ export const useStyles = makeStyles((theme) => ({
     fontFamily: 'Lato',
     color: '#000',
   },
-  btn: {
-    minWidth: 'auto',
-    padding: 3,
-    borderRadius: '50%',
-  },
   editBtn: {
     opacity: 0,
   },
   editBtnVisible: {
     opacity: 1,
-  },
-  closeBtn: {
-    marginLeft: 10,
-    marginRight: 5,
   },
   itemIcon: {
     fontSize: 16,
@@ -70,11 +61,26 @@ export const useStyles = makeStyles((theme) => ({
   formControl: {
     flex: 1,
   },
+}));
+
+export const useEditableStyles = makeStyles((theme) => ({
   input: {
     height: 24,
   },
+  btnsWrapper: {
+    display: 'flex',
+    alignItems: 'center',
+  },
   loader: {
     marginLeft: 10,
+    color: theme.color.darkBlue,
+  },
+  closeBtn: {
+    marginLeft: 10,
+    marginRight: 5,
+  },
+  icon: {
+    fontSize: 16,
     color: theme.color.darkBlue,
   },
 }));

@@ -1,6 +1,11 @@
 import { CSSProperties } from 'react';
+import {
+  FolderModel as ServiceFolderModel,
+  DocumentModel as ServiceDocumentModel,
+} from 'services';
 
-export type { FolderPickerItemModel } from 'components/FolderPicker';
+export interface FolderModel extends ServiceFolderModel {}
+export interface DocumentModel extends ServiceDocumentModel {}
 
 export interface BaseEntityModel {
   Id: string;
@@ -63,17 +68,6 @@ export interface AttributeHeaderModel {
   InternalName: string;
   DisplayName: string;
   Type: string;
-}
-
-export interface DocumentModel {
-  Id: string;
-  Name: string;
-  Size: number;
-}
-
-export interface FolderModel {
-  Folders: FolderModel[];
-  Documents: DocumentModel[];
 }
 
 export interface FiscalYearDocumentsListResponseModel {

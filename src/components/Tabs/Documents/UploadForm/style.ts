@@ -18,14 +18,6 @@ export const useStyles = makeStyles((theme) => ({
     color: 'rgba(48, 52, 75, 1)',
     textAlign: 'center',
   },
-  label: {
-    display: 'block',
-    marginBottom: 10,
-    fontSize: 14,
-    fontFamily: 'Lato',
-    letterSpacing: 0.2,
-    color: '#000',
-  },
   addBtn: {
     display: 'flex',
     margin: '0 auto',

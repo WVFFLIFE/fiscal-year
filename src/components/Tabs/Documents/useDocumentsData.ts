@@ -1,11 +1,11 @@
 import { useMemo, useEffect, useCallback, useState, ChangeEvent } from 'react';
-import { EntityModel } from 'models';
+import { EntityModel, ErrorModel } from 'models';
 import Services, { FolderModel, DocumentModel } from 'services';
 
 import { saveAs } from 'file-saver';
 import _first from 'lodash/first';
 import _last from 'lodash/last';
-import { isPublished } from 'utils';
+import { isPublished, extractDocs, getErrorsList } from 'utils';
 import { prepareData, limitFoldersDepth, countEntitiesAmount } from './utils';
 
 interface DeleteConfirmationStateModel {
@@ -14,12 +14,27 @@ interface DeleteConfirmationStateModel {
   loading: boolean;
 }
 
+interface EditDocumentDialogStateModel {
+  open: boolean;
+  document: DocumentModel | null;
+}
+
+interface State {
+  loading: boolean;
+  error: ErrorModel | null;
+  breadcrumbsList: FolderModel[];
+  quickFilter: string | null;
+  selectedItems: (DocumentModel | FolderModel)[];
+}
+
 const useDocumentsData = () => {
-  const [breadcrumbsList, setBreadcrumbsList] = useState<FolderModel[]>([]);
-  const [quickFilter, setQuickFilter] = useState<string | null>(null);
-  const [selectedItems, setSelectedItems] = useState<
-    (DocumentModel | FolderModel)[]
-  >([]);
+  const [state, setState] = useState<State>({
+    breadcrumbsList: [],
+    loading: false,
+    error: null,
+    quickFilter: null,
+    selectedItems: [],
+  });
   const [openUploadForm, setOpenUploadForm] = useState(false);
   const [deleteConfirmationState, setDeleteConfirmationState] =
     useState<DeleteConfirmationStateModel>({
@@ -28,6 +43,13 @@ const useDocumentsData = () => {
       loading: false,
     });
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  const [editDocumentDialogState, setEditDocumentDialogState] =
+    useState<EditDocumentDialogStateModel>({
+      open: false,
+      document: null,
+    });
+
+  const { loading, error, breadcrumbsList, quickFilter, selectedItems } = state;
 
   const rootFolder = _first(breadcrumbsList) || null;
   const activeFolder = _last(breadcrumbsList) || null;
@@ -57,24 +79,105 @@ const useDocumentsData = () => {
       '53820CFC-8E4A-E711-8106-005056AC126A'
     );
 
-    setBreadcrumbsList([
-      {
-        ...res.Folder,
-        Folders: limitFoldersDepth(res.Folder.Folders),
-      },
-    ]);
+    setState((prevState) => ({
+      ...prevState,
+      breadcrumbsList: [
+        {
+          ...res.Folder,
+          Name: 'Home',
+          Folders: limitFoldersDepth(res.Folder.Folders),
+        },
+      ],
+    }));
+  };
+
+  const setError = (messages: string | string[]) => {
+    setState((prevState) => ({
+      ...prevState,
+      error: { messages: Array.isArray(messages) ? messages : [messages] },
+      loading: false,
+    }));
+  };
+
+  const initError = () => {
+    setState((prevState) => ({
+      ...prevState,
+      error: null,
+    }));
+  };
+
+  const initSelectedItems = () => {
+    setState((prevState) => ({
+      ...prevState,
+      selectedItems: [],
+    }));
   };
 
   const handleChangeQuickFilter = useCallback((newFilter: string) => {
-    setQuickFilter((prevState) => (prevState === newFilter ? null : newFilter));
+    setState((prevState) => ({
+      ...prevState,
+      quickFilter: prevState.quickFilter === newFilter ? null : newFilter,
+    }));
   }, []);
 
   const handleChangeActiveFolder = useCallback((newFolder: FolderModel) => {
-    setBreadcrumbsList((prevState) => prevState.concat(newFolder));
+    setState((prevState) => ({
+      ...prevState,
+      breadcrumbsList: prevState.breadcrumbsList.concat(newFolder),
+    }));
   }, []);
 
   const handleSelectBreadcrumbsFolder = (idx: number) => {
-    setBreadcrumbsList((prevState) => prevState.slice(0, idx + 1));
+    setState((prevState) => ({
+      ...prevState,
+      breadcrumbsList: prevState.breadcrumbsList.slice(0, idx + 1),
+    }));
+  };
+
+  const handleChangeSelectedItems = (
+    item: FolderModel | DocumentModel,
+    selected: boolean
+  ) => {
+    setState((prevState) => ({
+      ...prevState,
+      selectedItems: selected
+        ? prevState.selectedItems.concat(item)
+        : prevState.selectedItems.filter((prevItem) => prevItem.Id !== item.Id),
+    }));
+  };
+
+  const handleSelectAll = (e: ChangeEvent<HTMLInputElement>) => {
+    if (filteredActiveFolder) {
+      const { checked } = e.target;
+
+      setState((prevState) => ({
+        ...prevState,
+        selectedItems: checked
+          ? [...filteredActiveFolder.Documents, ...filteredActiveFolder.Folders]
+          : [],
+      }));
+    }
+  };
+
+  const handleOpenEditDocumentDialog = (document: DocumentModel) => {
+    setEditDocumentDialogState({
+      document,
+      open: true,
+    });
+  };
+
+  const handleCloseEditDocumentDialog = () => {
+    setEditDocumentDialogState((prevState) => ({
+      ...prevState,
+      open: false,
+    }));
+  };
+
+  const handleInitEditDocumentDialogState = () => {
+    setEditDocumentDialogState({
+      document: null,
+      open: false,
+    });
   };
 
   const handleOpenDeleteConfirmationDialog = (entity: EntityModel) => {
@@ -113,29 +216,6 @@ const useDocumentsData = () => {
       ...prevState,
       loading: false,
     }));
-  };
-
-  const handleChangeSelectedItems = (
-    item: FolderModel | DocumentModel,
-    selected: boolean
-  ) => {
-    setSelectedItems((prevState) => {
-      return selected
-        ? prevState.concat(item)
-        : prevState.filter((prevItem) => prevItem.Id !== item.Id);
-    });
-  };
-
-  const handleSelectAll = (e: ChangeEvent<HTMLInputElement>) => {
-    if (filteredActiveFolder) {
-      const { checked } = e.target;
-
-      setSelectedItems(
-        checked
-          ? [...filteredActiveFolder.Documents, ...filteredActiveFolder.Folders]
-          : []
-      );
-    }
   };
 
   const deleteEntity = async () => {
@@ -182,6 +262,22 @@ const useDocumentsData = () => {
     if (res.IsSuccess) {
       saveAs(res.File.FileDataUrl, res.File.FileName);
     }
+
+    return res;
+  };
+
+  const saveSelected = async () => {
+    const docIds = extractDocs(selectedItems);
+
+    if (docIds.length) {
+      const res = await Promise.allSettled(docIds.map((id) => saveFile(id)));
+
+      const errors = getErrorsList(res);
+
+      if (errors.length) {
+        setError(errors);
+      }
+    }
   };
 
   useEffect(() => {
@@ -189,14 +285,17 @@ const useDocumentsData = () => {
   }, []);
 
   useEffect(() => {
-    setSelectedItems([]);
+    initSelectedItems();
   }, [filteredActiveFolder, quickFilter]);
 
   return {
+    loading,
+    error,
     rootFolder,
     activeFolder: filteredActiveFolder,
     openUploadForm,
     showSuccessDialog,
+    editDocumentDialogState,
     list,
     amount,
     selectedItems,
@@ -204,8 +303,10 @@ const useDocumentsData = () => {
     deleteConfirmationState,
     quickFilter,
     saveFile,
+    saveSelected,
     deleteEntity,
     fetchFolders,
+    initError,
     handleInitDeleteEntity,
     handleOpenUploadForm,
     handleCloseUploadForm,
@@ -218,6 +319,9 @@ const useDocumentsData = () => {
     handleShowSuccessDialog,
     handleCloseSuccessDialog,
     handleSelectAll,
+    handleOpenEditDocumentDialog,
+    handleCloseEditDocumentDialog,
+    handleInitEditDocumentDialogState,
   };
 };
 

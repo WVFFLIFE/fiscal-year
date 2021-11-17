@@ -167,3 +167,12 @@ export const DateBlock = styled(Button)(({ theme }) => ({
     background: 'rgba(34, 64, 96, 0.1)',
   },
 }));
+
+export const InputLabel = styled('span')(() => ({
+  display: 'block',
+  marginBottom: 10,
+  fontSize: 14,
+  fontFamily: 'Lato',
+  letterSpacing: 0.2,
+  color: '#000',
+}));

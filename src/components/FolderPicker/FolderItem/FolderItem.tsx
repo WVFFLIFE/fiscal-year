@@ -1,14 +1,12 @@
 import { useState, MouseEvent, ChangeEvent } from 'react';
-
-import { SelectedFolder, FolderPickerItemModel } from '../FolderPicker';
-
-import { isSelectedInChain } from '../utils';
+import { FolderModel } from '../FolderPicker';
+import { isChild } from '../utils';
 
 import CircularProgress from '@mui/material/CircularProgress';
 import MenuItem from '@mui/material/MenuItem';
 import Collapse from '@mui/material/Collapse';
-import Button from '@mui/material/Button';
 import Input from 'components/Input';
+import { IconButton } from 'components/Styled';
 import {
   ArrowIcon,
   EditIcon,
@@ -17,32 +15,100 @@ import {
 } from 'components/Icons';
 
 import clsx from 'clsx';
-import { useStyles } from './style';
+import { useStyles, useEditableStyles } from './style';
+
+interface EditableProps {
+  folder: FolderModel;
+  onChangeFolderName(folderId: string, newFolderName: string): Promise<void>;
+  onRejectEditMode(e: MouseEvent<HTMLButtonElement>): void;
+}
+
+const FolderNameEditor: React.FC<EditableProps> = ({
+  folder,
+  onChangeFolderName,
+  onRejectEditMode,
+}) => {
+  const classes = useEditableStyles();
+
+  const [folderName, setFolderName] = useState(folder.Name);
+  const [loading, setLoading] = useState(false);
+
+  const stopPropagate = (e: MouseEvent<unknown>) => {
+    e.stopPropagation();
+  };
+
+  const handleChangeFolderName = (e: ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+
+    setFolderName(value);
+  };
+
+  const handleAcceptFolderName = async (e: MouseEvent<HTMLButtonElement>) => {
+    stopPropagate(e);
+    try {
+      setLoading(true);
+      await onChangeFolderName(folder.Id, folderName);
+      onRejectEditMode(e);
+    } catch (err) {
+      console.error(err);
+      setLoading(false);
+    }
+  };
+
+  return (
+    <>
+      <Input
+        autoFocus
+        disabled={loading}
+        classes={{ root: classes.input }}
+        value={folderName}
+        onChange={handleChangeFolderName}
+        onClick={stopPropagate}
+        onMouseDown={stopPropagate}
+      />
+      {loading ? (
+        <CircularProgress size={16} className={classes.loader} />
+      ) : (
+        <div className={classes.btnsWrapper}>
+          <IconButton
+            className={classes.closeBtn}
+            onMouseDown={stopPropagate}
+            onClick={onRejectEditMode}
+          >
+            <CloseIcon className={classes.icon} />
+          </IconButton>
+          <IconButton onClick={handleAcceptFolderName}>
+            <RoundCheckIcon className={classes.icon} />
+          </IconButton>
+        </div>
+      )}
+    </>
+  );
+};
 
 interface FolderItemProps {
-  edit: boolean;
-  onChange(newFolder: SelectedFolder): void;
-  folder: FolderPickerItemModel;
-  selected: SelectedFolder | null;
-  saveFolderName(id: string, name: string): Promise<any>;
-  open: boolean;
+  selectedFolder: FolderModel | null;
+  depth: number;
+  open?: boolean;
+  folder: FolderModel;
+  onChangeFolder(newFolder: FolderModel, folderDepth: number): void;
+  onChangeFolderName(folderId: string, newFolderName: string): Promise<void>;
 }
 
 const FolderItem: React.FC<FolderItemProps> = ({
-  open: defaultOpen,
-  edit,
-  onChange,
+  depth,
+  open: defaultOpen = false,
   folder,
-  selected,
-  saveFolderName,
+  selectedFolder,
+  onChangeFolder,
+  onChangeFolderName,
 }) => {
   const classes = useStyles();
 
   const [open, setOpen] = useState(defaultOpen);
-  const [folderName, setFolderName] = useState(folder.name);
+
   const [editMode, setEditMode] = useState(false);
   const [showEditBtn, setShowEditBtn] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   const stopPropagate = (e: MouseEvent<unknown>) => {
     e.stopPropagation();
@@ -57,7 +123,7 @@ const FolderItem: React.FC<FolderItemProps> = ({
   const handleClickMenuItem = (e: MouseEvent<HTMLLIElement>) => {
     stopPropagate(e);
 
-    onChange({ id: folder.id, name: folder.name, depth: folder.depth });
+    onChangeFolder(folder, depth);
   };
 
   const handleMouseOver = (e: MouseEvent<HTMLLIElement>) => {
@@ -79,94 +145,52 @@ const FolderItem: React.FC<FolderItemProps> = ({
     setEditMode(false);
   };
 
-  const handleChangeFolderName = (e: ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
-
-    setFolderName(value);
-  };
-
-  const acceptFolderNameChanges = async (e: MouseEvent<HTMLButtonElement>) => {
-    stopPropagate(e);
-    setLoading(true);
-
-    await saveFolderName(folder.id, folderName);
-
-    setLoading(false);
-    setEditMode(false);
-  };
-
-  const hasSubFolders = !!folder.folders.length;
-  const isRoot = folder.depth === 0;
-  const isSelected = folder.id === selected?.id;
+  const root = depth === 0;
+  const hasSubFolders = !!folder.Folders.length;
+  const isSelected = !!(selectedFolder && selectedFolder.Id === folder.Id);
 
   return (
     <>
       <MenuItem
         className={classes.item}
-        style={{ paddingLeft: 20 * (folder.depth + 1) }}
-        disableRipple={loading}
-        disabled={loading}
+        onClick={handleClickMenuItem}
+        style={{ paddingLeft: 20 * (depth + 0.5) }}
         selected={isSelected}
-        onClick={loading ? undefined : handleClickMenuItem}
         onMouseDown={stopPropagate}
-        onMouseOver={edit && !isRoot ? handleMouseOver : undefined}
-        onMouseOut={edit && !isRoot ? handleMouseOut : undefined}
+        onMouseOver={root ? undefined : handleMouseOver}
+        onMouseOut={root ? undefined : handleMouseOut}
       >
         <div className={clsx(classes.wrapper, classes.spaceBetween)}>
           <div className={clsx(classes.wrapper, classes.f1)}>
             {hasSubFolders ? (
-              <Button
-                className={clsx(classes.btn, classes.arrowBtn)}
-                onClick={loading ? undefined : handleToggleCollapse}
+              <IconButton
+                className={classes.arrowBtn}
+                onClick={handleToggleCollapse}
                 onMouseDown={stopPropagate}
               >
                 <ArrowIcon className={classes.arrowIcon} />
-              </Button>
+              </IconButton>
             ) : null}
             {editMode ? (
-              <Input
-                autoFocus
-                disabled={loading}
-                classes={{ root: classes.input }}
-                value={folderName}
-                onChange={handleChangeFolderName}
-                onClick={stopPropagate}
-                onMouseDown={stopPropagate}
+              <FolderNameEditor
+                folder={folder}
+                onChangeFolderName={onChangeFolderName}
+                onRejectEditMode={handleRejectEditMode}
               />
             ) : (
-              <span className={classes.name}>{folder.name}</span>
+              <span className={classes.name}>{folder.Name}</span>
             )}
           </div>
-          {editMode ? (
-            loading ? (
-              <CircularProgress size={16} className={classes.loader} />
-            ) : (
-              <div>
-                <Button
-                  className={clsx(classes.btn, classes.closeBtn)}
-                  onMouseDown={stopPropagate}
-                  onClick={handleRejectEditMode}
-                >
-                  <CloseIcon className={classes.itemIcon} />
-                </Button>
-                <Button
-                  className={classes.btn}
-                  onClick={acceptFolderNameChanges}
-                >
-                  <RoundCheckIcon className={classes.itemIcon} />
-                </Button>
-              </div>
-            )
-          ) : !isRoot ? (
-            <Button
+          {editMode ? null : !root ? (
+            <IconButton
               onClick={handleSetEditMode}
               onMouseDown={stopPropagate}
-              className={clsx(classes.btn, classes.editBtn, {
+              className={clsx(classes.editBtn, {
                 [classes.editBtnVisible]: showEditBtn,
               })}
             >
               <EditIcon className={classes.itemIcon} />
-            </Button>
+            </IconButton>
           ) : null}
         </div>
       </MenuItem>
@@ -178,17 +202,17 @@ const FolderItem: React.FC<FolderItemProps> = ({
           unmountOnExit
         >
           <ul className={classes.reset}>
-            {folder.folders.map((subFolder) => {
-              const open = isSelectedInChain(subFolder, selected);
+            {folder.Folders.map((subFolder) => {
+              const open = isChild(subFolder, selectedFolder);
               return (
                 <FolderItem
+                  key={subFolder.Id}
+                  depth={depth + 1}
                   open={open}
-                  edit={edit}
-                  key={subFolder.id}
                   folder={subFolder}
-                  selected={selected}
-                  saveFolderName={saveFolderName}
-                  onChange={onChange}
+                  selectedFolder={selectedFolder}
+                  onChangeFolder={onChangeFolder}
+                  onChangeFolderName={onChangeFolderName}
                 />
               );
             })}

@@ -98,6 +98,11 @@ declare class DefaultService {
     values: UploadFileValue[],
     overwrite: boolean
   ): Promise<BaseResponseModel>;
+  public documentUpdate(
+    documentId: string,
+    name: string,
+    values: UploadFileValue[]
+  ): Promise<BaseResponseModel>;
   public documentDelete(documentId: string): Promise<BaseResponseModel>;
 }
 

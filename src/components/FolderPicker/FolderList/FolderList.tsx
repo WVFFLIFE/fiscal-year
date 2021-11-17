@@ -1,6 +1,6 @@
-import { SelectedFolder, FolderPickerItemModel } from '../FolderPicker';
+import { FolderModel } from '../FolderPicker';
 
-import { isSelectedInChain } from '../utils';
+import { isChild } from '../utils';
 
 import MenuList from '@mui/material/MenuList';
 import FolderItem from '../FolderItem';
@@ -8,42 +8,42 @@ import FolderItem from '../FolderItem';
 import { useStyles } from './style';
 
 interface FolderListProps {
-  edit: boolean;
-  onChange(newFolder: SelectedFolder): void;
+  rootFolder: FolderModel;
+  selectedFolder: FolderModel | null;
+  onChangeFolder(newFolder: FolderModel, fodlerDepth: number): void;
+  onChangeFolderName(folderId: string, newFolderName: string): Promise<void>;
   onClose(): void;
-  selected: SelectedFolder | null;
-  options: FolderPickerItemModel[];
-  saveFolderName(id: string, name: string): Promise<any>;
 }
 
 const FolderList: React.FC<FolderListProps> = ({
-  edit,
-  onChange,
+  rootFolder,
+  selectedFolder,
+  onChangeFolder,
+  onChangeFolderName,
   onClose,
-  selected,
-  options,
-  saveFolderName,
 }) => {
   const classes = useStyles();
 
-  const handleChange = (newFolder: SelectedFolder) => {
-    onChange(newFolder);
+  const handleChange = (newFolder: FolderModel, folderDepth: number) => {
+    onChangeFolder(newFolder, folderDepth);
     onClose();
   };
 
+  const list = [rootFolder];
+
   return (
     <MenuList className={classes.root}>
-      {options.map((item) => {
-        const open = isSelectedInChain(item, selected);
+      {list.map((folder) => {
+        const open = isChild(rootFolder, selectedFolder);
         return (
           <FolderItem
-            key={item.id}
-            folder={item}
-            selected={selected}
-            saveFolderName={saveFolderName}
-            onChange={handleChange}
-            edit={edit}
+            key={folder.Id}
+            depth={0}
             open={open}
+            folder={folder}
+            selectedFolder={selectedFolder}
+            onChangeFolder={handleChange}
+            onChangeFolderName={onChangeFolderName}
           />
         );
       })}
