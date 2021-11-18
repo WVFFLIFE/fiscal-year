@@ -8,6 +8,7 @@ import Breadcrumbs from './Breadcrumbs';
 import DeleteConfirmation from 'components/DeleteConfirmation';
 import Dialog from 'components/Dialog';
 import SuccessDialogView from 'components/SuccessDialogView';
+import Pagination from 'components/Pagination';
 import {
   EditIcon,
   DeleteIcon,
@@ -17,9 +18,10 @@ import {
   SharePointIcon,
   PlusIcon,
 } from 'components/Icons';
-import DocumentsTable from 'components/DocumentsTable';
+import DocumentsTable from './DocumentsTable';
 import UploadForm from './UploadForm';
 import EditDocument from './EditDocument';
+import FolderEditor from './FolderEditor';
 
 import clsx from 'clsx';
 import { useStyles } from './style';
@@ -29,10 +31,23 @@ const options: QuickFilterOption[] = [
   { id: 'unpublished', label: 'Unpublished' },
 ];
 
+const successMessages: { [key: string]: string } = {
+  successUpdated: 'Document(s) have been successfully updated',
+  successUploaded: 'Files have been successfully upload',
+  folderNameUpdated: 'Folder Name has been successfully updated',
+  successPublished: 'Document(s) have been successfully published',
+  successUnpublished: 'Document(s) have been successfully unpublished',
+};
+
+const rowsPerPage = [5, 10, 15];
+
 const Documents = () => {
   const classes = useStyles();
 
   const {
+    sortParams,
+    pagination,
+    publishing,
     rootFolder,
     activeFolder,
     list,
@@ -43,10 +58,12 @@ const Documents = () => {
     selectedItems,
     openUploadForm,
     quickFilter,
-    showSuccessDialog,
+    successDialogState,
     deleteConfirmationState,
     editDocumentDialogState,
+    editFolderDialogState,
     saveFile,
+    publishDocuments,
     saveSelected,
     deleteEntity,
     fetchFolders,
@@ -60,10 +77,17 @@ const Documents = () => {
     handleSelectBreadcrumbsFolder,
     handleCloseDeleteConfirmationDialog,
     handleCloseSuccessDialog,
+    handleInitSuccessDialogType,
     handleSelectAll,
     handleOpenEditDocumentDialog,
     handleCloseEditDocumentDialog,
     handleInitEditDocumentDialogState,
+    handleOpenEditFolderDialog,
+    handleCloseEditFolderDialog,
+    handleInitEditFolderDialogState,
+    handleChangeCurrentPage,
+    handleChangeRowsPerPage,
+    handleChangeSortParams,
   } = useDocumentsData();
 
   return (
@@ -132,8 +156,8 @@ const Documents = () => {
             </ActionButton>
             <ActionButton
               className={classes.actionBtn}
-              disabled={!Boolean(rootFolder?.Url)}
-              href={rootFolder?.Url}
+              disabled={!!!activeFolder?.Url}
+              href={activeFolder?.Url}
               target="_blank"
             >
               <SharePointIcon className={classes.actionIcon} />
@@ -149,26 +173,45 @@ const Documents = () => {
         </Box>
       </Box>
       {activeFolder ? (
-        <DocumentsTable
-          activeFolder={activeFolder}
-          list={list}
-          selected={selectedItems}
-          handleChangeActiveFolder={handleChangeActiveFolder}
-          handleChangeSelectedItems={handleChangeSelectedItems}
-          handleOpenDeletConfirmationDialog={handleOpenDeleteConfirmationDialog}
-          handleSelectAll={handleSelectAll}
-          handleOpenEditDocumentDialog={handleOpenEditDocumentDialog}
-          saveFile={saveFile}
-        />
+        <>
+          <DocumentsTable
+            activeFolder={activeFolder}
+            list={list}
+            selected={selectedItems}
+            handleChangeActiveFolder={handleChangeActiveFolder}
+            handleChangeSelectedItems={handleChangeSelectedItems}
+            handleChangeSortParams={handleChangeSortParams}
+            handleOpenDeleteConfirmationDialog={
+              handleOpenDeleteConfirmationDialog
+            }
+            handleOpenEditDocumentDialog={handleOpenEditDocumentDialog}
+            handleOpenEditFolderDialog={handleOpenEditFolderDialog}
+            handleSelectAll={handleSelectAll}
+            saveFile={saveFile}
+            sortParams={sortParams}
+            publishing={publishing}
+            publishDocuments={publishDocuments}
+          />
+          <Pagination
+            className={classes.pagination}
+            rowsPerPage={pagination.rowsPerPage}
+            currentPage={pagination.currentPage}
+            rowsPerPageOptions={rowsPerPage}
+            totalItems={list.length}
+            onChangeCurrentPage={handleChangeCurrentPage}
+            onChangeRowsPerPage={handleChangeRowsPerPage}
+          />
+        </>
       ) : null}
       <Dialog
         open={openUploadForm}
         handleClose={handleCloseUploadForm}
         maxWidth="sm"
       >
-        {rootFolder ? (
+        {rootFolder && activeFolder ? (
           <UploadForm
             rootFolder={rootFolder}
+            activeFolder={activeFolder}
             fetchFolders={fetchFolders}
             onClose={handleCloseUploadForm}
           />
@@ -200,23 +243,46 @@ const Documents = () => {
           onExited: handleInitDeleteEntity,
         }}
       >
-        <DeleteConfirmation
-          entity={
-            deleteConfirmationState.entity?.type === 'doc'
-              ? 'document'
-              : 'folder'
-          }
-          apply={deleteEntity}
-          cancel={handleCloseDeleteConfirmationDialog}
-          loading={deleteConfirmationState.loading}
-        />
+        {deleteConfirmationState.entity ? (
+          <DeleteConfirmation
+            entity={
+              deleteConfirmationState.entity.type === 'doc'
+                ? 'document'
+                : 'folder'
+            }
+            apply={deleteEntity}
+            cancel={handleCloseDeleteConfirmationDialog}
+            loading={deleteConfirmationState.loading}
+          />
+        ) : null}
       </Dialog>
       <Dialog
-        open={showSuccessDialog}
+        open={successDialogState.open}
         maxWidth="xs"
         handleClose={handleCloseSuccessDialog}
+        TransitionProps={{
+          onExited: handleInitSuccessDialogType,
+        }}
       >
-        <SuccessDialogView />
+        {successDialogState.type ? (
+          <SuccessDialogView text={successMessages[successDialogState.type]} />
+        ) : null}
+      </Dialog>
+      <Dialog
+        maxWidth="xs"
+        open={editFolderDialogState.open}
+        handleClose={handleCloseEditFolderDialog}
+        TransitionProps={{
+          onExited: handleInitEditFolderDialogState,
+        }}
+      >
+        {editFolderDialogState.folder ? (
+          <FolderEditor
+            selectedFolder={editFolderDialogState.folder}
+            fetchFolders={fetchFolders}
+            onClose={handleCloseEditFolderDialog}
+          />
+        ) : null}
       </Dialog>
       <DialogError error={error} initError={initError} />
     </Box>

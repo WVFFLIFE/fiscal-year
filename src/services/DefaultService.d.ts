@@ -33,11 +33,13 @@ export interface DocumentModel {
   Name: string;
   Size: number;
   Values: ValuesModel;
+  IsPublished: boolean;
 }
 
 export interface FolderModel {
   Id: string;
   Name: string;
+  IsPublished: boolean | null;
   Values: ValuesModel;
   Url: string;
   Documents: DocumentModel[];
@@ -48,7 +50,7 @@ export interface DocumentsListModel extends BaseResponseModel {
   FolderExists: boolean;
   HasFolder: boolean;
   Headers: AttributeHeaderModel[];
-  Folder: FolderModel;
+  Folder: FolderModel | null;
 }
 
 interface FileModel {
@@ -91,6 +93,10 @@ declare class DefaultService {
     parentFolderId: string,
     folderName: string
   ): Promise<CreateFolderResponseModel>;
+  public folderUpdate(
+    folderId: string,
+    folderName: string
+  ): Promise<BaseResponseModel>;
   public folderDelete(folderId: string): Promise<BaseResponseModel>;
   public documentCreate(
     parentFolderId: string,
@@ -101,9 +107,15 @@ declare class DefaultService {
   public documentUpdate(
     documentId: string,
     name: string,
-    values: UploadFileValue[]
+    values: UploadFileValue[],
+    newParentFolderId?: string,
+    overwrite?: boolean
   ): Promise<BaseResponseModel>;
   public documentDelete(documentId: string): Promise<BaseResponseModel>;
+  public documentPublish(
+    documentId: string,
+    publish: boolean
+  ): Promise<BaseResponseModel>;
 }
 
 export default new DefaultService();

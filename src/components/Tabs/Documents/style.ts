@@ -32,4 +32,7 @@ export const useStyles = makeStyles((theme) => ({
     height: 14,
     background: 'currentColor',
   },
+  pagination: {
+    marginTop: 20,
+  },
 }));

@@ -57,7 +57,7 @@ interface DocumentsTableHeadProps {
   selected: boolean;
   indeterminate?: boolean;
   onToggleSelectAll(e: ChangeEvent<HTMLInputElement>): void;
-  onChangeSortParams(id: string, type?: SortParamsType): void;
+  onChangeSortParams(id: string, type: SortParamsType): void;
 }
 
 const DocumentsTableHead: React.FC<DocumentsTableHeadProps> = ({
@@ -90,43 +90,47 @@ const DocumentsTableHead: React.FC<DocumentsTableHeadProps> = ({
           id={'Name'}
           order={order}
           orderBy={orderBy}
-          onClick={() => onChangeSortParams('Name')}
+          onClick={() => onChangeSortParams('Name', 'alphanumeric')}
         >
           Name
         </SortedTableCell>
         <SortedTableCell
           className={classes.cell}
-          id={'Service'}
+          id={'Values.Service_x002f_Process'}
           order={order}
           orderBy={orderBy}
-          onClick={() => onChangeSortParams('Service')}
+          onClick={() =>
+            onChangeSortParams('Values.Service_x002f_Process', 'alphanumeric')
+          }
         >
           Service/process
         </SortedTableCell>
         <SortedTableCell
           className={classes.cell}
-          id={'InformationGroup'}
+          id={'Values.Information_x0020_Group'}
           order={order}
           orderBy={orderBy}
-          onClick={() => onChangeSortParams('InformationGroup')}
+          onClick={() =>
+            onChangeSortParams('Values.Information_x0020_Group', 'alphanumeric')
+          }
         >
           Information group
         </SortedTableCell>
         <SortedTableCell
           className={classes.cell}
-          id={'Modified'}
+          id={'Values.Modified'}
           order={order}
           orderBy={orderBy}
-          onClick={() => onChangeSortParams('Modified', 'date')}
+          onClick={() => onChangeSortParams('Values.Modified', 'date')}
         >
           Modified
         </SortedTableCell>
         <SortedTableCell
           className={classes.cell}
-          id={'Modified'}
+          id={'Values.Editor'}
           order={order}
           orderBy={orderBy}
-          onClick={() => onChangeSortParams('Editor')}
+          onClick={() => onChangeSortParams('Values.Editor', 'alphanumeric')}
         >
           Modified by
         </SortedTableCell>

@@ -19,17 +19,74 @@ class FiscalYearInternalAPI {
     return userLcid === 1035 ? 'Finnish' : 'Default';
   };
 
-  getDocumentsList = async (entityId) => {
-    return await this.executeRequest('uds_SharePointFiscalYearDocumentList', {
-      Id: entityId,
-      LanguageCode: this.getLanguageCode(),
+  getCooperativesInformationList = async (
+    cooperativesIds,
+    startDate,
+    endDate
+  ) => {
+    return await this.executeRequest(
+      'uds_FiscalYearCooperativesInformationList',
+      {
+        CooperativesIds: cooperativesIds,
+        StartDate: startDate,
+        EndDate: endDate,
+      }
+    );
+  };
+
+  getCooperativessList = async () => {
+    return await this.executeRequest('uds_FiscalYearCooperativesList', {});
+  };
+
+  getCooperativeFiscalYearsList = async (cooperativeId) => {
+    return await this.executeRequest(
+      'uds_FiscalYearCooperativeFiscalYearsList',
+      { CooperativeId: cooperativeId }
+    );
+  };
+
+  getCommentsList = async (entityId) => {
+    return await this.executeRequest('uds_CommentGetList', {
+      EntityId: entityId,
+      EntityName: 'uds_fiscalyear',
     });
   };
 
-  getDocumentFormMetadata = async () => {
+  commentCreate = async (entityId, comment) => {
+    return await this.executeRequest('uds_CommentCreate', {
+      EntityId: entityId,
+      EntityName: 'uds_fiscalyear',
+      Comment: comment,
+    });
+  };
+
+  commentUpdate = async (entityId, comment) => {
+    return await this.executeRequest('uds_CommentEdit', {
+      EntityId: entityId,
+      EntityName: 'uds_fiscalyear',
+      Comment: comment,
+    });
+  };
+
+  commentDelete = async (entityId, commentId) => {
+    return await this.executeRequest('uds_CommentDelete', {
+      EntityId: entityId,
+      EntityName: 'uds_fiscalyear',
+      CommentId: commentId,
+    });
+  };
+
+  getDocumentsList = async (entityId, languageCode) => {
+    return await this.executeRequest('uds_SharePointFiscalYearDocumentList', {
+      Id: entityId,
+      LanguageCode: languageCode,
+    });
+  };
+
+  getDocumentFormMetadata = async (languageCode) => {
     return await this.executeRequest(
       'uds_SharePointFiscalYearDocumentFormMetadata',
-      { LanguageCode: this.getLanguageCode() }
+      { LanguageCode: languageCode }
     );
   };
 
@@ -55,11 +112,19 @@ class FiscalYearInternalAPI {
     });
   };
 
-  documentUpdate = async (documentId, name, values) => {
-    return await this.executeRequest('uds_SharePointDocumentEdit', {
+  documentUpdate = async (
+    documentId,
+    name,
+    values,
+    newParentFolderId = null,
+    overwrite = false
+  ) => {
+    return await this.executeRequest('uds_SharePointFiscalYearDocumentEdit', {
       DocumentId: documentId,
       Name: name,
       Values: values,
+      NewParentFolderId: newParentFolderId,
+      Overwrite: overwrite,
     });
   };
 

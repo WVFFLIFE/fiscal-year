@@ -5,11 +5,13 @@ import Services, {
   FolderModel,
   DocumentModel,
 } from 'services';
+import { stringsGroupToArray, getFolderDepth } from '../utils';
 
 interface StateModel {
   attributes: MettadataAttributeModel[];
   attributesLoading: boolean;
   error: ErrorModel | null;
+  overwrite: boolean;
   saveFlag: boolean;
 }
 
@@ -17,29 +19,6 @@ interface SelectedModel {
   folder: FolderModel;
   folderDepth: number;
   attributes: SelectedAttributesModel;
-}
-
-function stringsGroupToArray(val: string) {
-  return val ? val.split(', ') : [];
-}
-
-function getFolderDepth(
-  currentFolder: FolderModel,
-  selectedFolder: FolderModel
-): number {
-  let depth = 0;
-
-  if (currentFolder.Id === selectedFolder.Id) return depth;
-
-  for (let folder of currentFolder.Folders) {
-    if (folder.Id === selectedFolder.Id) {
-      depth++;
-    } else {
-      depth = getFolderDepth(folder, selectedFolder);
-    }
-  }
-
-  return depth;
 }
 
 function removeExtension(filename: string) {
@@ -51,12 +30,13 @@ const useEditDocumentData = (
   activeFolder: FolderModel,
   selectedDocument: DocumentModel,
   fetchFolders: () => Promise<void>,
-  onClose: () => void
+  onClose: (showSuccessDialog?: boolean) => void
 ) => {
   const [state, setState] = useState<StateModel>({
     attributes: [],
     attributesLoading: true,
     error: null,
+    overwrite: false,
     saveFlag: false,
   });
   const [selected, setSelected] = useState<SelectedModel>(() => ({
@@ -82,12 +62,10 @@ const useEditDocumentData = (
     show: false,
   });
 
-  const setError = (message: string | string[]) => {
+  const initError = () => {
     setState((prevState) => ({
       ...prevState,
-      attributes: [],
-      error: { messages: typeof message === 'string' ? [message] : message },
-      loading: false,
+      error: null,
     }));
   };
 
@@ -191,6 +169,17 @@ const useEditDocumentData = (
     }
   };
 
+  const handleChangeOverwriteCheckbox = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const { checked } = e.target;
+      setState((prevState) => ({
+        ...prevState,
+        overwrite: checked,
+      }));
+    },
+    []
+  );
+
   const save = async () => {
     try {
       setState((prevState) => ({
@@ -219,10 +208,18 @@ const useEditDocumentData = (
         },
       ];
 
+      // If parentFolderId is not changed, you must send undefined as parentFolderId field
+      // If you send the same parentFolderId,
+      // document will be copied and created with another id
+      const parentFolderId =
+        selected.folder.Id === activeFolder.Id ? undefined : selected.folder.Id;
+
       const res = await Services.documentUpdate(
         selectedDocument.Id,
         documentName.concat(ext),
-        values
+        values,
+        parentFolderId,
+        state.overwrite
       );
 
       if (res.IsSuccess) {
@@ -232,14 +229,22 @@ const useEditDocumentData = (
           saveFlag: false,
         }));
 
-        onClose();
+        onClose(true);
       } else {
-        setError(res.Message);
+        setState((prevState) => ({
+          ...prevState,
+          saveFlag: false,
+          error: { messages: [res.Message] },
+        }));
       }
     } catch (err) {
       console.error(err);
 
-      setError(String(err));
+      setState((prevState) => ({
+        ...prevState,
+        saveFlag: false,
+        error: { messages: [String(err)] },
+      }));
     }
   };
 
@@ -255,12 +260,19 @@ const useEditDocumentData = (
             attributesLoading: false,
           }));
         } else {
-          setError(res.Message);
+          setState((prevState) => ({
+            ...prevState,
+            attributesLoading: false,
+            error: { messages: [res.Message] },
+          }));
         }
       } catch (err) {
         console.error(err);
-
-        setError(String(err));
+        setState((prevState) => ({
+          ...prevState,
+          attributesLoading: false,
+          error: { messages: [String(err)] },
+        }));
       }
     }
 
@@ -276,10 +288,12 @@ const useEditDocumentData = (
     selected,
     newFolder,
     save,
+    initError,
     handleChangeNewFolderName,
     handleChangeAttribute,
     handleChangeSelectedFolder,
     handleSaveNewFolderName,
+    handleChangeOverwriteCheckbox,
   };
 };
 

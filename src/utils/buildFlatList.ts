@@ -1,6 +1,7 @@
 import { FolderModel, DocumentModel } from 'services';
-import { EntityModel } from 'models';
+import { EntityModel, EntityPublishModel } from 'models';
 
+import isPublished from './isPublished';
 import isFolder from './isFolder';
 
 export default function buildFlatList(
@@ -15,15 +16,26 @@ export default function buildFlatList(
 ): EntityModel[];
 export default function buildFlatList(
   item: FolderModel | DocumentModel,
-  type: 'entity' | 'id',
+  type: 'entity_published',
+  root?: boolean
+): EntityPublishModel[];
+export default function buildFlatList(
+  item: FolderModel | DocumentModel,
+  type: 'entity' | 'id' | 'entity_published',
   root = false
-): (string | EntityModel)[] {
+): (string | EntityModel | EntityPublishModel)[] {
   let list = [];
   const folder = isFolder(item);
   const el =
     type === 'id'
       ? item.Id
-      : ({ id: item.Id, type: folder ? 'folder' : 'doc' } as EntityModel);
+      : type === 'entity'
+      ? ({ id: item.Id, type: folder ? 'folder' : 'doc' } as EntityModel)
+      : ({
+          id: item.Id,
+          type: folder ? 'folder' : 'doc',
+          published: !!item.IsPublished,
+        } as EntityPublishModel);
 
   if (folder) {
     let itemList = [

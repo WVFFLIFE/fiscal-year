@@ -1,4 +1,6 @@
-import { DocumentModel, FolderModel } from 'services';
+import { DocumentModel, FolderModel } from 'models';
+
+import buildFlatList from 'utils/buildFlatList';
 
 export function isSelectedAll(
   activeFolder: FolderModel,
@@ -27,4 +29,10 @@ export function isIndeterminated(
   return [...activeFolder.Documents, ...activeFolder.Folders].some((entity) => {
     return selected.some((selectedEntity) => selectedEntity.Id === entity.Id);
   });
+}
+
+export function getFolderDocuments(folder: FolderModel) {
+  const entities = buildFlatList(folder, 'entity_published');
+
+  return entities.filter((entity) => entity.type === 'doc');
 }

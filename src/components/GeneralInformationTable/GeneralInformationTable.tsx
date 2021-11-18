@@ -82,7 +82,7 @@ const GeneralInformationTable = () => {
             : 'asc'
           : 'asc',
       orderBy,
-      type: 'string',
+      type: 'alphanumeric',
     }));
   };
 

@@ -5,7 +5,7 @@ import _get from 'lodash/get';
 
 export type SortParamsType = 'alphanumeric' | 'date';
 
-export interface SortModel<T extends { [key: string]: any }> {
+export interface SortModel<T extends { [key: string]: any } = {}> {
   order: 'asc' | 'desc';
   orderBy: keyof T | string | null;
   type: SortParamsType;

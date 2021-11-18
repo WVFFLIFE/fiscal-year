@@ -1,6 +1,8 @@
-import { FolderModel, DocumentModel } from 'services';
+import { FolderModel, DocumentModel, SortModel } from 'models';
+import { SettledResponse } from 'services';
 
 import isFolder from 'utils/isFolder';
+import sort from 'utils/sort';
 
 export function limitFoldersDepth(
   folders: FolderModel[],
@@ -24,25 +26,16 @@ export function limitFoldersDepth(
   return newFolders;
 }
 
-export function prepareData(folder: FolderModel) {
-  return [...folder.Folders, ...folder.Documents];
-}
+export function prepareData(folder: FolderModel, sortParams: SortModel) {
+  let sortedFolders = sort(folder.Folders, sortParams);
+  let sortedDocuments = sort(folder.Documents, sortParams);
 
-// export function transformFolders(
-//   folders: FolderModel[],
-//   depth = 0
-// ): FolderPickerItemModel[] {
-//   return folders.map((folder) => {
-//     return {
-//       id: folder.Id,
-//       name: depth === 0 ? 'Home' : folder.Name,
-//       depth,
-//       folders: folder.Folders.length
-//         ? transformFolders(folder.Folders, depth + 1)
-//         : [],
-//     };
-//   });
-// }
+  if (sortParams.order === 'asc') {
+    return [...sortedFolders, ...sortedDocuments];
+  } else {
+    return [...sortedDocuments, ...sortedFolders];
+  }
+}
 
 export function countEntitiesAmount(entities: (FolderModel | DocumentModel)[]) {
   let amount = { docs: 0, folders: 0 };
@@ -63,4 +56,38 @@ export function countEntitiesAmount(entities: (FolderModel | DocumentModel)[]) {
   }
 
   return amount;
+}
+
+export function stringsGroupToArray(val: string) {
+  return val ? val.split(', ') : [];
+}
+
+export function isAnySucceed(res: SettledResponse) {
+  return res.some(
+    (item) => item.status === 'fulfilled' && item.value.IsSuccess
+  );
+}
+
+export function getFolderDepth(
+  currentFolder: FolderModel,
+  selectedFolder: FolderModel,
+  depth = 0
+): number {
+  if (currentFolder.Id === selectedFolder.Id) {
+    return depth;
+  }
+
+  for (let folder of currentFolder.Folders) {
+    if (folder.Id === selectedFolder.Id) {
+      return depth + 1;
+    } else {
+      if (folder.Folders.length) {
+        return getFolderDepth(folder, selectedFolder, depth);
+      } else {
+        continue;
+      }
+    }
+  }
+
+  return depth;
 }

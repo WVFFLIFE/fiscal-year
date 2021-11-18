@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import useUploadFormData from './useUploadFormData';
 import { SelectedAttributesModel, FolderModel } from 'models';
 
@@ -24,12 +23,14 @@ import { useStyles } from './style';
 
 interface UploadFormProps {
   rootFolder: FolderModel;
+  activeFolder: FolderModel;
   fetchFolders(): Promise<any>;
-  onClose(val?: string): void;
+  onClose(showSuccessDialog?: boolean): void;
 }
 
 const UploadForm: React.FC<UploadFormProps> = ({
   rootFolder,
+  activeFolder,
   fetchFolders,
   onClose,
 }) => {
@@ -57,7 +58,7 @@ const UploadForm: React.FC<UploadFormProps> = ({
     handleChangeOverwriteCheckbox,
     upload,
     initErrors,
-  } = useUploadFormData(fetchFolders, onClose);
+  } = useUploadFormData(rootFolder, activeFolder, fetchFolders, onClose);
 
   const disabledDeployBtn =
     !selectedFiles.length || uploadFlag || !selectedFolder;

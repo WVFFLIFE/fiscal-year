@@ -1,4 +1,4 @@
-import { Column } from 'models';
+import { Column, SortModel } from 'models';
 
 import { useTranslation } from 'react-i18next';
 
@@ -10,10 +10,7 @@ import { HeadTableCell } from 'components/Styled';
 interface TableHeadProps {
   bgColor?: string;
   columns: Column[];
-  sort?: {
-    order: 'asc' | 'desc';
-    orderBy: string;
-  };
+  sort?: SortModel;
   onChangeSortParams?(orderBy: string): void;
 }
 

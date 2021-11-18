@@ -1,12 +1,13 @@
-import { DocumentModel, FolderModel, SettledResponse } from 'services';
+import { SettledResponse } from 'services';
 
 import { enGB, fi } from 'date-fns/locale';
 import { format } from 'date-fns';
-import _get from 'lodash/get';
 
 export { default as isFolder } from './isFolder';
+export { default as isPublished } from './isPublished';
 export { default as buildFlatList } from './buildFlatList';
 export { default as extractDocs } from './extractDocs';
+export { default as sort } from './sort';
 
 export const DEFAULT_FORMAT_PATTERN = 'd.M.yyyy';
 
@@ -53,10 +54,6 @@ export function getMonthsList() {
 
 export function getIdsList<T extends { Id: string }>(list: T[]) {
   return list.map((item) => item.Id);
-}
-
-export function isPublished(item: FolderModel | DocumentModel) {
-  return _get(item, 'Values.Published') === 'True';
 }
 
 export function formatBytes(bytes: number, decimals = 2) {

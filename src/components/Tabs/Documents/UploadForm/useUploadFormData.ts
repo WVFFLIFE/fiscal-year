@@ -1,12 +1,9 @@
 import { useState, useEffect, ChangeEvent, useCallback } from 'react';
-import { ErrorModel, SelectedAttributesModel } from 'models';
-import Services, {
-  MettadataAttributeModel,
-  FolderModel,
-  SettledResponse,
-} from 'services';
+import { ErrorModel, SelectedAttributesModel, FolderModel } from 'models';
+import Services, { MettadataAttributeModel } from 'services';
 import _uniqBy from 'lodash/uniqBy';
 import { getErrorsList } from 'utils';
+import { isAnySucceed, getFolderDepth } from '../utils';
 
 interface State {
   attributes: MettadataAttributeModel[];
@@ -34,25 +31,21 @@ function readFile(file: File): Promise<string> {
   });
 }
 
-function isAnySucceed(res: SettledResponse) {
-  return res.some(
-    (item) => item.status === 'fulfilled' && item.value.IsSuccess
-  );
-}
-
 const useUploadFormData = (
+  rootFolder: FolderModel,
+  activeFolder: FolderModel,
   fetchFolders: () => Promise<void>,
-  onClose: (val?: string) => void
+  onClose: (showSuccessDialog?: boolean) => void
 ) => {
-  const [state, setState] = useState<State>({
+  const [state, setState] = useState<State>(() => ({
     attributes: [],
-    selectedFolder: null,
-    selectedFolderDepth: null,
+    selectedFolder: activeFolder,
+    selectedFolderDepth: getFolderDepth(rootFolder, activeFolder),
     loading: true,
     error: null,
     overwrite: false,
     uploadFlag: false,
-  });
+  }));
   const [newFolder, setNewFolder] = useState<NewFolderModel>({
     name: '',
     show: false,
@@ -232,7 +225,7 @@ const useUploadFormData = (
       if (errors.length) {
         setError(errors);
       } else {
-        onClose('success');
+        onClose(true);
       }
     } catch (err) {
       console.error(err);

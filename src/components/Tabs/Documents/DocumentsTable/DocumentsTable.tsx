@@ -1,10 +1,14 @@
 import { ChangeEvent } from 'react';
-import { FolderModel, DocumentModel } from 'services';
-
-import useSort from 'hooks/useSort';
+import { FolderModel, DocumentModel, EntityPublishModel } from 'models';
+import { SortModel, SortParamsType } from 'models';
 import _get from 'lodash/get';
 import { isFolder, isPublished } from 'utils';
-import { isSelectedAll, isItemSelected, isIndeterminated } from './utils';
+import {
+  isSelectedAll,
+  isItemSelected,
+  isIndeterminated,
+  getFolderDocuments,
+} from './utils';
 
 import clsx from 'clsx';
 import { useStyles } from './style';
@@ -23,50 +27,54 @@ import {
   DeleteIcon,
   EditIcon,
   DownloadIcon,
-  SharePointIcon,
   FolderIcon,
   PublishedIcon,
+  UnpublishedIcon,
 } from 'components/Icons';
 
 interface DocumentsTableProps {
   activeFolder: FolderModel;
-  list: (FolderModel | DocumentModel)[];
-  selected: (FolderModel | DocumentModel)[];
-  saveFile(id: string): Promise<any>;
   handleChangeActiveFolder(folder: FolderModel): void;
+  handleChangeSortParams(id: string, type?: SortParamsType): void;
   handleChangeSelectedItems(
     item: FolderModel | DocumentModel,
     folder: boolean
   ): void;
-  handleOpenDeletConfirmationDialog(entity: {
+  handleOpenDeleteConfirmationDialog(entity: {
     id: string;
     type: 'doc' | 'folder';
   }): void;
-  handleSelectAll(e: ChangeEvent<HTMLInputElement>): void;
   handleOpenEditDocumentDialog(document: DocumentModel): void;
+  handleOpenEditFolderDialog(folder: FolderModel): void;
+  handleSelectAll(e: ChangeEvent<HTMLInputElement>): void;
+  list: (FolderModel | DocumentModel)[];
+  publishing: boolean;
+  publishDocuments(
+    documents: EntityPublishModel[],
+    type: 'publish' | 'unpublish'
+  ): void;
+  saveFile(id: string): Promise<any>;
+  selected: (FolderModel | DocumentModel)[];
+  sortParams: SortModel;
 }
 
 const DocumentsTable: React.FC<DocumentsTableProps> = ({
   activeFolder,
-  list,
-  selected,
-  saveFile,
   handleChangeActiveFolder,
   handleChangeSelectedItems,
+  handleChangeSortParams,
   handleSelectAll,
-  handleOpenDeletConfirmationDialog,
+  handleOpenDeleteConfirmationDialog,
   handleOpenEditDocumentDialog,
+  handleOpenEditFolderDialog,
+  list,
+  publishDocuments,
+  publishing,
+  saveFile,
+  selected,
+  sortParams,
 }) => {
   const classes = useStyles();
-
-  const {
-    list: sortedList,
-    sortParams,
-    onChangeSortParams,
-  } = useSort(list, {
-    order: 'asc',
-    orderBy: 'Name',
-  });
 
   const selectedAll = !!(list.length && isSelectedAll(activeFolder, selected));
   const indeterminatedAll = selectedAll
@@ -78,20 +86,22 @@ const DocumentsTable: React.FC<DocumentsTableProps> = ({
       <DocumentsTableHead
         order={sortParams.order}
         orderBy={sortParams.orderBy}
-        onChangeSortParams={onChangeSortParams}
+        onChangeSortParams={handleChangeSortParams}
         onToggleSelectAll={handleSelectAll}
         selected={selectedAll}
         indeterminate={indeterminatedAll}
       />
       <MuiTableBody>
-        {sortedList.map((item) => {
+        {list.map((item) => {
           const folder = isFolder(item);
-          const published = isPublished(item);
           const isSelected = isItemSelected(item, selected);
           const entity = {
             id: item.Id,
             type: folder ? ('folder' as const) : ('doc' as const),
           };
+          let documents: EntityPublishModel[] = folder
+            ? getFolderDocuments(item as FolderModel)
+            : [{ id: item.Id, type: 'doc', published: isPublished(item) }];
 
           return (
             <MuiTableRow
@@ -108,7 +118,7 @@ const DocumentsTable: React.FC<DocumentsTableProps> = ({
                 />
               </MuiTableCell>
               <MuiTableCell className={classes.cell}>
-                {published ? (
+                {item.IsPublished ? (
                   <Tooltip
                     arrow
                     title={'Published to portal'}
@@ -156,7 +166,7 @@ const DocumentsTable: React.FC<DocumentsTableProps> = ({
                   <ActionButton
                     className={classes.btn}
                     size="small"
-                    onClick={() => handleOpenDeletConfirmationDialog(entity)}
+                    onClick={() => handleOpenDeleteConfirmationDialog(entity)}
                   >
                     <DeleteIcon className={classes.icon} />
                   </ActionButton>
@@ -165,7 +175,7 @@ const DocumentsTable: React.FC<DocumentsTableProps> = ({
                     size="small"
                     onClick={() =>
                       folder
-                        ? () => {}
+                        ? handleOpenEditFolderDialog(item as FolderModel)
                         : handleOpenEditDocumentDialog(item as DocumentModel)
                     }
                   >
@@ -180,14 +190,23 @@ const DocumentsTable: React.FC<DocumentsTableProps> = ({
                       <DownloadIcon className={classes.icon} />
                     </ActionButton>
                   )}
-                  {folder && (
+                  {item.IsPublished === null ? null : (
                     <ActionButton
                       className={classes.btn}
                       size="small"
-                      href={(item as FolderModel).Url}
-                      target="_blank"
+                      disabled={publishing}
+                      onClick={() =>
+                        publishDocuments(
+                          documents,
+                          item.IsPublished ? 'unpublish' : 'publish'
+                        )
+                      }
                     >
-                      <SharePointIcon className={classes.icon} />
+                      {item.IsPublished ? (
+                        <UnpublishedIcon className={classes.icon} />
+                      ) : (
+                        <PublishedIcon className={classes.icon} />
+                      )}
                     </ActionButton>
                   )}
                 </div>

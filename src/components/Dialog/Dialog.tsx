@@ -28,7 +28,7 @@ const Dialog: React.FC<DialogProps> = ({
         paper: classes.paper,
       }}
       open={open}
-      onClose={handleClose}
+      onClose={() => handleClose()}
       maxWidth={maxWidth}
       fullWidth={fullWidth}
       {...rest}

@@ -4,26 +4,28 @@ import { useTranslation } from 'react-i18next';
 import usePagination from '@mui/material/usePagination';
 
 import MenuItem from '@mui/material/MenuItem';
-import Select, { SelectProps } from '@mui/material/Select';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { ArrowIcon } from 'components/Icons';
 
 import clsx from 'clsx';
 import { useStyles } from './style';
 
 interface PagiantionProps {
-  itemsPerPage: number;
+  className?: string;
+  rowsPerPage: number;
   totalItems: number;
   currentPage: number;
-  rowsPerPageOptions?: number[];
+  rowsPerPageOptions: number[];
   onChangeCurrentPage(page: number): void;
-  onChangeRowsPerPage: SelectProps['onChange'];
+  onChangeRowsPerPage(rows: number): void;
 }
 
 const Pagination: React.FC<PagiantionProps> = ({
-  itemsPerPage,
+  className,
+  rowsPerPage,
   totalItems,
   currentPage,
-  rowsPerPageOptions = [6, 12, 24],
+  rowsPerPageOptions,
   onChangeCurrentPage,
   onChangeRowsPerPage,
 }) => {
@@ -31,22 +33,28 @@ const Pagination: React.FC<PagiantionProps> = ({
   const { t } = useTranslation();
 
   const { items } = usePagination({
-    count: Math.ceil(totalItems / itemsPerPage),
+    count: Math.ceil(totalItems / rowsPerPage),
     page: currentPage + 1,
     onChange: (e, page) => onChangeCurrentPage(page),
   });
 
+  const handleChangeRowsPerPage = (e: SelectChangeEvent) => {
+    const { value } = e.target;
+
+    onChangeRowsPerPage(Number(value));
+  };
+
   const to =
-    (currentPage + 1) * itemsPerPage > totalItems
+    (currentPage + 1) * rowsPerPage > totalItems
       ? totalItems
-      : (currentPage + 1) * itemsPerPage;
+      : (currentPage + 1) * rowsPerPage;
 
   return (
-    <div className={classes.root}>
+    <div className={clsx(classes.root, className)}>
       <div className={classes.countWrapper}>
         <p className={classes.count}>
           {t('#pagination', {
-            show: currentPage * itemsPerPage + 1,
+            show: currentPage * rowsPerPage + 1,
             to,
             totalItems,
           })}
@@ -102,8 +110,8 @@ const Pagination: React.FC<PagiantionProps> = ({
             root: classes.selectRoot,
             select: classes.select,
           }}
-          onChange={onChangeRowsPerPage}
-          value={itemsPerPage}
+          onChange={handleChangeRowsPerPage}
+          value={String(rowsPerPage)}
           variant="standard"
           IconComponent={ArrowIcon}
           disableUnderline

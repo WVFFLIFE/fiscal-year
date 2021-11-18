@@ -6,7 +6,9 @@ import FolderPicker from 'components/FolderPicker';
 import Input from 'components/Input';
 import Button from 'components/Button';
 import CheckboxGroup from 'components/CheckboxGroup';
+import CheckboxControl from 'components/CheckboxControl';
 import CircularProgress from '@mui/material/CircularProgress';
+import DialogError from 'components/DialogError';
 import {
   InputLabel,
   IconButton,
@@ -22,7 +24,7 @@ interface EditDocumentModel {
   activeFolder: FolderModel;
   selectedDocument: DocumentModel;
   fetchFolders(): Promise<void>;
-  onClose(): void;
+  onClose(showSuccessDialog?: boolean): void;
 }
 
 const EditDocument: React.FC<EditDocumentModel> = ({
@@ -34,6 +36,7 @@ const EditDocument: React.FC<EditDocumentModel> = ({
 }) => {
   const classes = useStyles();
   const {
+    error,
     attributes,
     attributesLoading,
     documentName,
@@ -42,12 +45,15 @@ const EditDocument: React.FC<EditDocumentModel> = ({
     selected,
     save,
     saveFlag,
+    overwrite,
+    initError,
     handleAddNewFolder,
     handleRemoveNewFolder,
     handleChangeAttribute,
     handleChangeNewFolderName,
     handleChangeSelectedFolder,
     handleSaveNewFolderName,
+    handleChangeOverwriteCheckbox,
   } = useEditDocumentData(
     rootFolder,
     activeFolder,
@@ -106,6 +112,11 @@ const EditDocument: React.FC<EditDocumentModel> = ({
               </Box>
             </Box>
           ) : null}
+          <CheckboxControl
+            label={'Overwrite file'}
+            checked={overwrite}
+            onChange={handleChangeOverwriteCheckbox}
+          />
           <Box
             display="flex"
             flexWrap="wrap"
@@ -153,6 +164,7 @@ const EditDocument: React.FC<EditDocumentModel> = ({
               Save
             </ApplyButton>
           </Box>
+          <DialogError error={error} initError={initError} />
         </>
       )}
     </div>

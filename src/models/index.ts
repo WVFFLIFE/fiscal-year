@@ -3,10 +3,10 @@ import {
   FolderModel as ServiceFolderModel,
   DocumentModel as ServiceDocumentModel,
 } from 'services';
+export type { SortModel, SortParamsType } from 'hooks/useSort';
 
 export interface FolderModel extends ServiceFolderModel {}
 export interface DocumentModel extends ServiceDocumentModel {}
-
 export interface BaseEntityModel {
   Id: string;
   Name: string;
@@ -56,14 +56,6 @@ export interface Column {
   style?: CSSProperties;
 }
 
-export type SortParamsType = 'string' | 'date' | 'number' | 'boolean';
-
-export interface SortModel {
-  order: 'asc' | 'desc';
-  orderBy: string;
-  type: SortParamsType;
-}
-
 export interface AttributeHeaderModel {
   InternalName: string;
   DisplayName: string;
@@ -91,3 +83,14 @@ export interface EntityModel {
   id: string;
   type: 'doc' | 'folder';
 }
+
+export interface EntityPublishModel extends EntityModel {
+  published: boolean;
+}
+
+export type SuccessType =
+  | 'successUpdated'
+  | 'successUploaded'
+  | 'folderNameUpdated'
+  | 'successPublished'
+  | 'successUnpublished';

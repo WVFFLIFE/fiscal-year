@@ -15,7 +15,6 @@ import AddFiscalYearButton from 'components/AddFiscalYearButton';
 import { LockIcon, CopyIcon } from 'components/Icons';
 import { ApplyButton } from 'components/Styled';
 import Tabs from 'components/Tabs';
-import DocumentsTable from 'components/DocumentsTable';
 
 import { useStyles } from './style';
 
