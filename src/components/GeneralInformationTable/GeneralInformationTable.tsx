@@ -119,7 +119,6 @@ const GeneralInformationTable = () => {
     <Table>
       <TableHead
         columns={columns}
-        bgColor={theme.color.greyLight2}
         sort={sortParams}
         onChangeSortParams={handleChangeSortParams}
       />

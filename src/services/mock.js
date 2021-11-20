@@ -1,3 +1,8 @@
+const base = {
+  IsSuccess: true,
+  Message: null,
+};
+
 export const list = {
   HasFolder: true,
   FolderExist: true,
@@ -317,4 +322,40 @@ export const attr = {
   ],
   IsSuccess: true,
   Message: null,
+};
+
+export const baseCooperatives = {
+  ...base,
+  Cooperatives: [
+    {
+      Id: 'a98ee91c-e3ea-e711-8105-005056ac5819',
+      Name: 'As Oy Demotalo',
+      LatesClosedDate: '2017-12-31T01:00:00Z',
+      IsOwn: true,
+      IsPMCompanyEmployee: false,
+    },
+  ],
+};
+
+export const enhancedCooperatives = {
+  ...base,
+  Cooperatives: [
+    {
+      Id: 'a98ee91c-e3ea-e711-8105-005056ac5819',
+      Name: 'As Oy Demotalo',
+      LatesClosedDate: '2017-12-31T01:00:00Z',
+      IsFinancialCalculationsAccepted: false,
+      FiscalYearId: 'efb34799-2836-eb11-8110-005056ac71e1',
+      IsFiscalYearClosed: false,
+      FiscalYearStartDate: '2020-12-31T22:00:00Z',
+      FiscalYearEndDate: '2021-12-30T22:00:00Z',
+      BoardMeetingPlannedDate: null,
+      BoardMeetingActualDate: null,
+      GeneralMeetingPlannedDate: null,
+      GeneralMeetingActualDate: null,
+      AuditingPlannedDate: null,
+      AuditingActualDate: null,
+      Comments: null,
+    },
+  ],
 };

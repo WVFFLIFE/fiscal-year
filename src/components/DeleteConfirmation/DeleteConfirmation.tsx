@@ -5,14 +5,12 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { useStyles } from './style';
 
 interface DeleteConfirmationProps {
-  entity: string;
   cancel(): void;
   apply(): void;
   loading?: boolean;
 }
 
 const DeleteConfirmation: React.FC<DeleteConfirmationProps> = ({
-  entity,
   cancel,
   apply,
   loading,
@@ -21,10 +19,10 @@ const DeleteConfirmation: React.FC<DeleteConfirmationProps> = ({
 
   return (
     <div className={classes.root}>
-      <h3 className={classes.title}>Delete {entity}</h3>
+      <h3 className={classes.title}>Delete entity(ies)</h3>
       <RoundQuestionIcon className={classes.icon} />
       <p className={classes.description}>
-        Are you sure you want to delete this {entity}?
+        Are you sure you want to delete selected entity(ies)?
       </p>
       <div className={classes.btnsRow}>
         <CancelButton

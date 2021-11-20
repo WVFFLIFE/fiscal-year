@@ -1,6 +1,5 @@
 import { useMemo, useEffect, useCallback, useState, ChangeEvent } from 'react';
 import {
-  EntityModel,
   ErrorModel,
   SuccessType,
   FolderModel,
@@ -8,6 +7,7 @@ import {
   EntityPublishModel,
   SortModel,
   SortParamsType,
+  FiscalYearModel,
 } from 'models';
 import Services from 'services';
 
@@ -20,11 +20,13 @@ import {
   limitFoldersDepth,
   countEntitiesAmount,
   isAnySucceed,
+  getInnerDocuments,
+  getPublishedEntities,
 } from './utils';
 
 interface DeleteConfirmationStateModel {
   open: boolean;
-  entity: EntityModel | null;
+  entities: (DocumentModel | FolderModel)[];
   loading: boolean;
 }
 
@@ -52,7 +54,7 @@ interface State {
   selectedItems: (DocumentModel | FolderModel)[];
 }
 
-const useDocumentsData = () => {
+const useDocumentsData = (fiscalYear: FiscalYearModel | null) => {
   const [state, setState] = useState<State>({
     breadcrumbsList: [],
     loading: false,
@@ -65,7 +67,7 @@ const useDocumentsData = () => {
   const [deleteConfirmationState, setDeleteConfirmationState] =
     useState<DeleteConfirmationStateModel>({
       open: false,
-      entity: null,
+      entities: [],
       loading: false,
     });
   const [successDialogState, setSuccessDialogState] =
@@ -128,22 +130,41 @@ const useDocumentsData = () => {
   }, [selectedItems]);
 
   const fetchFolders = async () => {
-    const res = await Services.getDocumentsList(
-      '53820CFC-8E4A-E711-8106-005056AC126A'
-    );
+    if (fiscalYear) {
+      try {
+        const res = await Services.getDocumentsList(fiscalYear.Id);
 
-    setState((prevState) => ({
-      ...prevState,
-      breadcrumbsList: res.Folder
-        ? [
-            {
-              ...res.Folder,
-              Name: 'Home',
-              Folders: limitFoldersDepth(res.Folder.Folders),
-            },
-          ]
-        : [],
-    }));
+        if (res.IsSuccess) {
+          setState((prevState) => ({
+            ...prevState,
+            loading: false,
+            breadcrumbsList: res.Folder
+              ? [
+                  {
+                    ...res.Folder,
+                    Name: 'Home',
+                    Folders: limitFoldersDepth(res.Folder.Folders),
+                  },
+                ]
+              : [],
+          }));
+        } else {
+          setState((prevState) => ({
+            ...prevState,
+            loading: false,
+            error: { messages: [res.Message] },
+          }));
+        }
+      } catch (err) {
+        console.error(err);
+
+        setState((prevState) => ({
+          ...prevState,
+          loading: false,
+          error: { messages: [String(err)] },
+        }));
+      }
+    }
   };
 
   const setError = (messages: string | string[]) => {
@@ -158,7 +179,43 @@ const useDocumentsData = () => {
     setState((prevState) => ({
       ...prevState,
       error: null,
+      loading: false,
     }));
+  };
+
+  const refreshData = async () => {
+    try {
+      setState((prevState) => ({
+        ...prevState,
+        loading: true,
+      }));
+
+      const res = await Services.getDocumentsList(
+        '53820CFC-8E4A-E711-8106-005056AC126A'
+      );
+
+      if (res.IsSuccess) {
+        setState((prevState) => ({
+          ...prevState,
+          loading: false,
+          breadcrumbsList: res.Folder
+            ? [
+                {
+                  ...res.Folder,
+                  Name: 'Home',
+                  Folders: limitFoldersDepth(res.Folder.Folders),
+                },
+              ]
+            : [],
+        }));
+      } else {
+        setError(res.Message);
+      }
+    } catch (err) {
+      console.error(err);
+
+      setError(String(err));
+    }
   };
 
   const unselectItems = () => {
@@ -214,10 +271,12 @@ const useDocumentsData = () => {
     }
   };
 
-  const handleOpenDeleteConfirmationDialog = (entity: EntityModel) => {
+  const handleOpenDeleteConfirmationDialog = (
+    entities: (FolderModel | DocumentModel)[]
+  ) => {
     setDeleteConfirmationState((prevState) => ({
       ...prevState,
-      entity,
+      entities,
       open: true,
     }));
   };
@@ -233,7 +292,7 @@ const useDocumentsData = () => {
   const handleInitDeleteEntity = () => {
     setDeleteConfirmationState((prevState) => ({
       ...prevState,
-      entity: null,
+      entity: [],
       open: false,
     }));
   };
@@ -252,30 +311,47 @@ const useDocumentsData = () => {
     }));
   };
 
-  const deleteEntity = async () => {
-    const { entity } = deleteConfirmationState;
+  const deleteEntity = async (entity: DocumentModel | FolderModel) => {
+    const deleteAction = isFolder(entity)
+      ? Services.folderDelete
+      : Services.documentDelete;
 
-    if (entity) {
-      try {
-        const deleteAction =
-          entity.type === 'doc'
-            ? Services.documentDelete
-            : Services.folderDelete;
+    return await deleteAction(entity.Id);
+  };
 
-        showDeleteConfirmationLoader();
+  const deleteEntities = async () => {
+    try {
+      showDeleteConfirmationLoader();
 
-        const res = await deleteAction(entity.id);
+      const { entities } = deleteConfirmationState;
 
-        if (res.IsSuccess) {
-          await fetchFolders();
-          handleCloseDeleteConfirmationDialog();
-        } else {
-          hideDeleteConfirmationLoader();
-        }
-      } catch (err) {
-        console.error(err);
-        hideDeleteConfirmationLoader();
+      const res = await Promise.allSettled(
+        entities.map((entity) => deleteEntity(entity))
+      );
+
+      if (isAnySucceed(res)) {
+        await fetchFolders();
       }
+
+      const errors = getErrorsList(res);
+
+      if (errors.length) {
+        hideDeleteConfirmationLoader();
+        setState((prevState) => ({
+          ...prevState,
+          error: { messages: errors },
+        }));
+      } else {
+        handleCloseDeleteConfirmationDialog();
+        handleShowSuccessDialog('successDeleted');
+      }
+    } catch (err) {
+      console.error(err);
+      hideDeleteConfirmationLoader();
+      setState((prevState) => ({
+        ...prevState,
+        error: { messages: [String(err)] },
+      }));
     }
   };
 
@@ -427,13 +503,55 @@ const useDocumentsData = () => {
     }
   };
 
-  // const publishSelectedDocuments = async () => {
-  //   const folder: FolderModel;
+  const publishSelectedDocuments = async (published: boolean) => {
+    const docs = getInnerDocuments(selectedItems);
+    const entities = getPublishedEntities(docs, published);
 
-  //   for (let selectedItem of state.selectedItems) {
-  //     if (isFolder)
-  //   }
-  // }
+    console.log(docs, entities);
+
+    if (entities.length) {
+      try {
+        setState((prevState) => ({
+          ...prevState,
+          publishing: true,
+        }));
+
+        const res = await Promise.allSettled(
+          entities.map((entity) => publishDocument(entity))
+        );
+
+        if (isAnySucceed(res)) {
+          await fetchFolders();
+        }
+
+        const errors = getErrorsList(res);
+
+        if (errors.length) {
+          setState((prevState) => ({
+            ...prevState,
+            publishing: false,
+            error: { messages: errors },
+          }));
+        } else {
+          setState((prevState) => ({
+            ...prevState,
+            publishing: false,
+          }));
+          handleShowSuccessDialog(
+            published ? 'successPublished' : 'successUnpublished'
+          );
+        }
+      } catch (err) {
+        console.error(err);
+
+        setState((prevState) => ({
+          ...prevState,
+          publishing: false,
+          error: { messages: [String(err)] },
+        }));
+      }
+    }
+  };
 
   const handleChangeCurrentPage = useCallback((page: number) => {
     setPagination((prevState) => ({
@@ -481,7 +599,7 @@ const useDocumentsData = () => {
   };
 
   useEffect(() => {
-    fetchFolders();
+    refreshData();
   }, []);
 
   useEffect(() => {
@@ -493,14 +611,19 @@ const useDocumentsData = () => {
     resetPage();
   }, [filteredActiveFolder, quickFilter]);
 
-  console.log(sortParams);
+  const allPublished = useMemo(() => {
+    const docs = getInnerDocuments(selectedItems);
+    return docs.length && docs.every((doc) => doc.IsPublished);
+  }, [selectedItems]);
 
   return {
+    allPublished,
     publishing,
     pagination,
     loading,
     error,
     rootFolder,
+    refreshData,
     activeFolder: filteredActiveFolder,
     openUploadForm,
     successDialogState,
@@ -517,8 +640,9 @@ const useDocumentsData = () => {
     saveFile,
     publishDocuments,
     saveSelected,
-    deleteEntity,
+    deleteEntities,
     fetchFolders,
+    publishSelectedDocuments,
     initError,
     handleInitDeleteEntity,
     handleOpenUploadForm,

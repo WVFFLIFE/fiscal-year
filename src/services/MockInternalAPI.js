@@ -1,4 +1,4 @@
-import { attr, list } from './mock';
+import { attr, list, baseCooperatives, enhancedCooperatives } from './mock';
 
 const DELAY = 500;
 
@@ -9,6 +9,14 @@ class MockService {
         resolve(data);
       }, DELAY);
     });
+  };
+
+  getCooperativesList = () => {
+    return this.execute(baseCooperatives);
+  };
+
+  getCooperativesInformationList = (cooperativeIds, startDate, endDate) => {
+    return this.execute(enhancedCooperatives);
   };
 
   getDocumentsList = (enityId) => {

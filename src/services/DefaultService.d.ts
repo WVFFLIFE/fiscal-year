@@ -79,9 +79,65 @@ interface CreateFolderResponseModel extends BaseResponseModel {
   FolderName: string;
 }
 
+export interface BaseCooperativeModel {
+  Id: string;
+  LatestClosedDate: string;
+  Name: string;
+}
+
+export interface CommonCooperativeModel extends BaseCooperativeModel {
+  Id: string;
+  IsOwn: boolean;
+  IsPMCompanyEmployee: boolean;
+  LatestClosedDate: string;
+  Name: string;
+}
+
+export interface ExtendedCooperativeModel extends BaseCooperativeModel {
+  AuditingActualDate: string | null;
+  AuditingPlannedDate: string | null;
+  BoardMeetingActualDate: string | null;
+  BoardMeetingPlannedDate: string | null;
+  Comments: string | null;
+  FiscalYearEndDate: string | null;
+  FiscalYearId: string | null;
+  FiscalYearStartDate: string | null;
+  GeneralMeetingActualDate: string | null;
+  GeneralMeetingPlannedDate: string | null;
+  IsFinancialCalculationsAccepted: boolean | null;
+  IsFiscalYearClosed: boolean | null;
+}
+
+interface BaseCooperativeListResponseModel extends BaseResponseModel {
+  Cooperatives: CommonCooperativeModel[];
+}
+
+interface ExtendedCooperativesListRepsonseModel extends BaseResponseModel {
+  Cooperatives: ExtendedCooperativeModel[];
+}
+
+export interface FiscalYearModel {
+  Id: string;
+  Name: string;
+  IsClosed: boolean | null;
+}
+
+interface FiscalYearListResponseModel extends BaseResponseModel {
+  FiscalYears: FiscalYearModel[];
+}
+
 export type SettledResponse = PromiseSettledResult<BaseResponseModel>[];
 
 declare class DefaultService {
+  public getCooperativesList(): Promise<BaseCooperativeListResponseModel>;
+  public getCooperativesInformationList(
+    cooperativesIds: string[],
+    startDate: string,
+    endDate: string
+  ): Promise<ExtendedCooperativesListRepsonseModel>;
+  public getCooperativeFiscalYearsList(
+    cooperativeId: string
+  ): Promise<FiscalYearListResponseModel>;
   public getDocumentsList(entityId: string): Promise<DocumentsListModel>;
   public documentDownload(documentId: string): Promise<FileResModel>;
   public getDocumentFormMetadata(): Promise<FormMettadataResponseModel>;

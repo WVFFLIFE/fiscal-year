@@ -1,4 +1,4 @@
-import { MockCooperative } from 'models';
+import { BaseCooperativeModel } from 'models';
 
 import format from 'date-fns/format';
 import { DEFAULT_FORMAT_PATTERN } from 'utils';
@@ -9,17 +9,19 @@ import MenuItem from '@mui/material/MenuItem';
 import clsx from 'clsx';
 import { useStyles } from './style';
 
-export interface CooperativesListItemProps {
-  cooperative: MockCooperative;
+export interface CooperativesListItemProps<T extends BaseCooperativeModel> {
+  multiple: boolean;
+  cooperative: T;
   selected: boolean;
-  onClick(cooperative: MockCooperative, isSelected: boolean): void;
+  onClick(cooperative: T, isSelected: boolean): void;
 }
 
-const CooperativesListItem: React.FC<CooperativesListItemProps> = ({
+const CooperativesListItem = <T extends BaseCooperativeModel>({
+  multiple,
   cooperative,
   selected,
   onClick,
-}) => {
+}: CooperativesListItemProps<T>) => {
   const classes = useStyles();
 
   return (
@@ -33,15 +35,19 @@ const CooperativesListItem: React.FC<CooperativesListItemProps> = ({
       onMouseUp={() => onClick(cooperative, selected)}
       data-testid="cooperative-item"
     >
-      <CheckboxControl
-        checked={selected}
-        label={cooperative.Name}
-        tabIndex={-1}
-      />
-      {cooperative.ClosedPeriodEndDate ? (
+      {multiple ? (
+        <CheckboxControl
+          checked={selected}
+          label={cooperative.Name}
+          tabIndex={-1}
+        />
+      ) : (
+        <span>{cooperative.Name}</span>
+      )}
+      {cooperative.LatestClosedDate ? (
         <span className={classes.closedPeriodEndDate}>
           {format(
-            new Date(cooperative.ClosedPeriodEndDate),
+            new Date(cooperative.LatestClosedDate),
             DEFAULT_FORMAT_PATTERN
           )}
         </span>

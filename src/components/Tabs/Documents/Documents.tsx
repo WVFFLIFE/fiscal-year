@@ -1,4 +1,5 @@
 import useDocumentsData from './useDocumentsData';
+import { FiscalYearModel } from 'models';
 
 import Box from '@mui/material/Box';
 import QuickFilter, { QuickFilterOption } from 'components/QuickFilter';
@@ -17,11 +18,13 @@ import {
   RefreshIcon,
   SharePointIcon,
   PlusIcon,
+  UnpublishedIcon,
 } from 'components/Icons';
 import DocumentsTable from './DocumentsTable';
 import UploadForm from './UploadForm';
 import EditDocument from './EditDocument';
 import FolderEditor from './FolderEditor';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import clsx from 'clsx';
 import { useStyles } from './style';
@@ -37,14 +40,21 @@ const successMessages: { [key: string]: string } = {
   folderNameUpdated: 'Folder Name has been successfully updated',
   successPublished: 'Document(s) have been successfully published',
   successUnpublished: 'Document(s) have been successfully unpublished',
+  successDeleted: 'Selected entity(ies) have been successfully deleted',
 };
 
 const rowsPerPage = [5, 10, 15];
 
-const Documents = () => {
+export interface DocumentsTabProps {
+  fiscalYear: FiscalYearModel | null;
+}
+
+const Documents: React.FC<DocumentsTabProps> = ({ fiscalYear }) => {
   const classes = useStyles();
 
   const {
+    loading,
+    allPublished,
     sortParams,
     pagination,
     publishing,
@@ -52,6 +62,7 @@ const Documents = () => {
     activeFolder,
     list,
     error,
+    refreshData,
     initError,
     breadcrumbsList,
     amount,
@@ -64,8 +75,9 @@ const Documents = () => {
     editFolderDialogState,
     saveFile,
     publishDocuments,
+    publishSelectedDocuments,
     saveSelected,
-    deleteEntity,
+    deleteEntities,
     fetchFolders,
     handleChangeActiveFolder,
     handleChangeQuickFilter,
@@ -88,7 +100,16 @@ const Documents = () => {
     handleChangeCurrentPage,
     handleChangeRowsPerPage,
     handleChangeSortParams,
-  } = useDocumentsData();
+  } = useDocumentsData(fiscalYear);
+
+  if (!fiscalYear) return null;
+  if (loading) {
+    return (
+      <Box>
+        <CircularProgress size={20} />
+      </Box>
+    );
+  }
 
   return (
     <Box>
@@ -135,6 +156,7 @@ const Documents = () => {
             <ActionButton
               className={classes.actionBtn}
               disabled={!!!selectedItems.length}
+              onClick={() => handleOpenDeleteConfirmationDialog(selectedItems)}
             >
               <DeleteIcon className={classes.actionIcon} />
             </ActionButton>
@@ -145,13 +167,28 @@ const Documents = () => {
             >
               <DownloadIcon className={classes.actionIcon} />
             </ActionButton>
+            {allPublished ? (
+              <ActionButton
+                className={classes.actionBtn}
+                disabled={!!!amount.docs || publishing}
+                onClick={() => publishSelectedDocuments(false)}
+              >
+                <UnpublishedIcon className={classes.actionIcon} />
+              </ActionButton>
+            ) : (
+              <ActionButton
+                className={classes.actionBtn}
+                disabled={!!!amount.docs || publishing}
+                onClick={() => publishSelectedDocuments(true)}
+              >
+                <PublishedIcon className={classes.actionIcon} />
+              </ActionButton>
+            )}
             <ActionButton
               className={classes.actionBtn}
-              disabled={!!!amount.docs}
+              disabled={loading || publishing}
+              onClick={refreshData}
             >
-              <PublishedIcon className={classes.actionIcon} />
-            </ActionButton>
-            <ActionButton className={classes.actionBtn}>
               <RefreshIcon className={classes.actionIcon} />
             </ActionButton>
             <ActionButton
@@ -243,14 +280,9 @@ const Documents = () => {
           onExited: handleInitDeleteEntity,
         }}
       >
-        {deleteConfirmationState.entity ? (
+        {deleteConfirmationState.entities.length ? (
           <DeleteConfirmation
-            entity={
-              deleteConfirmationState.entity.type === 'doc'
-                ? 'document'
-                : 'folder'
-            }
-            apply={deleteEntity}
+            apply={deleteEntities}
             cancel={handleCloseDeleteConfirmationDialog}
             loading={deleteConfirmationState.loading}
           />

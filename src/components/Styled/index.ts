@@ -13,6 +13,12 @@ export const RootContainer = styled('div')(({ theme }) => ({
   paddingBottom: theme.spacing(8),
 }));
 
+export const Container = styled('div')(({ theme }) => ({
+  padding: theme.spacing(4),
+  background: '#fff',
+  boxShadow: '0px 5px 15px rgba(0, 0, 0, 0.05)',
+}));
+
 export const Logo = styled('img')(() => ({
   display: 'block',
   maxWidth: '100%',

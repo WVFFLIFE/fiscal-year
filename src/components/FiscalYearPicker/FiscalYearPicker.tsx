@@ -21,9 +21,10 @@ import Box from '@mui/material/Box';
 import { useBodyStyles } from './style';
 
 interface FiscalYearProps {
+  multiple?: boolean;
   disabled?: boolean;
-  fiscalYears: FiscalYearModel[];
-  selectedFiscalYear: FiscalYearModel | null;
+  options: FiscalYearModel[];
+  value: FiscalYearModel | null;
   onSelectFiscalYear(fiscalYear: FiscalYearModel | null): void;
 }
 
@@ -32,8 +33,8 @@ interface BodyProps extends FiscalYearProps {
 }
 
 const Body: React.FC<BodyProps> = ({
-  fiscalYears,
-  selectedFiscalYear,
+  options,
+  value,
   onSelectFiscalYear,
   onClosePicker,
 }) => {
@@ -43,8 +44,6 @@ const Body: React.FC<BodyProps> = ({
   const searchRef = useRef<HTMLInputElement>(null);
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [currentFiscalYear, setCurrentFiscalYear] =
-    useState<FiscalYearModel | null>(selectedFiscalYear);
 
   useEffect(() => {
     if (searchRef.current) {
@@ -60,19 +59,15 @@ const Body: React.FC<BodyProps> = ({
   );
 
   const handleClickMenuItem = (newFiscalYear: FiscalYearModel) => {
-    setCurrentFiscalYear(newFiscalYear);
-  };
-
-  const handleSelectFiscalYear = () => {
-    onSelectFiscalYear(currentFiscalYear);
+    onSelectFiscalYear(newFiscalYear);
     onClosePicker();
   };
 
   const filteredList = useMemo(() => {
-    return fiscalYears.filter((fiscalYear) => {
+    return options.filter((fiscalYear) => {
       return filterBySearchTerm(fiscalYear.Name, searchTerm);
     });
-  }, [fiscalYears, searchTerm]);
+  }, [options, searchTerm]);
 
   return (
     <div className={classes.wrapper}>
@@ -84,7 +79,7 @@ const Body: React.FC<BodyProps> = ({
       />
       <MenuList className={classes.menuList}>
         {filteredList.map((fiscalYear) => {
-          const isActive = fiscalYear.Id === currentFiscalYear?.Id;
+          const isActive = fiscalYear.Id === value?.Id;
 
           return (
             <MenuItem
@@ -103,31 +98,23 @@ const Body: React.FC<BodyProps> = ({
           );
         })}
       </MenuList>
-      <Box display="flex" alignItems="center" justifyContent="flex-end">
-        <CancelButton className={classes.cancelBtn} onClick={onClosePicker}>
-          {t('#button.cancel')}
-        </CancelButton>
-        <ApplyButton onClick={handleSelectFiscalYear}>
-          {t('#button.apply')}
-        </ApplyButton>
-      </Box>
     </div>
   );
 };
 
 const FiscalYearPicker: React.FC<FiscalYearProps> = ({
   disabled,
-  fiscalYears,
-  selectedFiscalYear,
+  options,
+  value,
   onSelectFiscalYear,
 }) => {
   const { t } = useTranslation();
 
-  const renderValue = () => selectedFiscalYear?.Name || null;
+  const renderValue = () => value?.Name || null;
   const renderBody = (onClosePicker: () => void) => (
     <Body
-      fiscalYears={fiscalYears}
-      selectedFiscalYear={selectedFiscalYear}
+      options={options}
+      value={value}
       onSelectFiscalYear={onSelectFiscalYear}
       onClosePicker={onClosePicker}
     />

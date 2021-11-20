@@ -15,6 +15,7 @@ export const useStyles = makeStyles((theme) => ({
     fontFamily: 'Proxima Nova',
     fontWeight: 600,
     color: '#000',
+    textAlign: 'center',
   },
   description: {
     margin: 0,
@@ -24,6 +25,7 @@ export const useStyles = makeStyles((theme) => ({
     fontFamily: 'Proxima Nova',
     fontWeight: 600,
     color: 'rgba(48, 52, 75, 1)',
+    textAlign: 'center',
   },
   icon: {
     fontSize: 48,

@@ -8,7 +8,7 @@ import {
   useMemo,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MockCooperative } from 'models';
+import { BaseCooperativeModel } from 'models';
 import _orderBy from 'lodash/orderBy';
 import { filterBySearchTerm } from 'utils';
 
@@ -35,22 +35,25 @@ const quickFilterOptions: QuickFilterOption[] = [
   },
 ];
 
-interface CooperativesPickerProps {
-  cooperatives: MockCooperative[];
-  selectedCooperatives: MockCooperative[];
-  onSelectCooperatives(cooperatives: MockCooperative[]): void;
+interface CooperativesPickerProps<T extends BaseCooperativeModel> {
+  multiple?: boolean;
+  cooperatives: T[];
+  selectedCooperatives: T[];
+  onSelectCooperatives(cooperatives: T[]): void;
 }
 
-interface BodyProps extends CooperativesPickerProps {
+interface BodyProps<T extends BaseCooperativeModel>
+  extends CooperativesPickerProps<T> {
   onClosePicker(): void;
 }
 
-const Body: React.FC<BodyProps> = ({
+const Body = <T extends BaseCooperativeModel>({
+  multiple = false,
   cooperatives,
   onSelectCooperatives,
   selectedCooperatives,
   onClosePicker,
-}) => {
+}: BodyProps<T>) => {
   const classes = useBodyStyles();
   const { t } = useTranslation();
 
@@ -63,7 +66,7 @@ const Body: React.FC<BodyProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [activeQuickFilter, setActiveQuickFilter] = useState('myOwn');
   const [currentCooperative, setCurrentCooperative] =
-    useState<MockCooperative[]>(selectedCooperatives);
+    useState<T[]>(selectedCooperatives);
 
   /**
    * Focus search field when dropdown is opened
@@ -109,15 +112,18 @@ const Body: React.FC<BodyProps> = ({
     setActiveQuickFilter(newFilter);
   }, []);
 
-  const handleClickItem = (
-    currentCooperative: MockCooperative,
-    remove = true
-  ) => {
-    setCurrentCooperative((prevCoops) =>
-      remove
-        ? prevCoops.filter((prevCoop) => prevCoop.Id !== currentCooperative.Id)
-        : prevCoops.concat(currentCooperative)
-    );
+  const handleClickItem = (currentCooperative: T, remove = true) => {
+    if (multiple) {
+      setCurrentCooperative((prevCoops) =>
+        remove
+          ? prevCoops.filter(
+              (prevCoop) => prevCoop.Id !== currentCooperative.Id
+            )
+          : prevCoops.concat(currentCooperative)
+      );
+    } else {
+      setCurrentCooperative(remove ? [] : [currentCooperative]);
+    }
   };
 
   const handleSelectCooperatives = () => {
@@ -127,7 +133,7 @@ const Body: React.FC<BodyProps> = ({
 
   const handleToggleSelectAll = (
     e: ChangeEvent<HTMLInputElement>,
-    cooperatives: MockCooperative[]
+    cooperatives: T[]
   ) => {
     const { checked } = e.target;
 
@@ -151,7 +157,11 @@ const Body: React.FC<BodyProps> = ({
   const selectedAll = cooperativesList.length === currentCooperative.length;
 
   return (
-    <div className={classes.wrapper} ref={rootRef} style={{ width: bodyWidth }}>
+    <div
+      className={classes.wrapper}
+      ref={rootRef}
+      style={{ width: bodyWidth, minWidth: 350 }}
+    >
       <PickerSearch
         className={classes.offset}
         value={searchTerm}
@@ -163,30 +173,33 @@ const Body: React.FC<BodyProps> = ({
         active={activeQuickFilter}
         onChange={handleChangeQuickFilter}
       />
-      <Box
-        display="flex"
-        alignItems="center"
-        justifyContent="space-between"
-        marginBottom={3}
-        paddingLeft="16px"
-        paddingRight="16px"
-      >
-        <CheckboxControl
-          checked={selectedAll}
-          onChange={(e) => handleToggleSelectAll(e, cooperativesList)}
-          label="Select All"
-        />
-        <Button
-          className={classes.closeBtn}
-          classes={{
-            startIcon: classes.closeIcon,
-          }}
-          size="small"
-          startIcon={<CloseIcon />}
-          label={'Clear filters'}
-        />
-      </Box>
+      {multiple && (
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+          marginBottom={3}
+          paddingLeft="16px"
+          paddingRight="16px"
+        >
+          <CheckboxControl
+            checked={selectedAll}
+            onChange={(e) => handleToggleSelectAll(e, cooperativesList)}
+            label="Select All"
+          />
+          <Button
+            className={classes.closeBtn}
+            classes={{
+              startIcon: classes.closeIcon,
+            }}
+            size="small"
+            startIcon={<CloseIcon />}
+            label={'Clear filters'}
+          />
+        </Box>
+      )}
       <CooperativesList
+        multiple={multiple}
         cooperatives={cooperativesList}
         selected={currentCooperative}
         onClickItem={handleClickItem}
@@ -206,11 +219,12 @@ const Body: React.FC<BodyProps> = ({
   );
 };
 
-const CooperativesPicker: React.FC<CooperativesPickerProps> = ({
+const CooperativesPicker = <T extends BaseCooperativeModel>({
+  multiple = false,
   cooperatives,
   onSelectCooperatives,
   selectedCooperatives,
-}) => {
+}: CooperativesPickerProps<T>) => {
   const classes = useStyles();
   const { t } = useTranslation();
 
@@ -231,6 +245,7 @@ const CooperativesPicker: React.FC<CooperativesPickerProps> = ({
 
   const renderBody = (onClosePicker: () => void) => (
     <Body
+      multiple={multiple}
       cooperatives={cooperatives}
       selectedCooperatives={selectedCooperatives}
       onSelectCooperatives={onSelectCooperatives}

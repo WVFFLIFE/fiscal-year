@@ -1,4 +1,9 @@
-import { FolderModel, DocumentModel, SortModel } from 'models';
+import {
+  FolderModel,
+  DocumentModel,
+  SortModel,
+  EntityPublishModel,
+} from 'models';
 import { SettledResponse } from 'services';
 
 import isFolder from 'utils/isFolder';
@@ -90,4 +95,55 @@ export function getFolderDepth(
   }
 
   return depth;
+}
+
+export function getInnerDocuments(list: (FolderModel | DocumentModel)[]) {
+  let documents: DocumentModel[] = [];
+
+  list.forEach((item) => {
+    if (isFolder(item)) {
+      documents.push(...(item as FolderModel).Documents);
+      documents.push(...getInnerDocuments((item as FolderModel).Folders));
+    } else {
+      documents.push(item as DocumentModel);
+    }
+  });
+
+  return documents;
+}
+
+export function getPublishedEntities(
+  list: DocumentModel[],
+  published: boolean
+): EntityPublishModel[] {
+  return list
+    .filter((document) =>
+      published ? !document.IsPublished : document.IsPublished
+    )
+    .map((document) => ({
+      id: document.Id,
+      type: 'doc',
+      published: document.IsPublished,
+    }));
+}
+
+export function getDeleteEntityType(
+  selectedItems: (DocumentModel | FolderModel)[]
+) {
+  return selectedItems.reduce((acc, next) => {
+    const folder = isFolder(next);
+    if (acc) {
+      if (acc === 'doc') {
+        return folder ? 'both' : 'doc';
+      }
+
+      if (acc === 'folder') {
+        return folder ? 'folder' : 'both';
+      }
+
+      return 'both';
+    } else {
+      return folder ? 'folder' : 'doc';
+    }
+  }, null as 'doc' | 'folder' | 'both' | null);
 }

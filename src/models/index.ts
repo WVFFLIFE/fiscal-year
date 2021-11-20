@@ -3,7 +3,14 @@ import {
   FolderModel as ServiceFolderModel,
   DocumentModel as ServiceDocumentModel,
 } from 'services';
+export type {
+  BaseCooperativeModel,
+  CommonCooperativeModel,
+  ExtendedCooperativeModel,
+  FiscalYearModel,
+} from 'services';
 export type { SortModel, SortParamsType } from 'hooks/useSort';
+export type { CalendarYearOption } from 'components/SelectCalendarYear';
 
 export interface FolderModel extends ServiceFolderModel {}
 export interface DocumentModel extends ServiceDocumentModel {}
@@ -33,13 +40,6 @@ export enum EntityResponseCode {
   Warrning = 2,
   Error = 3,
   Info = 4,
-}
-
-export interface FiscalYearModel {
-  Id: string;
-  Name: string;
-  StartDate: string;
-  EndDate: string;
 }
 
 export interface MockCooperative {
@@ -93,4 +93,5 @@ export type SuccessType =
   | 'successUploaded'
   | 'folderNameUpdated'
   | 'successPublished'
-  | 'successUnpublished';
+  | 'successUnpublished'
+  | 'successDeleted';

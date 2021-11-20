@@ -1,21 +1,23 @@
-import { MockCooperative } from 'models';
+import { BaseCooperativeModel } from 'models';
 
 import MenuList from '@mui/material/MenuList';
 import CooperativesListItem from './CooperativesListItem';
 
 import { useStyles } from './style';
 
-export interface CooperativesListProps {
-  cooperatives: MockCooperative[];
-  selected: MockCooperative[];
-  onClickItem(cooperative: MockCooperative, selected: boolean): void;
+export interface CooperativesListProps<T extends BaseCooperativeModel> {
+  multiple: boolean;
+  cooperatives: T[];
+  selected: T[];
+  onClickItem(cooperative: T, selected: boolean): void;
 }
 
-const CooperativesList: React.FC<CooperativesListProps> = ({
+const CooperativesList = <T extends BaseCooperativeModel>({
+  multiple,
   cooperatives,
   selected,
   onClickItem,
-}) => {
+}: CooperativesListProps<T>) => {
   const classes = useStyles();
 
   return (
@@ -28,6 +30,7 @@ const CooperativesList: React.FC<CooperativesListProps> = ({
         return (
           <CooperativesListItem
             key={cooperative.Id}
+            multiple={multiple}
             cooperative={cooperative}
             selected={isSelected}
             onClick={onClickItem}

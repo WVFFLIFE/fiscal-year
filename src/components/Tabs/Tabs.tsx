@@ -3,7 +3,7 @@ import { useState, SyntheticEvent } from 'react';
 import Box from '@mui/material/Box';
 import MuiTabs from '@mui/material/Tabs';
 import MuiTab from '@mui/material/Tab';
-import Documents from './Documents';
+import Documents, { DocumentsTabProps } from './Documents';
 
 import { useStyles } from './style';
 
@@ -29,7 +29,11 @@ const tabsList: TabItemModel[] = [
   { label: 'Comments', value: 'comments', disabled: true },
 ];
 
-const Tabs = () => {
+interface Tabs {
+  DocumentsTabProps: DocumentsTabProps;
+}
+
+const Tabs: React.FC<Tabs> = ({ DocumentsTabProps }) => {
   const classes = useStyles();
 
   const [selectedTab, setSelectedTab] = useState<string>('documents');
@@ -61,7 +65,7 @@ const Tabs = () => {
         })}
       </MuiTabs>
       <Box className={classes.box}>
-        {selectedTab === 'documents' && <Documents />}
+        {selectedTab === 'documents' && <Documents {...DocumentsTabProps} />}
       </Box>
     </Box>
   );

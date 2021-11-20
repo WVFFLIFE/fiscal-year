@@ -8,23 +8,23 @@ import SortedTableCell from 'components/SortedTableCell';
 import { HeadTableCell } from 'components/Styled';
 
 interface TableHeadProps {
-  bgColor?: string;
+  className?: string;
   columns: Column[];
   sort?: SortModel;
   onChangeSortParams?(orderBy: string): void;
 }
 
 const TableHead: React.FC<TableHeadProps> = ({
+  className,
   columns,
   sort,
   onChangeSortParams,
-  bgColor,
 }) => {
   const { t } = useTranslation();
 
   return (
     <MuiTableHead>
-      <MuiTableRow style={bgColor ? { background: bgColor } : undefined}>
+      <MuiTableRow className={className}>
         {columns.map((column) => {
           return sort && column.sortable ? (
             <SortedTableCell

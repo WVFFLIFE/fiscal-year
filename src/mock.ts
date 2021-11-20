@@ -1,37 +1,4 @@
-import { FiscalYearModel, MockCooperative } from 'models';
-
-export const fiscalYears: FiscalYearModel[] = [
-  {
-    Id: 'c85e9d80-d596-eb11-813d-00155d06fd02',
-    Name: '1.1.2021 - 31.12.2021',
-    StartDate: '2021-01-01T00:00:00',
-    EndDate: '2021-12-31T00:00:00',
-  },
-  {
-    Id: '167a53c1-8063-ea11-812f-00155d06fd02',
-    Name: '1.1.2020 - 31.12.2020',
-    StartDate: '2020-01-01T00:00:00',
-    EndDate: '2020-12-31T00:00:00',
-  },
-  {
-    Id: '397d6507-4944-e911-8125-00155d6c1521',
-    Name: '1.1.2019 - 31.12.2019',
-    StartDate: '2019-01-01T00:00:00',
-    EndDate: '2019-12-31T23:59:59',
-  },
-  {
-    Id: '2efc7273-d1f0-e711-8114-00155d6c1521',
-    Name: '1.1.2018 - 31.12.2018',
-    StartDate: '2018-01-01T00:00:00',
-    EndDate: '2018-12-31T23:59:59',
-  },
-  {
-    Id: '7d5e4414-6931-e711-8101-00155d6c1521',
-    Name: '1.1.2017 - 31.12.2017',
-    StartDate: '2017-01-01T00:00:00',
-    EndDate: '2017-12-31T00:00:00',
-  },
-];
+import { MockCooperative } from 'models';
 
 export const cooperatives: MockCooperative[] = [
   {

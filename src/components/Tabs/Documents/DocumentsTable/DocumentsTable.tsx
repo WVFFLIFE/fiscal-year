@@ -40,10 +40,9 @@ interface DocumentsTableProps {
     item: FolderModel | DocumentModel,
     folder: boolean
   ): void;
-  handleOpenDeleteConfirmationDialog(entity: {
-    id: string;
-    type: 'doc' | 'folder';
-  }): void;
+  handleOpenDeleteConfirmationDialog(
+    entities: (DocumentModel | FolderModel)[]
+  ): void;
   handleOpenEditDocumentDialog(document: DocumentModel): void;
   handleOpenEditFolderDialog(folder: FolderModel): void;
   handleSelectAll(e: ChangeEvent<HTMLInputElement>): void;
@@ -95,10 +94,6 @@ const DocumentsTable: React.FC<DocumentsTableProps> = ({
         {list.map((item) => {
           const folder = isFolder(item);
           const isSelected = isItemSelected(item, selected);
-          const entity = {
-            id: item.Id,
-            type: folder ? ('folder' as const) : ('doc' as const),
-          };
           let documents: EntityPublishModel[] = folder
             ? getFolderDocuments(item as FolderModel)
             : [{ id: item.Id, type: 'doc', published: isPublished(item) }];
@@ -166,7 +161,7 @@ const DocumentsTable: React.FC<DocumentsTableProps> = ({
                   <ActionButton
                     className={classes.btn}
                     size="small"
-                    onClick={() => handleOpenDeleteConfirmationDialog(entity)}
+                    onClick={() => handleOpenDeleteConfirmationDialog([item])}
                   >
                     <DeleteIcon className={classes.icon} />
                   </ActionButton>
