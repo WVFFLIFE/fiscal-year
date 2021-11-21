@@ -29,11 +29,11 @@ const tabsList: TabItemModel[] = [
   { label: 'Comments', value: 'comments', disabled: true },
 ];
 
-interface Tabs {
+interface TabsProps {
   DocumentsTabProps: DocumentsTabProps;
 }
 
-const Tabs: React.FC<Tabs> = ({ DocumentsTabProps }) => {
+const Tabs: React.FC<TabsProps> = ({ DocumentsTabProps }) => {
   const classes = useStyles();
 
   const [selectedTab, setSelectedTab] = useState<string>('documents');
@@ -43,7 +43,7 @@ const Tabs: React.FC<Tabs> = ({ DocumentsTabProps }) => {
   };
 
   return (
-    <Box>
+    <Box className={classes.root}>
       <MuiTabs
         value={selectedTab}
         onChange={handleChangeSelectedTab}

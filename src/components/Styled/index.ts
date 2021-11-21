@@ -182,3 +182,20 @@ export const InputLabel = styled('span')(() => ({
   letterSpacing: 0.2,
   color: '#000',
 }));
+
+export const InfoBox = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  marginTop: theme.spacing(2),
+  paddingTop: theme.spacing(5),
+  paddingBottom: theme.spacing(5),
+  paddingLeft: theme.spacing(3),
+  paddingRight: theme.spacing(3),
+  background: '#fff',
+
+  fontSize: 18,
+  fontFamily: 'Proxima Nova',
+  fontWeight: 300,
+  color: '#000',
+}));

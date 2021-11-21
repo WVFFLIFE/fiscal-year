@@ -22,20 +22,24 @@ const Dialog: React.FC<DialogProps> = ({
 }) => {
   const classes = useStyles();
 
+  const onClose = () => {
+    handleClose();
+  };
+
   return (
     <MuiDialog
       classes={{
         paper: classes.paper,
       }}
       open={open}
-      onClose={() => handleClose()}
+      onClose={onClose}
       maxWidth={maxWidth}
       fullWidth={fullWidth}
       {...rest}
     >
       <div className={classes.root}>
         <div className={classes.btnRow}>
-          <Button className={classes.btn} onClick={handleClose}>
+          <Button className={classes.btn} onClick={onClose}>
             <CloseIcon className={classes.icon} />
           </Button>
         </div>

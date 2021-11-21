@@ -22,6 +22,8 @@ import {
   isAnySucceed,
   getInnerDocuments,
   getPublishedEntities,
+  getEntitiesType,
+  getDocuments,
 } from './utils';
 
 interface DeleteConfirmationStateModel {
@@ -33,6 +35,11 @@ interface DeleteConfirmationStateModel {
 interface EditDocumentDialogStateModel {
   open: boolean;
   document: DocumentModel | null;
+}
+
+interface EditDocumentsDialogStateModel {
+  open: boolean;
+  documents: DocumentModel[];
 }
 
 interface EditFolfderDialogStateModel {
@@ -54,7 +61,7 @@ interface State {
   selectedItems: (DocumentModel | FolderModel)[];
 }
 
-const useDocumentsData = (fiscalYear: FiscalYearModel | null) => {
+const useDocumentsData = (fiscalYear: FiscalYearModel) => {
   const [state, setState] = useState<State>({
     breadcrumbsList: [],
     loading: false,
@@ -79,6 +86,11 @@ const useDocumentsData = (fiscalYear: FiscalYearModel | null) => {
     useState<EditDocumentDialogStateModel>({
       open: false,
       document: null,
+    });
+  const [editDocumentsDialogState, setEditDocumentsDialogState] =
+    useState<EditDocumentsDialogStateModel>({
+      open: false,
+      documents: [],
     });
   const [editFolderDialogState, setEditFolderDialogState] =
     useState<EditFolfderDialogStateModel>({
@@ -132,6 +144,7 @@ const useDocumentsData = (fiscalYear: FiscalYearModel | null) => {
   const fetchFolders = async () => {
     if (fiscalYear) {
       try {
+        // test '53820CFC-8E4A-E711-8106-005056AC126A'
         const res = await Services.getDocumentsList(fiscalYear.Id);
 
         if (res.IsSuccess) {
@@ -149,20 +162,12 @@ const useDocumentsData = (fiscalYear: FiscalYearModel | null) => {
               : [],
           }));
         } else {
-          setState((prevState) => ({
-            ...prevState,
-            loading: false,
-            error: { messages: [res.Message] },
-          }));
+          setError(res.Message);
         }
       } catch (err) {
         console.error(err);
 
-        setState((prevState) => ({
-          ...prevState,
-          loading: false,
-          error: { messages: [String(err)] },
-        }));
+        setError(String(err));
       }
     }
   };
@@ -190,9 +195,7 @@ const useDocumentsData = (fiscalYear: FiscalYearModel | null) => {
         loading: true,
       }));
 
-      const res = await Services.getDocumentsList(
-        '53820CFC-8E4A-E711-8106-005056AC126A'
-      );
+      const res = await Services.getDocumentsList(fiscalYear.Id);
 
       if (res.IsSuccess) {
         setState((prevState) => ({
@@ -402,6 +405,31 @@ const useDocumentsData = (fiscalYear: FiscalYearModel | null) => {
     });
   };
 
+  const handleOpenEditDocumentsDialog = () => {
+    const selectedDocuments = getDocuments(selectedItems);
+
+    setEditDocumentsDialogState({
+      documents: selectedDocuments,
+      open: true,
+    });
+  };
+
+  const handleCloseEditDocumentsDialog = (showSuccessDialog?: boolean) => {
+    setEditDocumentsDialogState((prevState) => ({
+      ...prevState,
+      open: false,
+    }));
+
+    if (showSuccessDialog) handleShowSuccessDialog('successDocumentsUpdated');
+  };
+
+  const handleInitEditDocumentsDialogState = () => {
+    setEditDocumentsDialogState({
+      documents: [],
+      open: false,
+    });
+  };
+
   const handleOpenEditFolderDialog = (folder: FolderModel) => {
     setEditFolderDialogState({
       folder,
@@ -507,8 +535,6 @@ const useDocumentsData = (fiscalYear: FiscalYearModel | null) => {
     const docs = getInnerDocuments(selectedItems);
     const entities = getPublishedEntities(docs, published);
 
-    console.log(docs, entities);
-
     if (entities.length) {
       try {
         setState((prevState) => ({
@@ -556,7 +582,7 @@ const useDocumentsData = (fiscalYear: FiscalYearModel | null) => {
   const handleChangeCurrentPage = useCallback((page: number) => {
     setPagination((prevState) => ({
       ...prevState,
-      currentPage: page,
+      currentPage: page - 1,
     }));
   }, []);
 
@@ -616,6 +642,20 @@ const useDocumentsData = (fiscalYear: FiscalYearModel | null) => {
     return docs.length && docs.every((doc) => doc.IsPublished);
   }, [selectedItems]);
 
+  const isDisabledEditButton = useMemo(() => {
+    const entitesType = getEntitiesType(selectedItems);
+
+    return entitesType === 'both' || entitesType === 'folder';
+  }, [selectedItems]);
+
+  const paginatedList = useMemo(() => {
+    const { currentPage, rowsPerPage } = pagination;
+    return list.slice(
+      currentPage * rowsPerPage,
+      currentPage * rowsPerPage + rowsPerPage
+    );
+  }, [list, pagination]);
+
   return {
     allPublished,
     publishing,
@@ -624,14 +664,17 @@ const useDocumentsData = (fiscalYear: FiscalYearModel | null) => {
     error,
     rootFolder,
     refreshData,
+    isDisabledEditButton,
     activeFolder: filteredActiveFolder,
     openUploadForm,
     successDialogState,
     handleInitSuccessDialogType,
     editDocumentDialogState,
+    editDocumentsDialogState,
     editFolderDialogState,
     sortParams,
-    list,
+    totalItems: list.length,
+    list: paginatedList,
     amount,
     selectedItems,
     breadcrumbsList,
@@ -659,6 +702,9 @@ const useDocumentsData = (fiscalYear: FiscalYearModel | null) => {
     handleOpenEditDocumentDialog,
     handleCloseEditDocumentDialog,
     handleInitEditDocumentDialogState,
+    handleOpenEditDocumentsDialog,
+    handleCloseEditDocumentsDialog,
+    handleInitEditDocumentsDialogState,
     handleOpenEditFolderDialog,
     handleCloseEditFolderDialog,
     handleInitEditFolderDialogState,

@@ -9,7 +9,7 @@ interface AttributeHeaderModel {
   Type: string;
 }
 
-interface UploadFileValue {
+export interface UploadFileValue {
   InternalName: string;
   Values: string[];
 }
@@ -164,7 +164,7 @@ declare class DefaultService {
     documentId: string,
     name: string,
     values: UploadFileValue[],
-    newParentFolderId?: string,
+    newParentFolderId?: string | null,
     overwrite?: boolean
   ): Promise<BaseResponseModel>;
   public documentDelete(documentId: string): Promise<BaseResponseModel>;

@@ -1,6 +1,9 @@
 import { makeStyles } from '@mui/styles';
 
 export const useStyles = makeStyles((theme) => ({
+  root: {
+    boxShadow: '0px 5px 15px rgba(0, 0, 0, 0.1)',
+  },
   tabs: {
     background: theme.color.greyLight1,
   },

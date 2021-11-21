@@ -112,6 +112,10 @@ export function getInnerDocuments(list: (FolderModel | DocumentModel)[]) {
   return documents;
 }
 
+export function getDocuments(list: (FolderModel | DocumentModel)[]) {
+  return list.filter((entity) => !isFolder(entity)) as DocumentModel[];
+}
+
 export function getPublishedEntities(
   list: DocumentModel[],
   published: boolean
@@ -127,7 +131,7 @@ export function getPublishedEntities(
     }));
 }
 
-export function getDeleteEntityType(
+export function getEntitiesType(
   selectedItems: (DocumentModel | FolderModel)[]
 ) {
   return selectedItems.reduce((acc, next) => {

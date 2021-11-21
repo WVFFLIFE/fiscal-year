@@ -24,7 +24,8 @@ import DocumentsTable from './DocumentsTable';
 import UploadForm from './UploadForm';
 import EditDocument from './EditDocument';
 import FolderEditor from './FolderEditor';
-import CircularProgress from '@mui/material/CircularProgress';
+import EditDocuments from './EditDocuments';
+import Backdrop from 'components/Backdrop';
 
 import clsx from 'clsx';
 import { useStyles } from './style';
@@ -41,12 +42,13 @@ const successMessages: { [key: string]: string } = {
   successPublished: 'Document(s) have been successfully published',
   successUnpublished: 'Document(s) have been successfully unpublished',
   successDeleted: 'Selected entity(ies) have been successfully deleted',
+  successDocumentsUpdated: 'Selected documents have been successfully updated',
 };
 
 const rowsPerPage = [5, 10, 15];
 
 export interface DocumentsTabProps {
-  fiscalYear: FiscalYearModel | null;
+  fiscalYear: FiscalYearModel;
 }
 
 const Documents: React.FC<DocumentsTabProps> = ({ fiscalYear }) => {
@@ -61,6 +63,7 @@ const Documents: React.FC<DocumentsTabProps> = ({ fiscalYear }) => {
     rootFolder,
     activeFolder,
     list,
+    totalItems,
     error,
     refreshData,
     initError,
@@ -69,9 +72,11 @@ const Documents: React.FC<DocumentsTabProps> = ({ fiscalYear }) => {
     selectedItems,
     openUploadForm,
     quickFilter,
+    isDisabledEditButton,
     successDialogState,
     deleteConfirmationState,
     editDocumentDialogState,
+    editDocumentsDialogState,
     editFolderDialogState,
     saveFile,
     publishDocuments,
@@ -94,6 +99,9 @@ const Documents: React.FC<DocumentsTabProps> = ({ fiscalYear }) => {
     handleOpenEditDocumentDialog,
     handleCloseEditDocumentDialog,
     handleInitEditDocumentDialogState,
+    handleOpenEditDocumentsDialog,
+    handleCloseEditDocumentsDialog,
+    handleInitEditDocumentsDialogState,
     handleOpenEditFolderDialog,
     handleCloseEditFolderDialog,
     handleInitEditFolderDialogState,
@@ -101,15 +109,6 @@ const Documents: React.FC<DocumentsTabProps> = ({ fiscalYear }) => {
     handleChangeRowsPerPage,
     handleChangeSortParams,
   } = useDocumentsData(fiscalYear);
-
-  if (!fiscalYear) return null;
-  if (loading) {
-    return (
-      <Box>
-        <CircularProgress size={20} />
-      </Box>
-    );
-  }
 
   return (
     <Box>
@@ -141,6 +140,7 @@ const Documents: React.FC<DocumentsTabProps> = ({ fiscalYear }) => {
         </Box>
         <Box display="flex" alignItems="center">
           <QuickFilter
+            disabled={!!!activeFolder}
             itemClassName={classes.quickFilterItem}
             active={quickFilter}
             options={options}
@@ -149,7 +149,8 @@ const Documents: React.FC<DocumentsTabProps> = ({ fiscalYear }) => {
           <Box marginLeft="40px">
             <ActionButton
               className={classes.actionBtn}
-              disabled={!!!selectedItems.length}
+              disabled={!!!selectedItems.length || isDisabledEditButton}
+              onClick={handleOpenEditDocumentsDialog}
             >
               <EditIcon className={classes.actionIcon} />
             </ActionButton>
@@ -203,6 +204,7 @@ const Documents: React.FC<DocumentsTabProps> = ({ fiscalYear }) => {
               className={classes.actionBtn}
               palette="darkBlue"
               onClick={handleOpenUploadForm}
+              disabled={!!!activeFolder}
             >
               <PlusIcon className={classes.actionIcon} />
             </ActionButton>
@@ -234,7 +236,7 @@ const Documents: React.FC<DocumentsTabProps> = ({ fiscalYear }) => {
             rowsPerPage={pagination.rowsPerPage}
             currentPage={pagination.currentPage}
             rowsPerPageOptions={rowsPerPage}
-            totalItems={list.length}
+            totalItems={totalItems}
             onChangeCurrentPage={handleChangeCurrentPage}
             onChangeRowsPerPage={handleChangeRowsPerPage}
           />
@@ -271,6 +273,26 @@ const Documents: React.FC<DocumentsTabProps> = ({ fiscalYear }) => {
             onClose={handleCloseEditDocumentDialog}
           />
         ) : null}
+      </Dialog>
+      <Dialog
+        maxWidth="sm"
+        open={editDocumentsDialogState.open}
+        handleClose={handleCloseEditDocumentsDialog}
+        TransitionProps={{
+          onExited: handleInitEditDocumentsDialogState,
+        }}
+      >
+        {activeFolder &&
+          rootFolder &&
+          editDocumentsDialogState.documents.length && (
+            <EditDocuments
+              activeFolder={activeFolder}
+              rootFolder={rootFolder}
+              fetchFolders={fetchFolders}
+              selectedDocuments={editDocumentsDialogState.documents}
+              onClose={handleCloseEditDocumentsDialog}
+            />
+          )}
       </Dialog>
       <Dialog
         open={deleteConfirmationState.open}
@@ -317,6 +339,7 @@ const Documents: React.FC<DocumentsTabProps> = ({ fiscalYear }) => {
         ) : null}
       </Dialog>
       <DialogError error={error} initError={initError} />
+      <Backdrop loading={loading} />
     </Box>
   );
 };

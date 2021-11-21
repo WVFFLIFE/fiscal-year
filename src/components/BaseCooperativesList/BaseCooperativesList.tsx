@@ -6,10 +6,8 @@ import Box from '@mui/material/Box';
 import PageSearch from 'components/controls/PageSearch';
 import CooperativesPicker from 'components/CooperativesPicker';
 import SelectCalendarYear from 'components/SelectCalendarYear';
-import { FiltersWrapper, ApplyButton } from 'components/Styled';
+import { FiltersWrapper, ApplyButton, InfoBox } from 'components/Styled';
 import GeneralCooperativeTable from 'components/GeneralCooperativesTable';
-
-import { useStyles } from './style';
 
 interface BaseCooperativesListProps {
   commonCooperatives: CommonCooperativeModel[];
@@ -30,7 +28,6 @@ const BaseCooperativesList: React.FC<BaseCooperativesListProps> = ({
   fetchExtendedCooperativesList,
   onChangeDefaultCooperative,
 }) => {
-  const classes = useStyles();
   const { t } = useTranslation();
   const {
     state,
@@ -94,19 +91,7 @@ const BaseCooperativesList: React.FC<BaseCooperativesListProps> = ({
           />
         </Box>
       </FiltersWrapper>
-      {isEmptyFilter && (
-        <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          marginTop={2}
-          paddingX={3}
-          paddingY={5}
-          bgcolor="#fff"
-        >
-          <span className={classes.info}>{t(hint)}</span>
-        </Box>
-      )}
+      {isEmptyFilter && <InfoBox>{t(hint)}</InfoBox>}
       {showExtendedList && (
         <GeneralCooperativeTable
           cooperatives={extendedCooperatives}

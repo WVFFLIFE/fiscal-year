@@ -15,46 +15,43 @@ interface StateModel {
   loading: boolean;
   error: ErrorModel | null;
   searchTerm: string;
+  showTabs: boolean;
+  selected: SelectedModel;
 }
 
-const useGeneralPageData = (
-  extendedCooperatives: ExtendedCooperativeModel[],
-  defaultCooperative: ExtendedCooperativeModel
-) => {
+const useGeneralPageData = (defaultCooperative: ExtendedCooperativeModel) => {
   const [state, setState] = useState<StateModel>({
     fiscalYears: [],
     loading: true,
     error: null,
     searchTerm: '',
+    showTabs: false,
+    selected: {
+      cooperative: defaultCooperative,
+      fiscalYear: null,
+    },
   });
-  const [selected, setSelected] = useState<SelectedModel>(() => ({
-    cooperative: defaultCooperative,
-    fiscalYear: null,
-  }));
 
   useEffect(() => {
     (async function () {
       try {
         const res = await Services.getCooperativeFiscalYearsList(
-          selected.cooperative.Id
+          state.selected.cooperative.Id
         );
 
         if (res.IsSuccess) {
           const currentFY = findFiscalYear(
             res.FiscalYears,
-            defaultCooperative.FiscalYearId
+            state.selected.cooperative.FiscalYearId
           );
-
-          console.log(currentFY, 'CURRENT_FY');
-
-          setSelected((prevState) => ({
-            ...prevState,
-            fiscalYear: currentFY,
-          }));
 
           setState((prevState) => ({
             ...prevState,
             fiscalYears: res.FiscalYears,
+            selected: {
+              ...prevState.selected,
+              fiscalYear: currentFY,
+            },
             loading: false,
           }));
         } else {
@@ -74,15 +71,27 @@ const useGeneralPageData = (
         }));
       }
     })();
-  }, [selected.cooperative, defaultCooperative.FiscalYearId]);
+  }, [state.selected.cooperative]);
+
+  useEffect(() => {
+    if (state.showTabs) {
+      setState((prevState) => ({
+        ...prevState,
+        showTabs: false,
+      }));
+    }
+  }, [state.selected.fiscalYear]);
 
   const handleChangeSelectedCooperatives = useCallback(
     (cooperatives: ExtendedCooperativeModel[]) => {
       const [cooperative] = cooperatives;
 
-      setSelected((prevState) => ({
+      setState((prevState) => ({
         ...prevState,
-        cooperative,
+        selected: {
+          ...prevState.selected,
+          cooperative,
+        },
       }));
     },
     []
@@ -97,9 +106,12 @@ const useGeneralPageData = (
 
   const handleChangeFiscalYear = useCallback(
     (newFiscalYear: FiscalYearModel) => {
-      setSelected((prevState) => ({
+      setState((prevState) => ({
         ...prevState,
-        fiscalYear: newFiscalYear,
+        selected: {
+          ...prevState.selected,
+          fiscalYear: newFiscalYear,
+        },
       }));
     },
     []
@@ -112,9 +124,16 @@ const useGeneralPageData = (
     }));
   };
 
+  const handleShowTabs = () => {
+    setState((prevState) => ({
+      ...prevState,
+      showTabs: true,
+    }));
+  };
+
   return {
     state,
-    selected,
+    handleShowTabs,
     handleInitError,
     handleChangeSearchTerm,
     handleChangeFiscalYear,

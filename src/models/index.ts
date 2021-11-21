@@ -8,6 +8,7 @@ export type {
   CommonCooperativeModel,
   ExtendedCooperativeModel,
   FiscalYearModel,
+  MettadataAttributeModel,
 } from 'services';
 export type { SortModel, SortParamsType } from 'hooks/useSort';
 export type { CalendarYearOption } from 'components/SelectCalendarYear';
@@ -94,4 +95,5 @@ export type SuccessType =
   | 'folderNameUpdated'
   | 'successPublished'
   | 'successUnpublished'
-  | 'successDeleted';
+  | 'successDeleted'
+  | 'successDocumentsUpdated';
