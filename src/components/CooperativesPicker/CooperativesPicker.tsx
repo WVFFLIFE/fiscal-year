@@ -8,7 +8,7 @@ import {
   useMemo,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import { BaseCooperativeModel } from 'models';
+import { CommonCooperativeModel } from 'models';
 import _orderBy from 'lodash/orderBy';
 import { filterBySearchTerm } from 'utils';
 
@@ -30,24 +30,24 @@ const quickFilterOptions: QuickFilterOption[] = [
     label: '#control.quickfilter.myown',
   },
   {
-    id: 'all',
-    label: '#control.quickfilter.all',
+    id: 'pmCompany',
+    label: '#control.quickfilter.pmcompany',
   },
 ];
 
-interface CooperativesPickerProps<T extends BaseCooperativeModel> {
+interface CooperativesPickerProps<T extends CommonCooperativeModel> {
   multiple?: boolean;
   cooperatives: T[];
   selectedCooperatives: T[];
   onSelectCooperatives(cooperatives: T[]): void;
 }
 
-interface BodyProps<T extends BaseCooperativeModel>
+interface BodyProps<T extends CommonCooperativeModel>
   extends CooperativesPickerProps<T> {
   onClosePicker(): void;
 }
 
-const Body = <T extends BaseCooperativeModel>({
+const Body = <T extends CommonCooperativeModel>({
   multiple = false,
   cooperatives,
   onSelectCooperatives,
@@ -140,11 +140,21 @@ const Body = <T extends BaseCooperativeModel>({
     setCurrentCooperative(checked ? cooperatives : []);
   };
 
+  const filteredCooperativesByQuickFilter = useMemo(() => {
+    return activeQuickFilter
+      ? cooperatives.filter((cooperative) => {
+          return activeQuickFilter === 'myOwn'
+            ? cooperative.IsOwn
+            : cooperative.IsPMCompanyEmployee;
+        })
+      : cooperatives;
+  }, [cooperatives, activeQuickFilter]);
+
   const filteredCooperativesBySearchTerm = useMemo(() => {
-    return cooperatives.filter((cooperative) => {
+    return filteredCooperativesByQuickFilter.filter((cooperative) => {
       return filterBySearchTerm(cooperative.Name, searchTerm);
     });
-  }, [cooperatives, searchTerm]);
+  }, [filteredCooperativesByQuickFilter, searchTerm]);
 
   const cooperativesList = useMemo(() => {
     return _orderBy(
@@ -219,7 +229,11 @@ const Body = <T extends BaseCooperativeModel>({
   );
 };
 
-const CooperativesPicker = <T extends BaseCooperativeModel>({
+function isAllMyOwn(cooperatives: CommonCooperativeModel[]) {
+  return cooperatives.every((coop) => coop.IsOwn);
+}
+
+const CooperativesPicker = <T extends CommonCooperativeModel>({
   multiple = false,
   cooperatives,
   onSelectCooperatives,
@@ -236,7 +250,7 @@ const CooperativesPicker = <T extends BaseCooperativeModel>({
       return coop.Name;
     }
 
-    if (selectedCooperatives.length === cooperatives.length) {
+    if (isAllMyOwn(selectedCooperatives)) {
       return 'All my own cooperatives selected';
     }
 

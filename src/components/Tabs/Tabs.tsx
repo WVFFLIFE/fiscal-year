@@ -1,4 +1,5 @@
 import { useState, SyntheticEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import Box from '@mui/material/Box';
 import MuiTabs from '@mui/material/Tabs';
@@ -25,7 +26,7 @@ const tabsList: TabItemModel[] = [
   { label: 'Toimijat', value: 'toimijat', disabled: true },
   { label: 'Appendexis', value: 'appendexis', disabled: true },
   { label: 'Liabilities', value: 'liabilities', disabled: true },
-  { label: 'Documents', value: 'documents' },
+  { label: '#tab.documents', value: 'documents' },
   { label: 'Comments', value: 'comments', disabled: true },
 ];
 
@@ -35,6 +36,7 @@ interface TabsProps {
 
 const Tabs: React.FC<TabsProps> = ({ DocumentsTabProps }) => {
   const classes = useStyles();
+  const { t } = useTranslation();
 
   const [selectedTab, setSelectedTab] = useState<string>('documents');
 
@@ -58,7 +60,7 @@ const Tabs: React.FC<TabsProps> = ({ DocumentsTabProps }) => {
               classes={{
                 selected: classes.selected,
               }}
-              label={tabItem.label}
+              label={t(tabItem.label)}
               disabled={tabItem.disabled}
             />
           );

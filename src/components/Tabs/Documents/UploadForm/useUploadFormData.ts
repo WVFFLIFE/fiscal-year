@@ -211,25 +211,29 @@ const useUploadFormData = (
   };
 
   const uploadDocs = async (parentFolderId: string) => {
-    try {
-      const res = await Promise.allSettled(
-        selectedFiles.map((file) => uploadDoc(file, parentFolderId))
-      );
+    let errors: string[] = [];
 
-      if (isAnySucceed(res)) {
-        await fetchFolders();
+    for (let file of selectedFiles) {
+      try {
+        const res = await uploadDoc(file, parentFolderId);
+
+        if (!res.IsSuccess) {
+          errors.push(res.Message);
+        }
+      } catch (err) {
+        console.error(err);
+        errors.push(String(err));
       }
+    }
 
-      const errors = getErrorsList(res);
+    if (errors.length !== selectedFiles.length) {
+      await fetchFolders();
+    }
 
-      if (errors.length) {
-        setError(errors);
-      } else {
-        onClose(true);
-      }
-    } catch (err) {
-      console.error(err);
-      setError([String(err)]);
+    if (errors.length) {
+      setError(errors);
+    } else {
+      onClose(true);
     }
   };
 

@@ -1,4 +1,5 @@
 import { ChangeEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { SortParamsType } from 'hooks/useSort';
 
 import MuiTableHead from '@mui/material/TableHead';
@@ -69,6 +70,7 @@ const DocumentsTableHead: React.FC<DocumentsTableHeadProps> = ({
   onChangeSortParams,
 }) => {
   const classes = useTableHeadStyles();
+  const { t } = useTranslation();
 
   return (
     <MuiTableHead>
@@ -92,7 +94,7 @@ const DocumentsTableHead: React.FC<DocumentsTableHeadProps> = ({
           orderBy={orderBy}
           onClick={() => onChangeSortParams('Name', 'alphanumeric')}
         >
-          Name
+          {t('#table.documents.name')}
         </SortedTableCell>
         <SortedTableCell
           className={classes.cell}
@@ -103,7 +105,7 @@ const DocumentsTableHead: React.FC<DocumentsTableHeadProps> = ({
             onChangeSortParams('Values.Service_x002f_Process', 'alphanumeric')
           }
         >
-          Service/process
+          {t('#table.documents.service')}
         </SortedTableCell>
         <SortedTableCell
           className={classes.cell}
@@ -114,7 +116,7 @@ const DocumentsTableHead: React.FC<DocumentsTableHeadProps> = ({
             onChangeSortParams('Values.Information_x0020_Group', 'alphanumeric')
           }
         >
-          Information group
+          {t('#table.documents.informationgroup')}
         </SortedTableCell>
         <SortedTableCell
           className={classes.cell}
@@ -123,7 +125,7 @@ const DocumentsTableHead: React.FC<DocumentsTableHeadProps> = ({
           orderBy={orderBy}
           onClick={() => onChangeSortParams('Values.Modified', 'date')}
         >
-          Modified
+          {t('#table.documents.modified')}
         </SortedTableCell>
         <SortedTableCell
           className={classes.cell}
@@ -132,10 +134,10 @@ const DocumentsTableHead: React.FC<DocumentsTableHeadProps> = ({
           orderBy={orderBy}
           onClick={() => onChangeSortParams('Values.Editor', 'alphanumeric')}
         >
-          Modified by
+          {t('#table.documents.modifiedby')}
         </SortedTableCell>
         <MuiTableCell className={classes.cell} align="right" width={240}>
-          Action
+          {t('#table.documents.action')}
         </MuiTableCell>
       </MuiTableRow>
     </MuiTableHead>

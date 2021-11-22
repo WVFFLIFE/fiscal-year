@@ -54,7 +54,7 @@ const Pagination: React.FC<PagiantionProps> = ({
       <div className={classes.countWrapper}>
         <p className={classes.count}>
           {t('#pagination', {
-            show: currentPage * rowsPerPage + 1,
+            show: totalItems ? currentPage * rowsPerPage + 1 : 0,
             to,
             totalItems,
           })}

@@ -1,18 +1,18 @@
-import { BaseCooperativeModel } from 'models';
+import { CommonCooperativeModel } from 'models';
 
 import MenuList from '@mui/material/MenuList';
 import CooperativesListItem from './CooperativesListItem';
 
 import { useStyles } from './style';
 
-export interface CooperativesListProps<T extends BaseCooperativeModel> {
+export interface CooperativesListProps<T extends CommonCooperativeModel> {
   multiple: boolean;
   cooperatives: T[];
   selected: T[];
   onClickItem(cooperative: T, selected: boolean): void;
 }
 
-const CooperativesList = <T extends BaseCooperativeModel>({
+const CooperativesList = <T extends CommonCooperativeModel>({
   multiple,
   cooperatives,
   selected,

@@ -32,11 +32,6 @@ interface DeleteConfirmationStateModel {
   loading: boolean;
 }
 
-interface EditDocumentDialogStateModel {
-  open: boolean;
-  document: DocumentModel | null;
-}
-
 interface EditDocumentsDialogStateModel {
   open: boolean;
   documents: DocumentModel[];
@@ -59,6 +54,8 @@ interface State {
   breadcrumbsList: FolderModel[];
   quickFilter: string | null;
   selectedItems: (DocumentModel | FolderModel)[];
+  hasFolder: boolean;
+  folderExists: boolean;
 }
 
 const useDocumentsData = (fiscalYear: FiscalYearModel) => {
@@ -69,6 +66,8 @@ const useDocumentsData = (fiscalYear: FiscalYearModel) => {
     error: null,
     quickFilter: null,
     selectedItems: [],
+    hasFolder: false,
+    folderExists: false,
   });
   const [openUploadForm, setOpenUploadForm] = useState(false);
   const [deleteConfirmationState, setDeleteConfirmationState] =
@@ -81,11 +80,6 @@ const useDocumentsData = (fiscalYear: FiscalYearModel) => {
     useState<SuccessDialogState>({
       open: false,
       type: null,
-    });
-  const [editDocumentDialogState, setEditDocumentDialogState] =
-    useState<EditDocumentDialogStateModel>({
-      open: false,
-      document: null,
     });
   const [editDocumentsDialogState, setEditDocumentsDialogState] =
     useState<EditDocumentsDialogStateModel>({
@@ -151,6 +145,8 @@ const useDocumentsData = (fiscalYear: FiscalYearModel) => {
           setState((prevState) => ({
             ...prevState,
             loading: false,
+            hasFolder: res.HasFolder,
+            folderExists: res.FolderExists,
             breadcrumbsList: res.Folder
               ? [
                   {
@@ -201,6 +197,8 @@ const useDocumentsData = (fiscalYear: FiscalYearModel) => {
         setState((prevState) => ({
           ...prevState,
           loading: false,
+          hasFolder: res.HasFolder,
+          folderExists: res.FolderExists,
           breadcrumbsList: res.Folder
             ? [
                 {
@@ -382,31 +380,11 @@ const useDocumentsData = (fiscalYear: FiscalYearModel) => {
 
     if (showSuccessDialog) handleShowSuccessDialog('successUploaded');
   };
-  const handleOpenEditDocumentDialog = (document: DocumentModel) => {
-    setEditDocumentDialogState({
-      document,
-      open: true,
-    });
-  };
 
-  const handleCloseEditDocumentDialog = (showSuccessDialog?: boolean) => {
-    setEditDocumentDialogState((prevState) => ({
-      ...prevState,
-      open: false,
-    }));
-
-    if (showSuccessDialog) handleShowSuccessDialog('successUpdated');
-  };
-
-  const handleInitEditDocumentDialogState = () => {
-    setEditDocumentDialogState({
-      document: null,
-      open: false,
-    });
-  };
-
-  const handleOpenEditDocumentsDialog = () => {
-    const selectedDocuments = getDocuments(selectedItems);
+  const handleOpenEditDocumentsDialog = (document?: DocumentModel) => {
+    const selectedDocuments = document
+      ? [document]
+      : getDocuments(selectedItems);
 
     setEditDocumentsDialogState({
       documents: selectedDocuments,
@@ -642,11 +620,16 @@ const useDocumentsData = (fiscalYear: FiscalYearModel) => {
     return docs.length && docs.every((doc) => doc.IsPublished);
   }, [selectedItems]);
 
-  const isDisabledEditButton = useMemo(() => {
-    const entitesType = getEntitiesType(selectedItems);
-
-    return entitesType === 'both' || entitesType === 'folder';
+  const entitesType = useMemo(() => {
+    return getEntitiesType(selectedItems);
   }, [selectedItems]);
+
+  const isDisabledEditButton = useMemo(() => {
+    return (
+      entitesType === 'both' ||
+      (entitesType === 'folder' && selectedItems.length !== 1)
+    );
+  }, [entitesType, selectedItems]);
 
   const paginatedList = useMemo(() => {
     const { currentPage, rowsPerPage } = pagination;
@@ -657,7 +640,10 @@ const useDocumentsData = (fiscalYear: FiscalYearModel) => {
   }, [list, pagination]);
 
   return {
+    hasFolder: state.hasFolder,
+    folderExists: state.folderExists,
     allPublished,
+    entitesType,
     publishing,
     pagination,
     loading,
@@ -669,7 +655,6 @@ const useDocumentsData = (fiscalYear: FiscalYearModel) => {
     openUploadForm,
     successDialogState,
     handleInitSuccessDialogType,
-    editDocumentDialogState,
     editDocumentsDialogState,
     editFolderDialogState,
     sortParams,
@@ -699,9 +684,6 @@ const useDocumentsData = (fiscalYear: FiscalYearModel) => {
     handleChangeQuickFilter,
     handleCloseSuccessDialog,
     handleSelectAll,
-    handleOpenEditDocumentDialog,
-    handleCloseEditDocumentDialog,
-    handleInitEditDocumentDialogState,
     handleOpenEditDocumentsDialog,
     handleCloseEditDocumentsDialog,
     handleInitEditDocumentsDialogState,

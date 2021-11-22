@@ -19,7 +19,7 @@ const FiscalYear = () => {
       <TopBar />
       {state.defaultCooperative ? (
         <GeneralPage
-          cooperatives={state.extendedCooperatives}
+          commonCooperatives={state.commonCooperatives}
           defaultCooperative={state.defaultCooperative}
         />
       ) : (

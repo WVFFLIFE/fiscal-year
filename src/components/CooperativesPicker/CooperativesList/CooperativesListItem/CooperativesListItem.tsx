@@ -1,4 +1,4 @@
-import { BaseCooperativeModel } from 'models';
+import { CommonCooperativeModel } from 'models';
 
 import format from 'date-fns/format';
 import { DEFAULT_FORMAT_PATTERN } from 'utils';
@@ -9,14 +9,14 @@ import MenuItem from '@mui/material/MenuItem';
 import clsx from 'clsx';
 import { useStyles } from './style';
 
-export interface CooperativesListItemProps<T extends BaseCooperativeModel> {
+export interface CooperativesListItemProps<T extends CommonCooperativeModel> {
   multiple: boolean;
   cooperative: T;
   selected: boolean;
   onClick(cooperative: T, isSelected: boolean): void;
 }
 
-const CooperativesListItem = <T extends BaseCooperativeModel>({
+const CooperativesListItem = <T extends CommonCooperativeModel>({
   multiple,
   cooperative,
   selected,

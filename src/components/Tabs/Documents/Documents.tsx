@@ -1,5 +1,7 @@
 import useDocumentsData from './useDocumentsData';
-import { FiscalYearModel } from 'models';
+import { FiscalYearModel, DocumentModel, FolderModel } from 'models';
+
+import isFolder from 'utils/isFolder';
 
 import Box from '@mui/material/Box';
 import QuickFilter, { QuickFilterOption } from 'components/QuickFilter';
@@ -55,6 +57,9 @@ const Documents: React.FC<DocumentsTabProps> = ({ fiscalYear }) => {
   const classes = useStyles();
 
   const {
+    entitesType,
+    hasFolder,
+    folderExists,
     loading,
     allPublished,
     sortParams,
@@ -75,7 +80,6 @@ const Documents: React.FC<DocumentsTabProps> = ({ fiscalYear }) => {
     isDisabledEditButton,
     successDialogState,
     deleteConfirmationState,
-    editDocumentDialogState,
     editDocumentsDialogState,
     editFolderDialogState,
     saveFile,
@@ -96,9 +100,6 @@ const Documents: React.FC<DocumentsTabProps> = ({ fiscalYear }) => {
     handleCloseSuccessDialog,
     handleInitSuccessDialogType,
     handleSelectAll,
-    handleOpenEditDocumentDialog,
-    handleCloseEditDocumentDialog,
-    handleInitEditDocumentDialogState,
     handleOpenEditDocumentsDialog,
     handleCloseEditDocumentsDialog,
     handleInitEditDocumentsDialogState,
@@ -150,7 +151,7 @@ const Documents: React.FC<DocumentsTabProps> = ({ fiscalYear }) => {
             <ActionButton
               className={classes.actionBtn}
               disabled={!!!selectedItems.length || isDisabledEditButton}
-              onClick={handleOpenEditDocumentsDialog}
+              onClick={() => handleOpenEditDocumentsDialog()}
             >
               <EditIcon className={classes.actionIcon} />
             </ActionButton>
@@ -223,7 +224,7 @@ const Documents: React.FC<DocumentsTabProps> = ({ fiscalYear }) => {
             handleOpenDeleteConfirmationDialog={
               handleOpenDeleteConfirmationDialog
             }
-            handleOpenEditDocumentDialog={handleOpenEditDocumentDialog}
+            handleOpenEditDocumentDialog={handleOpenEditDocumentsDialog}
             handleOpenEditFolderDialog={handleOpenEditFolderDialog}
             handleSelectAll={handleSelectAll}
             saveFile={saveFile}
@@ -258,41 +259,39 @@ const Documents: React.FC<DocumentsTabProps> = ({ fiscalYear }) => {
       </Dialog>
       <Dialog
         maxWidth="sm"
-        open={editDocumentDialogState.open}
-        handleClose={handleCloseEditDocumentDialog}
-        TransitionProps={{
-          onExited: handleInitEditDocumentDialogState,
-        }}
-      >
-        {activeFolder && rootFolder && editDocumentDialogState.document ? (
-          <EditDocument
-            rootFolder={rootFolder}
-            activeFolder={activeFolder}
-            fetchFolders={fetchFolders}
-            selectedDocument={editDocumentDialogState.document}
-            onClose={handleCloseEditDocumentDialog}
-          />
-        ) : null}
-      </Dialog>
-      <Dialog
-        maxWidth="sm"
         open={editDocumentsDialogState.open}
         handleClose={handleCloseEditDocumentsDialog}
         TransitionProps={{
           onExited: handleInitEditDocumentsDialogState,
         }}
       >
-        {activeFolder &&
-          rootFolder &&
-          editDocumentsDialogState.documents.length && (
+        {entitesType === 'doc' && activeFolder && rootFolder ? (
+          selectedItems.length === 1 ? (
+            <EditDocument
+              rootFolder={rootFolder}
+              activeFolder={activeFolder}
+              fetchFolders={fetchFolders}
+              selectedDocument={selectedItems[0] as DocumentModel}
+              onClose={handleCloseEditDocumentsDialog}
+            />
+          ) : selectedItems.length > 1 ? (
             <EditDocuments
               activeFolder={activeFolder}
               rootFolder={rootFolder}
               fetchFolders={fetchFolders}
-              selectedDocuments={editDocumentsDialogState.documents}
+              selectedDocuments={selectedItems as DocumentModel[]}
               onClose={handleCloseEditDocumentsDialog}
             />
-          )}
+          ) : null
+        ) : entitesType === 'folder' && activeFolder && rootFolder ? (
+          selectedItems.length === 1 ? (
+            <FolderEditor
+              selectedFolder={selectedItems[0] as FolderModel}
+              fetchFolders={fetchFolders}
+              onClose={handleCloseEditDocumentsDialog}
+            />
+          ) : null
+        ) : null}
       </Dialog>
       <Dialog
         open={deleteConfirmationState.open}
