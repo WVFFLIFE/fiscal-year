@@ -9,6 +9,9 @@ export const useBodyStyles = makeStyles((theme) => ({
     marginBottom: 20,
   },
   fiscalYearItem: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     padding: '10px 16px',
     fontSize: 14,
     fontFamily: 'Proxima Nova',
@@ -25,6 +28,9 @@ export const useBodyStyles = makeStyles((theme) => ({
     padding: 0,
     overflow: 'auto',
     overflowX: 'hidden',
+  },
+  label: {
+    marginRight: 50,
   },
   cancelBtn: {
     marginRight: 20,

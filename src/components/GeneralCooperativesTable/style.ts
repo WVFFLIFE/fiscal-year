@@ -26,4 +26,21 @@ export const useStyles = makeStyles((theme) => ({
   icon: {
     fontSize: 16,
   },
+  calendarIcon: {
+    marginRight: 16,
+    color: theme.color.orange,
+  },
+  acceptIcon: {
+    fontSize: 16,
+    color: theme.color.green,
+  },
+  mockIcon: {
+    width: 16,
+    height: 16,
+    marginRight: 16,
+  },
+  box: {
+    display: 'flex',
+    alignItems: 'center',
+  },
 }));

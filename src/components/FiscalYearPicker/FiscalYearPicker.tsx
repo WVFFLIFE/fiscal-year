@@ -1,22 +1,21 @@
 import {
   memo,
+  useMemo,
   useState,
   useRef,
-  useMemo,
   useEffect,
   useCallback,
   ChangeEvent,
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FiscalYearModel } from 'models';
-import { filterBySearchTerm } from 'utils';
+import { filterBySearchTerm, defaultFormat } from 'utils';
+import _orderBy from 'lodash/orderBy';
 
-import { ApplyButton, CancelButton } from 'components/Styled';
 import Picker from 'components/controls/Picker';
 import PickerSearch from 'components/controls/PickerSearch';
 import MenuList from '@mui/material/MenuList';
 import MenuItem from '@mui/material/MenuItem';
-import Box from '@mui/material/Box';
 
 import { useBodyStyles } from './style';
 
@@ -39,7 +38,6 @@ const Body: React.FC<BodyProps> = ({
   onClosePicker,
 }) => {
   const classes = useBodyStyles();
-  const { t } = useTranslation();
 
   const searchRef = useRef<HTMLInputElement>(null);
 
@@ -69,6 +67,14 @@ const Body: React.FC<BodyProps> = ({
     });
   }, [options, searchTerm]);
 
+  const sortedList = useMemo(() => {
+    return _orderBy(
+      filteredList,
+      (item) => (item.StartDate ? new Date(item.StartDate).getTime() : null),
+      'desc'
+    );
+  }, [filteredList]);
+
   return (
     <div className={classes.wrapper}>
       <PickerSearch
@@ -78,8 +84,10 @@ const Body: React.FC<BodyProps> = ({
         onChange={handleChangeSearchTerm}
       />
       <MenuList className={classes.menuList}>
-        {filteredList.map((fiscalYear) => {
+        {sortedList.map((fiscalYear) => {
           const isActive = fiscalYear.Id === value?.Id;
+          const start = defaultFormat(new Date(fiscalYear.StartDate));
+          const end = defaultFormat(new Date(fiscalYear.EndDate));
 
           return (
             <MenuItem
@@ -93,7 +101,10 @@ const Body: React.FC<BodyProps> = ({
                 selected: classes.selected,
               }}
             >
-              {fiscalYear.Name}
+              <span
+                className={classes.label}
+              >{`Tilikausi ${start} - ${end}`}</span>
+              <span>{fiscalYear.IsClosed ? 'Closed' : 'Open'}</span>
             </MenuItem>
           );
         })}
@@ -110,7 +121,13 @@ const FiscalYearPicker: React.FC<FiscalYearProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  const renderValue = () => value?.Name || null;
+  const renderValue = () => {
+    if (!value) return null;
+    const start = defaultFormat(new Date(value.StartDate));
+    const end = defaultFormat(new Date(value.EndDate));
+
+    return `Tilikausi ${start} - ${end}`;
+  };
   const renderBody = (onClosePicker: () => void) => (
     <Body
       options={options}

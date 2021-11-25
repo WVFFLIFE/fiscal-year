@@ -10,6 +10,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { CommonCooperativeModel } from 'models';
 import _orderBy from 'lodash/orderBy';
+import _toLower from 'lodash/toLower';
 import { filterBySearchTerm } from 'utils';
 
 import Picker from 'components/controls/Picker';
@@ -23,6 +24,10 @@ import { ApplyButton, CancelButton } from 'components/Styled';
 import { CloseIcon } from 'components/Icons';
 
 import { useStyles, useBodyStyles } from './style';
+
+function sortCooperatives<T extends CommonCooperativeModel>(coops: T[]) {
+  return _orderBy(coops, (coop) => _toLower(coop.Name), 'asc');
+}
 
 const quickFilterOptions: QuickFilterOption[] = [
   {
@@ -59,33 +64,20 @@ const Body = <T extends CommonCooperativeModel>({
 
   const searchRef = useRef<HTMLInputElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
-  const firstRender = useRef(true);
-
-  const [bodyWidth, setBodyWidth] = useState<string | number>('auto');
 
   const [searchTerm, setSearchTerm] = useState('');
   const [activeQuickFilter, setActiveQuickFilter] = useState('myOwn');
   const [currentCooperative, setCurrentCooperative] =
     useState<T[]>(selectedCooperatives);
 
-  /**
-   * Focus search field when dropdown is opened
-   */
-  useEffect(() => {
+  const selectedAll =
+    !!cooperatives.length && cooperatives.length === currentCooperative.length;
+
+  const focusSearchField = () => {
     if (searchRef.current) {
       searchRef.current.focus();
     }
-  }, []);
-
-  /**
-   * Set root width for avoiding its jumping
-   * while searching or filtering
-   */
-  useEffect(() => {
-    if (rootRef.current) {
-      setBodyWidth(rootRef.current.offsetWidth);
-    }
-  }, []);
+  };
 
   /**
    * Reset selected cooperatives
@@ -93,13 +85,8 @@ const Body = <T extends CommonCooperativeModel>({
    * if it's not the first render
    */
   useEffect(() => {
-    if (firstRender.current) {
-      firstRender.current = false;
-      return;
-    }
-
-    setCurrentCooperative([]);
-  }, [searchTerm, activeQuickFilter]);
+    focusSearchField();
+  }, [activeQuickFilter]);
 
   const handleChangeSearchTerm = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -131,24 +118,40 @@ const Body = <T extends CommonCooperativeModel>({
     onClosePicker();
   };
 
-  const handleToggleSelectAll = (
-    e: ChangeEvent<HTMLInputElement>,
-    cooperatives: T[]
-  ) => {
-    const { checked } = e.target;
-
-    setCurrentCooperative(checked ? cooperatives : []);
+  const handleToggleSelectAll = () => {
+    setCurrentCooperative(currentCooperative.length ? [] : [...cooperatives]);
   };
+
+  const resetFilters = () => {
+    setCurrentCooperative([]);
+    setSearchTerm('');
+    setActiveQuickFilter('myOwn');
+  };
+
+  const groupedList = useMemo(() => {
+    return selectedAll || !multiple
+      ? sortCooperatives(cooperatives)
+      : sortCooperatives([...currentCooperative]).concat(
+          sortCooperatives(
+            cooperatives.filter(
+              (coop) =>
+                !!!currentCooperative.find(
+                  (currentCoop) => currentCoop.Id === coop.Id
+                )
+            )
+          )
+        );
+  }, [selectedAll, cooperatives, currentCooperative, multiple]);
 
   const filteredCooperativesByQuickFilter = useMemo(() => {
     return activeQuickFilter
-      ? cooperatives.filter((cooperative) => {
+      ? groupedList.filter((cooperative) => {
           return activeQuickFilter === 'myOwn'
             ? cooperative.IsOwn
             : cooperative.IsPMCompanyEmployee;
         })
-      : cooperatives;
-  }, [cooperatives, activeQuickFilter]);
+      : groupedList;
+  }, [groupedList, activeQuickFilter]);
 
   const filteredCooperativesBySearchTerm = useMemo(() => {
     return filteredCooperativesByQuickFilter.filter((cooperative) => {
@@ -156,23 +159,14 @@ const Body = <T extends CommonCooperativeModel>({
     });
   }, [filteredCooperativesByQuickFilter, searchTerm]);
 
-  const cooperativesList = useMemo(() => {
-    return _orderBy(
-      filteredCooperativesBySearchTerm,
-      (coop) => coop.Name.toLowerCase(),
-      'asc'
-    );
-  }, [filteredCooperativesBySearchTerm]);
-
-  const selectedAll = cooperativesList.length === currentCooperative.length;
-
   return (
     <div
       className={classes.wrapper}
       ref={rootRef}
-      style={{ width: bodyWidth, minWidth: 350 }}
+      style={{ width: 'auto', minWidth: 350 }}
     >
       <PickerSearch
+        ref={searchRef}
         className={classes.offset}
         value={searchTerm}
         onChange={handleChangeSearchTerm}
@@ -194,10 +188,12 @@ const Body = <T extends CommonCooperativeModel>({
         >
           <CheckboxControl
             checked={selectedAll}
-            onChange={(e) => handleToggleSelectAll(e, cooperativesList)}
+            onChange={handleToggleSelectAll}
             label="Select All"
+            indeterminate={!!currentCooperative.length && !selectedAll}
           />
           <Button
+            onClick={resetFilters}
             className={classes.closeBtn}
             classes={{
               startIcon: classes.closeIcon,
@@ -210,11 +206,16 @@ const Body = <T extends CommonCooperativeModel>({
       )}
       <CooperativesList
         multiple={multiple}
-        cooperatives={cooperativesList}
+        cooperatives={filteredCooperativesBySearchTerm}
         selected={currentCooperative}
         onClickItem={handleClickItem}
       />
-      <Box display="flex" alignItems="center" justifyContent="flex-end">
+      <Box
+        display="flex"
+        alignItems="center"
+        justifyContent="flex-end"
+        marginTop="20px"
+      >
         <CancelButton
           className={classes.cancelBtnOffsetRight}
           onClick={onClosePicker}
@@ -229,8 +230,15 @@ const Body = <T extends CommonCooperativeModel>({
   );
 };
 
-function isAllMyOwn(cooperatives: CommonCooperativeModel[]) {
-  return cooperatives.every((coop) => coop.IsOwn);
+function isAllMyOwn(
+  cooperatives: CommonCooperativeModel[],
+  selectedCooperatives: CommonCooperativeModel[]
+) {
+  const allMyOwnCoops = cooperatives.filter((coop) => coop.IsOwn);
+  return allMyOwnCoops.every(
+    (coop) =>
+      !!selectedCooperatives.find((selectedCoop) => selectedCoop.Id === coop.Id)
+  );
 }
 
 const CooperativesPicker = <T extends CommonCooperativeModel>({
@@ -250,7 +258,7 @@ const CooperativesPicker = <T extends CommonCooperativeModel>({
       return coop.Name;
     }
 
-    if (isAllMyOwn(selectedCooperatives)) {
+    if (isAllMyOwn(cooperatives, selectedCooperatives)) {
       return 'All my own cooperatives selected';
     }
 

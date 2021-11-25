@@ -10,24 +10,32 @@ const FiscalYear = () => {
   const {
     state,
     handleInitError,
-    fetchExtendedCooperativesList,
     handleChangeDefaultCooperative,
+    handleChangeCalendarYear,
+    handleChangeSelectedCooperatives,
+    handleShowExtendedList,
   } = useFiscalYearData();
 
   return (
     <>
       <TopBar />
-      {state.defaultCooperative ? (
+      {state.defaultCooperative && state.selectedCalendarYear ? (
         <GeneralPage
-          commonCooperatives={state.commonCooperatives}
-          defaultCooperative={state.defaultCooperative}
+          selectedCalendarYear={state.selectedCalendarYear}
+          defaultCooperativeId={state.defaultCooperative}
+          defaultFiscalYearId={state.defaultFiscalYear}
         />
       ) : (
         <BaseCooperativesList
+          selectedCooperatives={state.selectedCooperatives}
+          calendarYear={state.selectedCalendarYear}
           commonCooperatives={state.commonCooperatives}
           extendedCooperatives={state.extendedCooperatives}
-          fetchExtendedCooperativesList={fetchExtendedCooperativesList}
           onChangeDefaultCooperative={handleChangeDefaultCooperative}
+          onChangeCalendarYear={handleChangeCalendarYear}
+          onChangeCooperatives={handleChangeSelectedCooperatives}
+          onShowExtendedList={handleShowExtendedList}
+          showExtendedList={state.showExtendedList}
         />
       )}
       <Backdrop loading={state.loading} />

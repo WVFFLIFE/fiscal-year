@@ -34,8 +34,16 @@ class FiscalYearInternalAPI {
     );
   };
 
-  getCooperativesList = async () => {
-    return await this.executeRequest('uds_FiscalYearCooperativesList', {});
+  getCooperativesList = async (
+    startDate = null,
+    endDate = null,
+    includeAll = false
+  ) => {
+    return await this.executeRequest('uds_FiscalYearCooperativesList', {
+      StartDate: startDate,
+      EndDate: endDate,
+      IncludeAll: includeAll,
+    });
   };
 
   getCooperativeFiscalYearsList = async (cooperativeId) => {

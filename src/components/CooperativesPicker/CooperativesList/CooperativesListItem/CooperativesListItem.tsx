@@ -1,3 +1,4 @@
+import { CSSProperties, useEffect } from 'react';
 import { CommonCooperativeModel } from 'models';
 
 import format from 'date-fns/format';
@@ -14,6 +15,8 @@ export interface CooperativesListItemProps<T extends CommonCooperativeModel> {
   cooperative: T;
   selected: boolean;
   onClick(cooperative: T, isSelected: boolean): void;
+  style?: CSSProperties;
+  measure?: () => void;
 }
 
 const CooperativesListItem = <T extends CommonCooperativeModel>({
@@ -21,8 +24,16 @@ const CooperativesListItem = <T extends CommonCooperativeModel>({
   cooperative,
   selected,
   onClick,
+  style,
+  measure,
 }: CooperativesListItemProps<T>) => {
   const classes = useStyles();
+
+  useEffect(() => {
+    if (measure) {
+      measure();
+    }
+  }, [measure]);
 
   return (
     <MenuItem
@@ -34,11 +45,14 @@ const CooperativesListItem = <T extends CommonCooperativeModel>({
       }}
       onMouseUp={() => onClick(cooperative, selected)}
       data-testid="cooperative-item"
+      style={style}
+      component="div"
     >
       {multiple ? (
         <CheckboxControl
           checked={selected}
           label={cooperative.Name}
+          classes={{ label: classes.checkboxLabel }}
           tabIndex={-1}
         />
       ) : (

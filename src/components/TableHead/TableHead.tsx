@@ -25,27 +25,27 @@ const TableHead: React.FC<TableHeadProps> = ({
   return (
     <MuiTableHead>
       <MuiTableRow className={className}>
-        {columns.map((column) => {
-          return sort && column.sortable ? (
+        {columns.map(({ sortable = true, style, field, align, label }) => {
+          return sort && sortable ? (
             <SortedTableCell
-              key={column.field}
+              key={field}
               component="th"
               order={sort.order}
               onChangeSortParams={onChangeSortParams}
-              field={column.field}
-              align={column.align || 'left'}
-              style={column.style}
+              field={field}
+              align={align || 'left'}
+              style={style}
             >
-              {t(column.label)}
+              {t(label)}
             </SortedTableCell>
           ) : (
             <HeadTableCell
-              key={column.field}
+              key={field}
               component="th"
-              align={column.align || 'left'}
-              style={column.style}
+              align={align || 'left'}
+              style={style}
             >
-              {t(column.label)}
+              {t(label)}
             </HeadTableCell>
           );
         })}

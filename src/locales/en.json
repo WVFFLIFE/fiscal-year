@@ -14,6 +14,7 @@
   "#control.quickfilter.published": "Published",
   "#control.quickfilter.unpublished": "Unpublished",
   "#info.selectcooperative": "Please select Cooperative(s)",
+  "#info.nocooperatives": "There are no cooperatives in the selected calendar year",
   "#pagination": "Showing {{show}} to {{to}} of {{totalItems}}",
   "#pagination.direction.previous": "Previous",
   "#pagination.direction.next": "Next",

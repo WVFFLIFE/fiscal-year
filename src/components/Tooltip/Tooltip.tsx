@@ -1,6 +1,7 @@
 import MuiTooltip, {
   TooltipProps as MuiTooltipProps,
 } from '@mui/material/Tooltip';
+import Fade from '@mui/material/Fade';
 
 import { useStyles } from './style';
 
@@ -17,6 +18,7 @@ const Tooltip: React.FC<MuiTooltipProps> = ({
         arrow: classes.arrow,
         tooltip: classes.tooltip,
       }}
+      TransitionComponent={Fade}
       placement={placement}
       {...rest}
     >

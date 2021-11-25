@@ -1,6 +1,6 @@
 import useGeneralPageData from './useGeneralPageData';
 import { useTranslation } from 'react-i18next';
-import { ExtendedCooperativeModel, CommonCooperativeModel } from 'models';
+import { CommonCooperativeModel, CalendarYearOption } from 'models';
 
 import Box from '@mui/material/Box';
 import {
@@ -20,13 +20,15 @@ import SelectedInfo from './SelectedInfo';
 import { useStyles } from './style';
 
 interface GeneralPageProps {
-  defaultCooperative: ExtendedCooperativeModel;
-  commonCooperatives: CommonCooperativeModel[];
+  selectedCalendarYear: CalendarYearOption;
+  defaultCooperativeId: string;
+  defaultFiscalYearId: string | null;
 }
 
 const GeneralPage: React.FC<GeneralPageProps> = ({
-  defaultCooperative,
-  commonCooperatives,
+  selectedCalendarYear,
+  defaultCooperativeId,
+  defaultFiscalYearId,
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
@@ -37,14 +39,18 @@ const GeneralPage: React.FC<GeneralPageProps> = ({
     handleChangeFiscalYear,
     handleChangeSearchTerm,
     handleChangeSelectedCooperatives,
-  } = useGeneralPageData(defaultCooperative, commonCooperatives);
+  } = useGeneralPageData(
+    defaultCooperativeId,
+    defaultFiscalYearId,
+    selectedCalendarYear
+  );
 
   return (
     <>
       <FiltersWrapper>
         <Box padding={4} paddingX={2}>
           <CooperativesPicker
-            cooperatives={commonCooperatives}
+            cooperatives={state.cooperatives}
             selectedCooperatives={
               state.selected.cooperative ? [state.selected.cooperative] : []
             }

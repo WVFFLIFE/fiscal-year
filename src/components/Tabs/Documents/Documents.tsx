@@ -1,8 +1,6 @@
 import useDocumentsData from './useDocumentsData';
 import { FiscalYearModel, DocumentModel, FolderModel } from 'models';
 
-import isFolder from 'utils/isFolder';
-
 import Box from '@mui/material/Box';
 import QuickFilter, { QuickFilterOption } from 'components/QuickFilter';
 import ActionButton from 'components/ActionButton';
@@ -28,6 +26,7 @@ import EditDocument from './EditDocument';
 import FolderEditor from './FolderEditor';
 import EditDocuments from './EditDocuments';
 import Backdrop from 'components/Backdrop';
+import Tooltip from 'components/Tooltip';
 
 import clsx from 'clsx';
 import { useStyles } from './style';
@@ -58,8 +57,6 @@ const Documents: React.FC<DocumentsTabProps> = ({ fiscalYear }) => {
 
   const {
     entitesType,
-    hasFolder,
-    folderExists,
     loading,
     allPublished,
     sortParams,
@@ -80,6 +77,7 @@ const Documents: React.FC<DocumentsTabProps> = ({ fiscalYear }) => {
     isDisabledEditButton,
     successDialogState,
     deleteConfirmationState,
+    editDocumentDialogState,
     editDocumentsDialogState,
     editFolderDialogState,
     saveFile,
@@ -109,6 +107,9 @@ const Documents: React.FC<DocumentsTabProps> = ({ fiscalYear }) => {
     handleChangeCurrentPage,
     handleChangeRowsPerPage,
     handleChangeSortParams,
+    handleOpenEditDocumentDialog,
+    handleCloseEditDocumentDialog,
+    handleInitEditDocumentDialog,
   } = useDocumentsData(fiscalYear);
 
   return (
@@ -148,67 +149,85 @@ const Documents: React.FC<DocumentsTabProps> = ({ fiscalYear }) => {
             onChange={handleChangeQuickFilter}
           />
           <Box marginLeft="40px">
-            <ActionButton
-              className={classes.actionBtn}
-              disabled={!!!selectedItems.length || isDisabledEditButton}
-              onClick={() => handleOpenEditDocumentsDialog()}
-            >
-              <EditIcon className={classes.actionIcon} />
-            </ActionButton>
-            <ActionButton
-              className={classes.actionBtn}
-              disabled={!!!selectedItems.length}
-              onClick={() => handleOpenDeleteConfirmationDialog(selectedItems)}
-            >
-              <DeleteIcon className={classes.actionIcon} />
-            </ActionButton>
-            <ActionButton
-              className={classes.actionBtn}
-              disabled={!!!amount.docs}
-              onClick={saveSelected}
-            >
-              <DownloadIcon className={classes.actionIcon} />
-            </ActionButton>
+            <Tooltip title="Edit entity(ies)">
+              <ActionButton
+                className={classes.actionBtn}
+                disabled={!!!selectedItems.length || isDisabledEditButton}
+                onClick={() => handleOpenEditDocumentsDialog()}
+              >
+                <EditIcon className={classes.actionIcon} />
+              </ActionButton>
+            </Tooltip>
+            <Tooltip title="Delete entity(ies)">
+              <ActionButton
+                className={classes.actionBtn}
+                disabled={!!!selectedItems.length}
+                onClick={() =>
+                  handleOpenDeleteConfirmationDialog(selectedItems)
+                }
+              >
+                <DeleteIcon className={classes.actionIcon} />
+              </ActionButton>
+            </Tooltip>
+            <Tooltip title="Download document(s)">
+              <ActionButton
+                className={classes.actionBtn}
+                disabled={!!!amount.docs}
+                onClick={saveSelected}
+              >
+                <DownloadIcon className={classes.actionIcon} />
+              </ActionButton>
+            </Tooltip>
             {allPublished ? (
-              <ActionButton
-                className={classes.actionBtn}
-                disabled={!!!amount.docs || publishing}
-                onClick={() => publishSelectedDocuments(false)}
-              >
-                <UnpublishedIcon className={classes.actionIcon} />
-              </ActionButton>
+              <Tooltip title="Unpublish document(s)">
+                <ActionButton
+                  className={classes.actionBtn}
+                  disabled={!!!amount.docs || publishing}
+                  onClick={() => publishSelectedDocuments(false)}
+                >
+                  <UnpublishedIcon className={classes.actionIcon} />
+                </ActionButton>
+              </Tooltip>
             ) : (
+              <Tooltip title="Publish document(s)">
+                <ActionButton
+                  className={classes.actionBtn}
+                  disabled={!!!amount.docs || publishing}
+                  onClick={() => publishSelectedDocuments(true)}
+                >
+                  <PublishedIcon className={classes.actionIcon} />
+                </ActionButton>
+              </Tooltip>
+            )}
+            <Tooltip title="Refresh documents">
               <ActionButton
                 className={classes.actionBtn}
-                disabled={!!!amount.docs || publishing}
-                onClick={() => publishSelectedDocuments(true)}
+                disabled={loading || publishing}
+                onClick={refreshData}
               >
-                <PublishedIcon className={classes.actionIcon} />
+                <RefreshIcon className={classes.actionIcon} />
               </ActionButton>
-            )}
-            <ActionButton
-              className={classes.actionBtn}
-              disabled={loading || publishing}
-              onClick={refreshData}
-            >
-              <RefreshIcon className={classes.actionIcon} />
-            </ActionButton>
-            <ActionButton
-              className={classes.actionBtn}
-              disabled={!!!activeFolder?.Url}
-              href={activeFolder?.Url}
-              target="_blank"
-            >
-              <SharePointIcon className={classes.actionIcon} />
-            </ActionButton>
-            <ActionButton
-              className={classes.actionBtn}
-              palette="darkBlue"
-              onClick={handleOpenUploadForm}
-              disabled={!!!activeFolder}
-            >
-              <PlusIcon className={classes.actionIcon} />
-            </ActionButton>
+            </Tooltip>
+            <Tooltip title="Open sharepoint">
+              <ActionButton
+                className={classes.actionBtn}
+                disabled={!!!activeFolder?.Url}
+                href={activeFolder?.Url}
+                target="_blank"
+              >
+                <SharePointIcon className={classes.actionIcon} />
+              </ActionButton>
+            </Tooltip>
+            <Tooltip title="Upload new document(s)">
+              <ActionButton
+                className={classes.actionBtn}
+                palette="darkBlue"
+                onClick={handleOpenUploadForm}
+                disabled={!!!activeFolder}
+              >
+                <PlusIcon className={classes.actionIcon} />
+              </ActionButton>
+            </Tooltip>
           </Box>
         </Box>
       </Box>
@@ -224,7 +243,7 @@ const Documents: React.FC<DocumentsTabProps> = ({ fiscalYear }) => {
             handleOpenDeleteConfirmationDialog={
               handleOpenDeleteConfirmationDialog
             }
-            handleOpenEditDocumentDialog={handleOpenEditDocumentsDialog}
+            handleOpenEditDocumentDialog={handleOpenEditDocumentDialog}
             handleOpenEditFolderDialog={handleOpenEditFolderDialog}
             handleSelectAll={handleSelectAll}
             saveFile={saveFile}
@@ -292,6 +311,24 @@ const Documents: React.FC<DocumentsTabProps> = ({ fiscalYear }) => {
             />
           ) : null
         ) : null}
+      </Dialog>
+      <Dialog
+        open={editDocumentDialogState.open}
+        handleClose={handleCloseEditDocumentDialog}
+        maxWidth="sm"
+        TransitionProps={{
+          onExited: handleInitEditDocumentDialog,
+        }}
+      >
+        {rootFolder && activeFolder && editDocumentDialogState.document && (
+          <EditDocument
+            rootFolder={rootFolder}
+            activeFolder={activeFolder}
+            fetchFolders={fetchFolders}
+            selectedDocument={editDocumentDialogState.document}
+            onClose={handleCloseEditDocumentDialog}
+          />
+        )}
       </Dialog>
       <Dialog
         open={deleteConfirmationState.open}

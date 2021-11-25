@@ -9,6 +9,7 @@ export const useStyles = makeStyles((theme) => ({
     '&.MuiTableRow-hover': {
       '&:hover': {
         background: theme.color.transparentBlue,
+        cursor: 'pointer',
 
         '& .cell-actions': {
           opacity: 1,

@@ -1,7 +1,9 @@
+import { CommonCooperativeModel } from 'models';
 import { SettledResponse } from 'services';
 
 import { enGB, fi } from 'date-fns/locale';
 import { format } from 'date-fns';
+import _toLower from 'lodash/toLower';
 
 export { default as isFolder } from './isFolder';
 export { default as isPublished } from './isPublished';
@@ -12,7 +14,7 @@ export { default as sort } from './sort';
 export const DEFAULT_FORMAT_PATTERN = 'd.M.yyyy';
 
 export function filterBySearchTerm(val: string, searchTerm: string) {
-  return val.toLowerCase().includes(searchTerm.toLowerCase());
+  return _toLower(val).includes(_toLower(searchTerm));
 }
 
 export function getLangString() {
@@ -81,4 +83,21 @@ export function getErrorsList(res: SettledResponse) {
 
     return acc;
   }, [] as string[]);
+}
+
+export function defaultFormat(date: Date | null) {
+  if (!date) return null;
+
+  return format(date, DEFAULT_FORMAT_PATTERN);
+}
+
+export function isAllMyOwn(
+  cooperatives: CommonCooperativeModel[],
+  selectedCooperatives: CommonCooperativeModel[]
+) {
+  const allMyOwnCoops = cooperatives.filter((coop) => coop.IsOwn);
+  return allMyOwnCoops.every(
+    (coop) =>
+      !!selectedCooperatives.find((selectedCoop) => selectedCoop.Id === coop.Id)
+  );
 }

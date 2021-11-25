@@ -13,6 +13,7 @@
   "#control.quickfilter.published": "JULKAISTU",
   "#control.quickfilter.unpublished": "JULKAISEMATON",
   "#info.selectcooperative": "Valitse taloyhtiö",
+  "#info.nocooperatives": "Valitulle vuodelle ei löytynyt yhtään yhtiötä",
   "#pagination": "Tietueet {{show}}-{{to}} / {{totalItems}}",
   "#pagination.direction.previous": "Edellinen",
   "#pagination.direction.next": "Seuraava",

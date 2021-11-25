@@ -1,49 +1,67 @@
 import { useTranslation } from 'react-i18next';
-import useBaseCooperativesListData from './useBaseCooperativesListData';
-import { ExtendedCooperativeModel, CommonCooperativeModel } from 'models';
+import useSearchTerm from 'hooks/useSearchTerm';
+import {
+  ExtendedCooperativeModel,
+  CommonCooperativeModel,
+  CalendarYearOption,
+} from 'models';
+import { buildCalendarYearOptions } from './utils';
 
 import Box from '@mui/material/Box';
 import PageSearch from 'components/controls/PageSearch';
 import CooperativesPicker from 'components/CooperativesPicker';
 import SelectCalendarYear from 'components/SelectCalendarYear';
-import { FiltersWrapper, ApplyButton, InfoBox } from 'components/Styled';
+import {
+  FiltersWrapper,
+  ApplyButton,
+  InfoBox,
+  Container,
+} from 'components/Styled';
 import GeneralCooperativeTable from 'components/GeneralCooperativesTable';
+import ContainerTopBar from './ContainerTopBar';
+
+import { useStyles } from './style';
+
+const calendarYearOptions = buildCalendarYearOptions(
+  new Date('01.01.2017'),
+  new Date()
+);
 
 interface BaseCooperativesListProps {
+  showExtendedList: boolean;
+  selectedCooperatives: CommonCooperativeModel[];
+  calendarYear: CalendarYearOption | null;
   commonCooperatives: CommonCooperativeModel[];
   extendedCooperatives: ExtendedCooperativeModel[];
-  fetchExtendedCooperativesList(
-    coopIds: string[],
-    startDate: string,
-    endDate: string
-  ): Promise<void>;
   onChangeDefaultCooperative(
     defaultCooperative: ExtendedCooperativeModel
   ): void;
+  onChangeCalendarYear(calendarYear: CalendarYearOption): void;
+  onChangeCooperatives(coops: CommonCooperativeModel[]): void;
+  onShowExtendedList(): void;
 }
 
 const BaseCooperativesList: React.FC<BaseCooperativesListProps> = ({
+  showExtendedList,
+  selectedCooperatives,
+  calendarYear,
   commonCooperatives,
   extendedCooperatives,
-  fetchExtendedCooperativesList,
   onChangeDefaultCooperative,
+  onChangeCalendarYear,
+  onChangeCooperatives,
+  onShowExtendedList,
 }) => {
   const { t } = useTranslation();
-  const {
-    state,
-    selected,
-    calendarYearOptions,
-    handleChangeSelectedCooperatives,
-    handleChangeCalendarYear,
-    handleChangeSearchTerm,
-    handleShowExtendedCooperatives,
-  } = useBaseCooperativesListData(fetchExtendedCooperativesList);
+  const classes = useStyles();
 
-  const isDisabledCalendarYearPicker = !!!selected.cooperatives.length;
-  const isSelectedCalendarYear = !!selected.calendarYear;
+  const { searchTerm, onChangeSearchTerm } = useSearchTerm();
+
+  const isDisabledCalendarYearPicker = !!!selectedCooperatives.length;
+  const isSelectedCalendarYear = !!calendarYear;
   const isEmptyFilter = isDisabledCalendarYearPicker || !isSelectedCalendarYear;
   const isDisabledApplyButton = isEmptyFilter;
-  const showExtendedList = !isEmptyFilter && !!extendedCooperatives.length;
+  const show = showExtendedList && !isEmptyFilter;
 
   const hint = isDisabledCalendarYearPicker
     ? '#info.selectcooperative'
@@ -58,22 +76,22 @@ const BaseCooperativesList: React.FC<BaseCooperativesListProps> = ({
           <CooperativesPicker
             multiple
             cooperatives={commonCooperatives}
-            selectedCooperatives={selected.cooperatives}
-            onSelectCooperatives={handleChangeSelectedCooperatives}
+            selectedCooperatives={selectedCooperatives}
+            onSelectCooperatives={onChangeCooperatives}
           />
         </Box>
         <Box padding={4} paddingX={2}>
           <SelectCalendarYear
-            value={selected.calendarYear}
+            value={calendarYear}
             options={calendarYearOptions}
-            onChange={handleChangeCalendarYear}
+            onChange={onChangeCalendarYear}
             disabled={isDisabledCalendarYearPicker}
           />
         </Box>
         <Box padding={4} paddingX={2}>
           <ApplyButton
             disabled={isDisabledApplyButton}
-            onClick={handleShowExtendedCooperatives}
+            onClick={onShowExtendedList}
           >
             {t('#button.apply')}
           </ApplyButton>
@@ -85,19 +103,28 @@ const BaseCooperativesList: React.FC<BaseCooperativesListProps> = ({
           padding={4}
           paddingX={2}
         >
-          <PageSearch
-            searchTerm={state.searchTerm}
-            onChange={handleChangeSearchTerm}
-          />
+          <PageSearch searchTerm={searchTerm} onChange={onChangeSearchTerm} />
         </Box>
       </FiltersWrapper>
       {isEmptyFilter && <InfoBox>{t(hint)}</InfoBox>}
-      {showExtendedList && (
-        <GeneralCooperativeTable
-          cooperatives={extendedCooperatives}
-          onSelectCooperative={onChangeDefaultCooperative}
-        />
-      )}
+      {show ? (
+        extendedCooperatives.length ? (
+          <Container className={classes.offsetTop}>
+            <ContainerTopBar
+              className={classes.offsetBottom}
+              cooperatives={commonCooperatives}
+              selectedCooperatives={selectedCooperatives}
+              selectedCalendarYear={calendarYear}
+            />
+            <GeneralCooperativeTable
+              cooperatives={extendedCooperatives}
+              onSelectCooperative={onChangeDefaultCooperative}
+            />
+          </Container>
+        ) : (
+          <InfoBox>{t('#info.nocooperatives')}</InfoBox>
+        )
+      ) : null}
     </>
   );
 };

@@ -18,4 +18,7 @@ export const useStyles = makeStyles((theme) => ({
       background: theme.color.greyLight2,
     },
   },
+  checkboxLabel: {
+    whiteSpace: 'normal',
+  },
 }));

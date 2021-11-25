@@ -62,6 +62,14 @@ interface FileResModel extends BaseResponseModel {
   File: FileModel;
 }
 
+export interface FiscalYearModel {
+  Id: string;
+  Name: string;
+  IsClosed: boolean | null;
+  StartDate: string;
+  EndDate: string;
+}
+
 export interface MettadataAttributeModel {
   AvailableValues: string[];
   DisplayName: string;
@@ -90,22 +98,29 @@ export interface CommonCooperativeModel extends BaseCooperativeModel {
   IsOwn: boolean;
   IsPMCompanyEmployee: boolean;
   LatestClosedDate: string;
+  DefaultFiscalYear: FiscalYearModel | null;
   Name: string;
 }
 
 export interface ExtendedCooperativeModel extends BaseCooperativeModel {
   AuditingActualDate: string | null;
+  AuditMeetingType: string | null;
   AuditingPlannedDate: string | null;
   BoardMeetingActualDate: string | null;
   BoardMeetingPlannedDate: string | null;
+  BoardMeetingType: string | null;
   Comments: string | null;
+  FiscalYearComments: string | null;
   FiscalYearEndDate: string | null;
   FiscalYearId: string | null;
+  FiscalYearName: string | null;
   FiscalYearStartDate: string | null;
   GeneralMeetingActualDate: string | null;
   GeneralMeetingPlannedDate: string | null;
+  GeneralMeetingType: string | null;
   IsFinancialCalculationsAccepted: boolean | null;
   IsFiscalYearClosed: boolean | null;
+  IsFiscalYearDoesNotMatchCalendar: boolean | null;
 }
 
 interface BaseCooperativeListResponseModel extends BaseResponseModel {
@@ -116,12 +131,6 @@ interface ExtendedCooperativesListRepsonseModel extends BaseResponseModel {
   Cooperatives: ExtendedCooperativeModel[];
 }
 
-export interface FiscalYearModel {
-  Id: string;
-  Name: string;
-  IsClosed: boolean | null;
-}
-
 interface FiscalYearListResponseModel extends BaseResponseModel {
   FiscalYears: FiscalYearModel[];
 }
@@ -129,7 +138,11 @@ interface FiscalYearListResponseModel extends BaseResponseModel {
 export type SettledResponse = PromiseSettledResult<BaseResponseModel>[];
 
 declare class DefaultService {
-  public getCooperativesList(): Promise<BaseCooperativeListResponseModel>;
+  public getCooperativesList(
+    startDate?: string,
+    endDate?: string,
+    includeAll?: boolean
+  ): Promise<BaseCooperativeListResponseModel>;
   public getCooperativesInformationList(
     cooperativesIds: string[],
     startDate: string,

@@ -17,13 +17,13 @@ import _last from 'lodash/last';
 import { isPublished, isFolder, extractDocs, getErrorsList } from 'utils';
 import {
   prepareData,
-  limitFoldersDepth,
   countEntitiesAmount,
   isAnySucceed,
   getInnerDocuments,
   getPublishedEntities,
   getEntitiesType,
   getDocuments,
+  updateBreadcrumbsList,
 } from './utils';
 
 interface DeleteConfirmationStateModel {
@@ -35,6 +35,11 @@ interface DeleteConfirmationStateModel {
 interface EditDocumentsDialogStateModel {
   open: boolean;
   documents: DocumentModel[];
+}
+
+interface EditDocumentDialogStateModel {
+  open: boolean;
+  document: DocumentModel | null;
 }
 
 interface EditFolfderDialogStateModel {
@@ -86,6 +91,11 @@ const useDocumentsData = (fiscalYear: FiscalYearModel) => {
       open: false,
       documents: [],
     });
+  const [editDocumentDialogState, setEditDocumentDialogState] =
+    useState<EditDocumentDialogStateModel>({
+      open: false,
+      document: null,
+    });
   const [editFolderDialogState, setEditFolderDialogState] =
     useState<EditFolfderDialogStateModel>({
       open: false,
@@ -118,6 +128,13 @@ const useDocumentsData = (fiscalYear: FiscalYearModel) => {
     return activeFolder
       ? {
           ...activeFolder,
+          Folders: activeFolder.Folders.filter((folder) =>
+            quickFilter === 'published'
+              ? folder.IsPublished
+              : quickFilter === 'unpublished'
+              ? folder.IsPublished === false
+              : false
+          ),
           Documents: activeFolder.Documents.filter((doc) =>
             quickFilter === 'published' ? isPublished(doc) : !isPublished(doc)
           ),
@@ -142,19 +159,20 @@ const useDocumentsData = (fiscalYear: FiscalYearModel) => {
         const res = await Services.getDocumentsList(fiscalYear.Id);
 
         if (res.IsSuccess) {
+          console.log(
+            res.Folder &&
+              updateBreadcrumbsList(res.Folder, state.breadcrumbsList)
+          );
           setState((prevState) => ({
             ...prevState,
             loading: false,
             hasFolder: res.HasFolder,
             folderExists: res.FolderExists,
             breadcrumbsList: res.Folder
-              ? [
-                  {
-                    ...res.Folder,
-                    Name: 'Home',
-                    Folders: limitFoldersDepth(res.Folder.Folders),
-                  },
-                ]
+              ? updateBreadcrumbsList(
+                  { ...res.Folder, Name: 'Home' },
+                  prevState.breadcrumbsList
+                )
               : [],
           }));
         } else {
@@ -200,13 +218,10 @@ const useDocumentsData = (fiscalYear: FiscalYearModel) => {
           hasFolder: res.HasFolder,
           folderExists: res.FolderExists,
           breadcrumbsList: res.Folder
-            ? [
-                {
-                  ...res.Folder,
-                  Name: 'Home',
-                  Folders: limitFoldersDepth(res.Folder.Folders),
-                },
-              ]
+            ? updateBreadcrumbsList(
+                { ...res.Folder, Name: 'Home' },
+                prevState.breadcrumbsList
+              )
             : [],
         }));
       } else {
@@ -265,9 +280,12 @@ const useDocumentsData = (fiscalYear: FiscalYearModel) => {
 
       setState((prevState) => ({
         ...prevState,
-        selectedItems: checked
-          ? [...filteredActiveFolder.Documents, ...filteredActiveFolder.Folders]
-          : [],
+        selectedItems: selectedItems.length
+          ? []
+          : [
+              ...filteredActiveFolder.Documents,
+              ...filteredActiveFolder.Folders,
+            ],
       }));
     }
   };
@@ -404,6 +422,29 @@ const useDocumentsData = (fiscalYear: FiscalYearModel) => {
   const handleInitEditDocumentsDialogState = () => {
     setEditDocumentsDialogState({
       documents: [],
+      open: false,
+    });
+  };
+
+  const handleOpenEditDocumentDialog = (document: DocumentModel) => {
+    setEditDocumentDialogState({
+      document,
+      open: true,
+    });
+  };
+
+  const handleCloseEditDocumentDialog = (showSuccessDialog?: boolean) => {
+    setEditDocumentDialogState((prevState) => ({
+      ...prevState,
+      open: false,
+    }));
+
+    if (showSuccessDialog) handleShowSuccessDialog('successUpdated');
+  };
+
+  const handleInitEditDocumentDialog = () => {
+    setEditDocumentDialogState({
+      document: null,
       open: false,
     });
   };
@@ -656,6 +697,7 @@ const useDocumentsData = (fiscalYear: FiscalYearModel) => {
     successDialogState,
     handleInitSuccessDialogType,
     editDocumentsDialogState,
+    editDocumentDialogState,
     editFolderDialogState,
     sortParams,
     totalItems: list.length,
@@ -692,6 +734,9 @@ const useDocumentsData = (fiscalYear: FiscalYearModel) => {
     handleInitEditFolderDialogState,
     handleChangeRowsPerPage,
     handleChangeCurrentPage,
+    handleOpenEditDocumentDialog,
+    handleCloseEditDocumentDialog,
+    handleInitEditDocumentDialog,
   };
 };
 

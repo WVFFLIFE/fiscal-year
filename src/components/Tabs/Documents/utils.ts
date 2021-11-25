@@ -151,3 +151,38 @@ export function getEntitiesType(
     }
   }, null as 'doc' | 'folder' | 'both' | null);
 }
+
+function findFolderInRootFolder(
+  rootFolder: FolderModel,
+  folder: FolderModel
+): FolderModel | null {
+  if (rootFolder.Id === folder.Id) return rootFolder;
+
+  let newFolder: FolderModel | null = null;
+
+  for (let innerFolder of rootFolder.Folders) {
+    newFolder = findFolderInRootFolder(innerFolder, folder);
+    if (newFolder) break;
+  }
+
+  return newFolder;
+}
+
+export function updateBreadcrumbsList(
+  rootFolder: FolderModel,
+  breadcrumbsList: FolderModel[]
+) {
+  if (breadcrumbsList.length <= 1) {
+    return [
+      {
+        ...rootFolder,
+        Name: 'Home',
+        Folders: limitFoldersDepth(rootFolder.Folders),
+      },
+    ];
+  }
+
+  return breadcrumbsList.map((folder) => {
+    return findFolderInRootFolder(rootFolder, folder) || folder;
+  });
+}
