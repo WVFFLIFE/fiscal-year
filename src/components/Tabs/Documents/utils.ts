@@ -112,6 +112,12 @@ export function getInnerDocuments(list: (FolderModel | DocumentModel)[]) {
   return documents;
 }
 
+export function isPublishedAnyInnerDocument(folder: FolderModel) {
+  const documents = getInnerDocuments([folder]);
+
+  return documents.some((doc) => doc.IsPublished);
+}
+
 export function getDocuments(list: (FolderModel | DocumentModel)[]) {
   return list.filter((entity) => !isFolder(entity)) as DocumentModel[];
 }

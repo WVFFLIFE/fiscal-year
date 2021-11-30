@@ -1,15 +1,15 @@
 import _get from 'lodash/get';
 import _orderBy from 'lodash/orderBy';
 
+export const orderBy = _orderBy;
 export type SortParamsType = 'alphanumeric' | 'date';
-
 export interface SortModel<T extends { [key: string]: any } = {}> {
   order: 'asc' | 'desc';
   orderBy: keyof T | string | null;
   type: SortParamsType;
 }
 
-function prepareData<T extends {}, K extends keyof T>(
+export function prepareData<T extends {}, K extends keyof T>(
   item: T,
   key: K | string | null,
   type: SortParamsType

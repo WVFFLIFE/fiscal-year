@@ -9,6 +9,7 @@ import GeneralPage from 'components/GeneralPage';
 const FiscalYear = () => {
   const {
     state,
+    fetchExtendedCooperativesList,
     handleInitError,
     handleChangeDefaultCooperative,
     handleChangeCalendarYear,
@@ -31,6 +32,7 @@ const FiscalYear = () => {
           calendarYear={state.selectedCalendarYear}
           commonCooperatives={state.commonCooperatives}
           extendedCooperatives={state.extendedCooperatives}
+          fetchExtendedCooperativesList={fetchExtendedCooperativesList}
           onChangeDefaultCooperative={handleChangeDefaultCooperative}
           onChangeCalendarYear={handleChangeCalendarYear}
           onChangeCooperatives={handleChangeSelectedCooperatives}

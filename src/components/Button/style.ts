@@ -10,7 +10,7 @@ export const useStyles = makeStyles((theme) => ({
     borderRadius: 20,
     color: theme.color.darkBlue,
     filter: 'drop-shadow(0px 2px 7px rgba(151, 151, 151, 0.4))',
-    textTransform: 'capitalize',
+    textTransform: 'none',
   },
   largeSize: {
     padding: '12px 16px',

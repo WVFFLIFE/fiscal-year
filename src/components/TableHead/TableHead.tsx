@@ -7,8 +7,16 @@ import MuiTableRow from '@mui/material/TableRow';
 import SortedTableCell from 'components/SortedTableCell';
 import { HeadTableCell } from 'components/Styled';
 
+import clsx from 'clsx';
+
+export interface TableHeadClasses {
+  root?: string;
+  cell?: string;
+}
+
 interface TableHeadProps {
   className?: string;
+  classes?: TableHeadClasses;
   columns: Column[];
   sort?: SortModel;
   onChangeSortParams?(orderBy: string): void;
@@ -16,6 +24,7 @@ interface TableHeadProps {
 
 const TableHead: React.FC<TableHeadProps> = ({
   className,
+  classes,
   columns,
   sort,
   onChangeSortParams,
@@ -24,13 +33,15 @@ const TableHead: React.FC<TableHeadProps> = ({
 
   return (
     <MuiTableHead>
-      <MuiTableRow className={className}>
+      <MuiTableRow className={clsx(classes?.root, className)}>
         {columns.map(({ sortable = true, style, field, align, label }) => {
           return sort && sortable ? (
             <SortedTableCell
+              className={classes?.cell}
               key={field}
               component="th"
               order={sort.order}
+              orderBy={sort.orderBy}
               onChangeSortParams={onChangeSortParams}
               field={field}
               align={align || 'left'}
@@ -41,6 +52,7 @@ const TableHead: React.FC<TableHeadProps> = ({
           ) : (
             <HeadTableCell
               key={field}
+              className={classes?.cell}
               component="th"
               align={align || 'left'}
               style={style}

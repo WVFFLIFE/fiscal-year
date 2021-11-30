@@ -259,10 +259,12 @@ const CooperativesPicker = <T extends CommonCooperativeModel>({
     }
 
     if (isAllMyOwn(cooperatives, selectedCooperatives)) {
-      return 'All my own cooperatives selected';
+      return t('#control.allowncooperativeselected');
     }
 
-    return `${selectedCooperatives.length} cooperatives selected`;
+    return t('#control.partailcooperativesselected', {
+      num: selectedCooperatives.length,
+    });
   };
 
   const renderBody = (onClosePicker: () => void) => (

@@ -35,6 +35,55 @@ const useFiscalYearData = () => {
     showExtendedList: false,
   });
 
+  const fetchExtendedCooperativesList = async () => {
+    if (!state.selectedCooperatives.length || !state.selectedCalendarYear)
+      return;
+
+    const coopIds = state.selectedCooperatives.map((coop) => coop.Id);
+    const startDate = format(
+      state.selectedCalendarYear.start,
+      "yyyy-MM-dd'T'00:00:00"
+    );
+    const endDate = format(
+      state.selectedCalendarYear.end,
+      "yyyy-MM-dd'T'00:00:00"
+    );
+
+    try {
+      setState((prevState) => ({
+        ...prevState,
+        loading: true,
+      }));
+
+      const res = await Services.getCooperativesInformationList(
+        coopIds,
+        startDate,
+        endDate
+      );
+
+      if (res.IsSuccess) {
+        setState((prevState) => ({
+          ...prevState,
+          loading: false,
+          extendedCooperatives: res.Cooperatives,
+        }));
+      } else {
+        setState((prevState) => ({
+          ...prevState,
+          loading: false,
+          error: { messages: [String(res.Message)] },
+        }));
+      }
+    } catch (err) {
+      console.error(err);
+
+      setState((prevState) => ({
+        ...prevState,
+        error: { messages: [String(err)] },
+      }));
+    }
+  };
+
   useEffect(() => {
     (async function () {
       try {
@@ -79,64 +128,9 @@ const useFiscalYearData = () => {
 
   useEffect(() => {
     if (state.showExtendedList) {
-      const fetchExtendedCooperativesList = async (
-        coopIds: string[],
-        startDate: string,
-        endDate: string
-      ) => {
-        try {
-          setState((prevState) => ({
-            ...prevState,
-            loading: true,
-          }));
-
-          const res = await Services.getCooperativesInformationList(
-            coopIds,
-            startDate,
-            endDate
-          );
-
-          if (res.IsSuccess) {
-            setState((prevState) => ({
-              ...prevState,
-              loading: false,
-              extendedCooperatives: res.Cooperatives,
-            }));
-          } else {
-            setState((prevState) => ({
-              ...prevState,
-              loading: false,
-              error: { messages: [String(res.Message)] },
-            }));
-          }
-        } catch (err) {
-          console.error(err);
-
-          setState((prevState) => ({
-            ...prevState,
-            error: { messages: [String(err)] },
-          }));
-        }
-      };
-
-      if (state.selectedCooperatives.length && state.selectedCalendarYear) {
-        const coopIds = state.selectedCooperatives.map((coop) => coop.Id);
-        const start = format(
-          state.selectedCalendarYear.start,
-          "yyyy-MM-dd'T'00:00:00"
-        );
-        const end = format(
-          state.selectedCalendarYear.end,
-          "yyyy-MM-dd'T'00:00:00"
-        );
-        fetchExtendedCooperativesList(coopIds, start, end);
-      }
+      fetchExtendedCooperativesList();
     }
-  }, [
-    state.showExtendedList,
-    state.selectedCooperatives,
-    state.selectedCalendarYear,
-  ]);
+  }, [state.showExtendedList]);
 
   const handleChangeDefaultCooperative = (coop: ExtendedCooperativeModel) => {
     setState((prevState) => ({
@@ -178,6 +172,7 @@ const useFiscalYearData = () => {
 
   return {
     state,
+    fetchExtendedCooperativesList,
     handleInitError,
     handleShowExtendedList,
     handleChangeDefaultCooperative,

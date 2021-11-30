@@ -12,6 +12,7 @@ export { default as extractDocs } from './extractDocs';
 export { default as sort } from './sort';
 
 export const DEFAULT_FORMAT_PATTERN = 'd.M.yyyy';
+export const DEFAULT_PAGINATION_OPTIONS = [5, 10, 15];
 
 export function filterBySearchTerm(val: string, searchTerm: string) {
   return _toLower(val).includes(_toLower(searchTerm));
@@ -85,6 +86,8 @@ export function getErrorsList(res: SettledResponse) {
   }, [] as string[]);
 }
 
+export function defaultFormat(date: null): null;
+export function defaultFormat(date: Date): string;
 export function defaultFormat(date: Date | null) {
   if (!date) return null;
 

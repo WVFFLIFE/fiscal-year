@@ -1,9 +1,8 @@
 /* eslint-disable */
 
-class CrmAction
-{
+class CrmAction {
 
-    Execute = (opts) => { 
+    Execute = (opts) => {
 
         let req = this.GetRequestObject();
         const url = `${top.window.location.protocol}//${top.window.location.hostname}/XRMServices/2011/Organization.svc/web`;
@@ -44,11 +43,10 @@ class CrmAction
             if (req.status == 200) {
                 return this.ProcessSoapResponse(req.responseXML, opts.successCallback);
             }
-            else if(req.status == 500 && req.responseXML != null) {
+            else if (req.status == 500 && req.responseXML != null) {
                 return this.ProcessSoapError(req.responseXML, opts.errorCallback);
             }
-            else
-            {
+            else {
                 var error = new Error(req.statusText || req.status);
                 error.status = req.status;
                 return error;
@@ -69,7 +67,7 @@ class CrmAction
             }
             catch (e) {
                 try {
-                    
+
                     xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
                 }
                 catch (e) {
@@ -82,7 +80,7 @@ class CrmAction
     }
 
 
-    ProcessSoapResponse =  (responseXml, successCallback) => {
+    ProcessSoapResponse = (responseXml, successCallback) => {
         this._setSelectionNamespaces(responseXml);
         let objectNodes = this.ObjectifyNodes(this._selectNodes(responseXml, "//a:Results/a:KeyValuePairOfstringanyType"));
         if (successCallback) {
@@ -104,11 +102,11 @@ class CrmAction
     _setSelectionNamespaces = (doc) => {
         try {
             let namespaces = [
-            "xmlns:s='http://schemas.xmlsoap.org/soap/envelope/'",
-            "xmlns:a='http://schemas.microsoft.com/xrm/2011/Contracts'",
-            "xmlns:i='http://www.w3.org/2001/XMLSchema-instance'",
-            "xmlns:b='http://schemas.datacontract.org/2004/07/System.Collections.Generic'",
-            "xmlns:c='http://schemas.microsoft.com/xrm/2011/Metadata'"
+                "xmlns:s='http://schemas.xmlsoap.org/soap/envelope/'",
+                "xmlns:a='http://schemas.microsoft.com/xrm/2011/Contracts'",
+                "xmlns:i='http://www.w3.org/2001/XMLSchema-instance'",
+                "xmlns:b='http://schemas.datacontract.org/2004/07/System.Collections.Generic'",
+                "xmlns:c='http://schemas.microsoft.com/xrm/2011/Metadata'"
             ];
             doc.setProperty("SelectionNamespaces", namespaces.join(" "));
         } catch (e) { }
@@ -182,7 +180,7 @@ class CrmAction
         return result;
     }
 
-    ObjectifyRecord =  (node) => {
+    ObjectifyRecord = (node) => {
         let result = {};
 
         result.logicalName = (node.childNodes[4].text !== undefined) ? node.childNodes[4].text : node.childNodes[4].textContent;
@@ -206,7 +204,7 @@ class CrmAction
             parseInt(dateParts[5], 10),
             parseInt(dateParts[6], 10)));
     }
-    
+
 
     _selectNodes = (node, xPathExpression) => {
         if (typeof (node.selectNodes) != "undefined") {
@@ -280,11 +278,11 @@ class CrmAction
     _setSelectionNamespaces = (doc) => {
         try {
             let namespaces = [
-            "xmlns:s='http://schemas.xmlsoap.org/soap/envelope/'",
-            "xmlns:a='http://schemas.microsoft.com/xrm/2011/Contracts'",
-            "xmlns:i='http://www.w3.org/2001/XMLSchema-instance'",
-            "xmlns:b='http://schemas.datacontract.org/2004/07/System.Collections.Generic'",
-            "xmlns:c='http://schemas.microsoft.com/xrm/2011/Metadata'"
+                "xmlns:s='http://schemas.xmlsoap.org/soap/envelope/'",
+                "xmlns:a='http://schemas.microsoft.com/xrm/2011/Contracts'",
+                "xmlns:i='http://www.w3.org/2001/XMLSchema-instance'",
+                "xmlns:b='http://schemas.datacontract.org/2004/07/System.Collections.Generic'",
+                "xmlns:c='http://schemas.microsoft.com/xrm/2011/Metadata'"
             ];
             doc.setProperty("SelectionNamespaces", namespaces.join(" "));
         } catch (e) { }
@@ -308,7 +306,7 @@ class CrmAction
         if (window.ActiveXObject) {
             xmlString = xmlData.xml;
         }
-            // code for Mozilla, Firefox, Opera, etc.
+        // code for Mozilla, Firefox, Opera, etc.
         else {
             xmlString = (new XMLSerializer()).serializeToString(xmlData);
         }
@@ -317,8 +315,7 @@ class CrmAction
 
     isoDateExpression = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.?(\d*)?(Z|[+-]\d{2}?(:\d{2})?)?$/;
 
-    GenerateRequestXml = (request, jsonObject) => 
-    {
+    GenerateRequestXml = (request, jsonObject) => {
         return `<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
                               <s:Body>
                                 <Execute xmlns="http://schemas.microsoft.com/xrm/2011/Contracts/Services" xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
@@ -337,12 +334,34 @@ class CrmAction
                             </s:Envelope>`;
     }
 
-    JsonEncodeURI = (jsonObject) => 
-    {
-        if(!jsonObject) return "null";
+    GenerateRequestWithTypeXml = (request, requestType, jsonObject) => {
+        return `<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+                              <s:Body>
+                                <Execute xmlns="http://schemas.microsoft.com/xrm/2011/Contracts/Services" xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+                                  <request xmlns:a="http://schemas.microsoft.com/xrm/2011/Contracts">
+                                    <a:Parameters xmlns:b="http://schemas.datacontract.org/2004/07/System.Collections.Generic">
+                                      <a:KeyValuePairOfstringanyType>
+                                        <b:key>RequestType</b:key>
+                                        <b:value i:type='c:int' xmlns:c='http://www.w3.org/2001/XMLSchema'>${requestType}</b:value>
+                                      </a:KeyValuePairOfstringanyType>
+                                      <a:KeyValuePairOfstringanyType>
+                                        <b:key>Request</b:key>
+                                        <b:value i:type='c:string' xmlns:c='http://www.w3.org/2001/XMLSchema'>${this.JsonEncodeURI(jsonObject)}</b:value>
+                                      </a:KeyValuePairOfstringanyType>
+                                    </a:Parameters>
+                                    <a:RequestId i:nil="true" />
+                                    <a:RequestName>${request}</a:RequestName>
+                                  </request>
+                                </Execute>
+                              </s:Body>
+                            </s:Envelope>`;
+    }
+
+    JsonEncodeURI = (jsonObject) => {
+        if (!jsonObject) return "null";
         return encodeURIComponent(typeof jsonObject == 'object'
-        ? JSON.stringify(jsonObject)
-        : jsonObject);
+            ? JSON.stringify(jsonObject)
+            : jsonObject);
     }
 
 }

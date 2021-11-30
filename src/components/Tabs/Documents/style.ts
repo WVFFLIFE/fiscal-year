@@ -8,12 +8,6 @@ export const useStyles = makeStyles((theme) => ({
     fontSize: 16,
     color: '#000',
   },
-  actionBtn: {
-    marginRight: 10,
-    '&:last-child': {
-      marginRight: 0,
-    },
-  },
   actionIcon: {
     fontSize: 12,
   },
@@ -34,5 +28,11 @@ export const useStyles = makeStyles((theme) => ({
   },
   pagination: {
     marginTop: 20,
+  },
+  btnOffset: {
+    marginRight: 10,
+    '&:last-child': {
+      marginRight: 0,
+    },
   },
 }));

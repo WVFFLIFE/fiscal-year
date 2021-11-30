@@ -10,12 +10,14 @@ import { useStyles } from './style';
 interface SortedTableCellProps extends MuiTableCellProps {
   onChangeSortParams?(orderBy: string): void;
   order?: 'asc' | 'desc';
+  orderBy: string | null;
   field: string;
 }
 
 const SortedTableCell: React.FC<SortedTableCellProps> = ({
   field,
   order,
+  orderBy,
   onChangeSortParams,
   children,
   ...rest
@@ -30,7 +32,7 @@ const SortedTableCell: React.FC<SortedTableCellProps> = ({
         className={classes.label}
       >
         {children}
-        {order ? (
+        {orderBy === field ? (
           <ArrowIcon
             className={clsx(classes.icon, {
               [classes.asc]: order === 'asc',

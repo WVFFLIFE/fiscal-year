@@ -24,6 +24,7 @@ import {
   getEntitiesType,
   getDocuments,
   updateBreadcrumbsList,
+  isPublishedAnyInnerDocument,
 } from './utils';
 
 interface DeleteConfirmationStateModel {
@@ -128,13 +129,13 @@ const useDocumentsData = (fiscalYear: FiscalYearModel) => {
     return activeFolder
       ? {
           ...activeFolder,
-          Folders: activeFolder.Folders.filter((folder) =>
-            quickFilter === 'published'
-              ? folder.IsPublished
+          Folders: activeFolder.Folders.filter((folder) => {
+            return quickFilter === 'published'
+              ? isPublishedAnyInnerDocument(folder)
               : quickFilter === 'unpublished'
-              ? folder.IsPublished === false
-              : false
-          ),
+              ? !isPublishedAnyInnerDocument(folder)
+              : folder;
+          }),
           Documents: activeFolder.Documents.filter((doc) =>
             quickFilter === 'published' ? isPublished(doc) : !isPublished(doc)
           ),
@@ -276,8 +277,6 @@ const useDocumentsData = (fiscalYear: FiscalYearModel) => {
 
   const handleSelectAll = (e: ChangeEvent<HTMLInputElement>) => {
     if (filteredActiveFolder) {
-      const { checked } = e.target;
-
       setState((prevState) => ({
         ...prevState,
         selectedItems: selectedItems.length

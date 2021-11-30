@@ -7,4 +7,7 @@ export const useStyles = makeStyles(() => ({
   offsetBottom: {
     marginBottom: 20,
   },
+  filterItem: {
+    marginRight: 0,
+  },
 }));

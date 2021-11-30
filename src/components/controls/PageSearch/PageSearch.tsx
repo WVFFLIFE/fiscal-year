@@ -11,7 +11,7 @@ import {
 import Menu from 'components/Menu';
 import Search from 'components/controls/PickerSearch';
 import { IconButton } from 'components/Styled';
-import { SearchIcon } from 'components/Icons';
+import { SearchIcon, CloseIcon } from 'components/Icons';
 
 import clsx from 'clsx';
 import { useStyles, useBodyStyles } from './style';
@@ -53,6 +53,7 @@ const Body: React.FC<BodyProps> = ({ searchTerm, onChange, onClose }) => {
 
   return (
     <div className={classes.wrapper}>
+      <SearchIcon className={classes.searchIcon} />
       <Search
         className={classes.input}
         ref={searchInputRef}
@@ -87,13 +88,18 @@ const PageSearch: React.FC<PageSearchProps> = ({
     <>
       <IconButton
         disabled={disabled}
+        disableRipple
         onClick={disabled ? undefined : handleClick}
         className={clsx(classes.btn, {
           [classes.fill]: !!searchTerm,
           [classes.open]: open,
         })}
       >
-        <SearchIcon className={classes.icon} />
+        {open ? (
+          <CloseIcon className={classes.icon} />
+        ) : (
+          <SearchIcon className={classes.icon} />
+        )}
       </IconButton>
       <Menu
         open={open}

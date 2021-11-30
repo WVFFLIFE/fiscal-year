@@ -14,9 +14,23 @@ class FiscalYearInternalAPI {
   };
 
   getLanguageCode = () => {
-    var userLcid = this.getCurrentUserLcid();
+    const userLcid = this.getCurrentUserLcid();
 
     return userLcid === 1035 ? 'Finnish' : 'Default';
+  };
+
+  //request = { FiscalYearId: fiscalYearId, Comments: comments }
+  fiscalYearCommentsUpdate = async (fiscalYearId, comments) => {
+    return await this.executeTypeRequest('uds_FiscalYearUpdate', 1, {
+      FiscalYearId: fiscalYearId,
+      Comments: comments,
+    });
+  };
+
+  fiscalYearCreateBaseFolder = async (fiscalYearId) => {
+    return await this.executeRequest('uds_FiscalYearCreateBaseFolder', {
+      FiscalYearId: fiscalYearId,
+    });
   };
 
   getCooperativesInformationList = async (
@@ -170,6 +184,26 @@ class FiscalYearInternalAPI {
 
   executeRequest = async (request, requestJson) => {
     const requestXml = CrmAction.GenerateRequestXml(request, requestJson);
+
+    return await new Promise((success, error) =>
+      CrmAction.Execute({
+        requestXml: requestXml,
+        async: true,
+        successCallback: (data) => {
+          success(data.Response);
+          console.log(data);
+        },
+        errorCallback: (data) => error(data.message),
+      })
+    );
+  };
+
+  executeTypeRequest = async (request, requestType, requestJson) => {
+    const requestXml = CrmAction.GenerateRequestWithTypeXml(
+      request,
+      requestType,
+      requestJson
+    );
 
     return await new Promise((success, error) =>
       CrmAction.Execute({

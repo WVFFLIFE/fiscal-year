@@ -55,6 +55,7 @@ export interface Column {
   sortable?: boolean;
   align?: 'left' | 'center' | 'right';
   style?: CSSProperties;
+  type?: 'string' | 'date';
 }
 
 export interface AttributeHeaderModel {

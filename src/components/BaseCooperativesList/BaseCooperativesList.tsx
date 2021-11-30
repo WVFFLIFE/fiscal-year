@@ -1,3 +1,4 @@
+import { useState, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import useSearchTerm from 'hooks/useSearchTerm';
 import {
@@ -11,6 +12,7 @@ import Box from '@mui/material/Box';
 import PageSearch from 'components/controls/PageSearch';
 import CooperativesPicker from 'components/CooperativesPicker';
 import SelectCalendarYear from 'components/SelectCalendarYear';
+import QuickFilter, { QuickFilterOption } from 'components/QuickFilter';
 import {
   FiltersWrapper,
   ApplyButton,
@@ -27,12 +29,18 @@ const calendarYearOptions = buildCalendarYearOptions(
   new Date()
 );
 
+const quickFilterOptions: QuickFilterOption[] = [
+  { id: 'open_fy', label: 'Open FY' },
+  { id: 'open_fc', label: 'Open FC' },
+];
+
 interface BaseCooperativesListProps {
   showExtendedList: boolean;
   selectedCooperatives: CommonCooperativeModel[];
   calendarYear: CalendarYearOption | null;
   commonCooperatives: CommonCooperativeModel[];
   extendedCooperatives: ExtendedCooperativeModel[];
+  fetchExtendedCooperativesList(): Promise<void>;
   onChangeDefaultCooperative(
     defaultCooperative: ExtendedCooperativeModel
   ): void;
@@ -47,6 +55,7 @@ const BaseCooperativesList: React.FC<BaseCooperativesListProps> = ({
   calendarYear,
   commonCooperatives,
   extendedCooperatives,
+  fetchExtendedCooperativesList,
   onChangeDefaultCooperative,
   onChangeCalendarYear,
   onChangeCooperatives,
@@ -55,7 +64,29 @@ const BaseCooperativesList: React.FC<BaseCooperativesListProps> = ({
   const { t } = useTranslation();
   const classes = useStyles();
 
+  const [activeQuickFilter, setActiveQuickFilter] = useState<string | null>(
+    null
+  );
   const { searchTerm, onChangeSearchTerm } = useSearchTerm();
+
+  const handleChangeActiveQuickFilter = useCallback(
+    (newQuickFilter: string) => {
+      setActiveQuickFilter((prevState) =>
+        prevState === newQuickFilter ? null : newQuickFilter
+      );
+    },
+    []
+  );
+
+  const filteredExtendedCooperatives = useMemo(() => {
+    return extendedCooperatives.filter((coop) => {
+      return activeQuickFilter === 'open_fy'
+        ? !coop.IsFiscalYearClosed
+        : activeQuickFilter === 'open_fc'
+        ? !coop.IsFinancialCalculationsAccepted
+        : true;
+    });
+  }, [extendedCooperatives, activeQuickFilter]);
 
   const isDisabledCalendarYearPicker = !!!selectedCooperatives.length;
   const isSelectedCalendarYear = !!calendarYear;
@@ -88,13 +119,22 @@ const BaseCooperativesList: React.FC<BaseCooperativesListProps> = ({
             disabled={isDisabledCalendarYearPicker}
           />
         </Box>
-        <Box padding={4} paddingX={2}>
+        <Box marginRight={4} padding={4} paddingX={2}>
           <ApplyButton
             disabled={isDisabledApplyButton}
             onClick={onShowExtendedList}
           >
             {t('#button.apply')}
           </ApplyButton>
+        </Box>
+        <Box padding={4} paddingX={2}>
+          <QuickFilter
+            itemClassName={classes.filterItem}
+            active={activeQuickFilter}
+            onChange={handleChangeActiveQuickFilter}
+            options={quickFilterOptions}
+            disabled={!show && !extendedCooperatives.length}
+          />
         </Box>
         <Box
           display="flex"
@@ -117,8 +157,10 @@ const BaseCooperativesList: React.FC<BaseCooperativesListProps> = ({
               selectedCalendarYear={calendarYear}
             />
             <GeneralCooperativeTable
-              cooperatives={extendedCooperatives}
+              searchTerm={searchTerm}
+              cooperatives={filteredExtendedCooperatives}
               onSelectCooperative={onChangeDefaultCooperative}
+              fetchExtendedCooperativesList={fetchExtendedCooperativesList}
             />
           </Container>
         ) : (

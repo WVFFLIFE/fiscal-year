@@ -150,83 +150,88 @@ const Documents: React.FC<DocumentsTabProps> = ({ fiscalYear }) => {
           />
           <Box marginLeft="40px">
             <Tooltip title="Edit entity(ies)">
-              <ActionButton
-                className={classes.actionBtn}
-                disabled={!!!selectedItems.length || isDisabledEditButton}
-                onClick={() => handleOpenEditDocumentsDialog()}
-              >
-                <EditIcon className={classes.actionIcon} />
-              </ActionButton>
+              <span className={classes.btnOffset}>
+                <ActionButton
+                  disabled={!!!selectedItems.length || isDisabledEditButton}
+                  onClick={() => handleOpenEditDocumentsDialog()}
+                >
+                  <EditIcon className={classes.actionIcon} />
+                </ActionButton>
+              </span>
             </Tooltip>
             <Tooltip title="Delete entity(ies)">
-              <ActionButton
-                className={classes.actionBtn}
-                disabled={!!!selectedItems.length}
-                onClick={() =>
-                  handleOpenDeleteConfirmationDialog(selectedItems)
-                }
-              >
-                <DeleteIcon className={classes.actionIcon} />
-              </ActionButton>
+              <span className={classes.btnOffset}>
+                <ActionButton
+                  disabled={!!!selectedItems.length}
+                  onClick={() =>
+                    handleOpenDeleteConfirmationDialog(selectedItems)
+                  }
+                >
+                  <DeleteIcon className={classes.actionIcon} />
+                </ActionButton>
+              </span>
             </Tooltip>
             <Tooltip title="Download document(s)">
-              <ActionButton
-                className={classes.actionBtn}
-                disabled={!!!amount.docs}
-                onClick={saveSelected}
-              >
-                <DownloadIcon className={classes.actionIcon} />
-              </ActionButton>
+              <span className={classes.btnOffset}>
+                <ActionButton disabled={!!!amount.docs} onClick={saveSelected}>
+                  <DownloadIcon className={classes.actionIcon} />
+                </ActionButton>
+              </span>
             </Tooltip>
             {allPublished ? (
               <Tooltip title="Unpublish document(s)">
-                <ActionButton
-                  className={classes.actionBtn}
-                  disabled={!!!amount.docs || publishing}
-                  onClick={() => publishSelectedDocuments(false)}
-                >
-                  <UnpublishedIcon className={classes.actionIcon} />
-                </ActionButton>
+                <span className={classes.btnOffset}>
+                  <ActionButton
+                    disabled={!!!amount.docs || publishing}
+                    onClick={() => publishSelectedDocuments(false)}
+                  >
+                    <UnpublishedIcon className={classes.actionIcon} />
+                  </ActionButton>
+                </span>
               </Tooltip>
             ) : (
               <Tooltip title="Publish document(s)">
-                <ActionButton
-                  className={classes.actionBtn}
-                  disabled={!!!amount.docs || publishing}
-                  onClick={() => publishSelectedDocuments(true)}
-                >
-                  <PublishedIcon className={classes.actionIcon} />
-                </ActionButton>
+                <span className={classes.btnOffset}>
+                  <ActionButton
+                    disabled={!!!amount.docs || publishing}
+                    onClick={() => publishSelectedDocuments(true)}
+                  >
+                    <PublishedIcon className={classes.actionIcon} />
+                  </ActionButton>
+                </span>
               </Tooltip>
             )}
             <Tooltip title="Refresh documents">
-              <ActionButton
-                className={classes.actionBtn}
-                disabled={loading || publishing}
-                onClick={refreshData}
-              >
-                <RefreshIcon className={classes.actionIcon} />
-              </ActionButton>
+              <span className={classes.btnOffset}>
+                <ActionButton
+                  disabled={loading || publishing}
+                  onClick={refreshData}
+                >
+                  <RefreshIcon className={classes.actionIcon} />
+                </ActionButton>
+              </span>
             </Tooltip>
             <Tooltip title="Open sharepoint">
-              <ActionButton
-                className={classes.actionBtn}
-                disabled={!!!activeFolder?.Url}
-                href={activeFolder?.Url}
-                target="_blank"
-              >
-                <SharePointIcon className={classes.actionIcon} />
-              </ActionButton>
+              <span className={classes.btnOffset}>
+                <ActionButton
+                  disabled={!!!activeFolder?.Url}
+                  href={activeFolder?.Url}
+                  target="_blank"
+                >
+                  <SharePointIcon className={classes.actionIcon} />
+                </ActionButton>
+              </span>
             </Tooltip>
             <Tooltip title="Upload new document(s)">
-              <ActionButton
-                className={classes.actionBtn}
-                palette="darkBlue"
-                onClick={handleOpenUploadForm}
-                disabled={!!!activeFolder}
-              >
-                <PlusIcon className={classes.actionIcon} />
-              </ActionButton>
+              <span className={classes.btnOffset}>
+                <ActionButton
+                  palette="darkBlue"
+                  onClick={handleOpenUploadForm}
+                  disabled={!!!activeFolder}
+                >
+                  <PlusIcon className={classes.actionIcon} />
+                </ActionButton>
+              </span>
             </Tooltip>
           </Box>
         </Box>

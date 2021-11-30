@@ -138,6 +138,10 @@ interface FiscalYearListResponseModel extends BaseResponseModel {
 export type SettledResponse = PromiseSettledResult<BaseResponseModel>[];
 
 declare class DefaultService {
+  public fiscalYearCommentsUpdate(
+    fiscalYearId: string,
+    comments: string
+  ): Promise<BaseResponseModel>;
   public getCooperativesList(
     startDate?: string,
     endDate?: string,

@@ -21,3 +21,7 @@ body {
 .cell-actions {
   opacity: 0;
 }
+
+.highlighted {
+  background: lightgray;
+}
