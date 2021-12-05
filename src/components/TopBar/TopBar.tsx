@@ -9,7 +9,11 @@ import { LockIcon, CopyIcon } from 'components/Icons';
 
 import { useStyles } from './style';
 
-const TopBar = () => {
+interface TopBarProps {
+  showFiscalYearBtns: boolean;
+}
+
+const TopBar: React.FC<TopBarProps> = ({ showFiscalYearBtns }) => {
   const classes = useStyles();
   const { t } = useTranslation();
 
@@ -30,22 +34,24 @@ const TopBar = () => {
       }}
     >
       <Title>{t('#page.title')}</Title>
-      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-        <Button
-          size="large"
-          className={classes.offsetRight}
-          classes={cls}
-          label={t('#button.lockfydata')}
-          startIcon={<LockIcon />}
-        />
-        <Button
-          className={classes.offsetRight}
-          classes={cls}
-          label={t('#button.copyfy')}
-          startIcon={<CopyIcon />}
-        />
-        <AddFiscalYearButton />
-      </Box>
+      {showFiscalYearBtns && (
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Button
+            size="large"
+            className={classes.offsetRight}
+            classes={cls}
+            label={t('#button.lockfydata')}
+            startIcon={<LockIcon />}
+          />
+          <Button
+            className={classes.offsetRight}
+            classes={cls}
+            label={t('#button.copyfy')}
+            startIcon={<CopyIcon />}
+          />
+          <AddFiscalYearButton />
+        </Box>
+      )}
     </Box>
   );
 };

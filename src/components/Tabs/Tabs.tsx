@@ -5,6 +5,7 @@ import Box from '@mui/material/Box';
 import MuiTabs from '@mui/material/Tabs';
 import MuiTab from '@mui/material/Tab';
 import Documents, { DocumentsTabProps } from './Documents';
+import General, { GeneralTabProps } from './General';
 
 import { useStyles } from './style';
 
@@ -15,7 +16,7 @@ interface TabItemModel {
 }
 
 const tabsList: TabItemModel[] = [
-  { label: 'General', value: 'general', disabled: true },
+  { label: 'General', value: 'general' },
   {
     label: 'Fiscal Year Balances',
     value: 'fiscalYearBalances',
@@ -32,13 +33,14 @@ const tabsList: TabItemModel[] = [
 
 interface TabsProps {
   DocumentsTabProps: DocumentsTabProps;
+  GeneralTabProps: GeneralTabProps;
 }
 
-const Tabs: React.FC<TabsProps> = ({ DocumentsTabProps }) => {
+const Tabs: React.FC<TabsProps> = ({ DocumentsTabProps, GeneralTabProps }) => {
   const classes = useStyles();
   const { t } = useTranslation();
 
-  const [selectedTab, setSelectedTab] = useState<string>('documents');
+  const [selectedTab, setSelectedTab] = useState<string>('general');
 
   const handleChangeSelectedTab = (e: SyntheticEvent, newValue: string) => {
     setSelectedTab(newValue);
@@ -67,6 +69,7 @@ const Tabs: React.FC<TabsProps> = ({ DocumentsTabProps }) => {
         })}
       </MuiTabs>
       <Box className={classes.box}>
+        {selectedTab === 'general' && <General {...GeneralTabProps} />}
         {selectedTab === 'documents' && <Documents {...DocumentsTabProps} />}
       </Box>
     </Box>

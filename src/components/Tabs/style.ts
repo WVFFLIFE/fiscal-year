@@ -30,4 +30,7 @@ export const useStyles = makeStyles((theme) => ({
     padding: '25px 20px',
     background: '#fff',
   },
+  loader: {
+    color: theme.color.darkBlue,
+  },
 }));

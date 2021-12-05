@@ -29,17 +29,6 @@ function sortCooperatives<T extends CommonCooperativeModel>(coops: T[]) {
   return _orderBy(coops, (coop) => _toLower(coop.Name), 'asc');
 }
 
-const quickFilterOptions: QuickFilterOption[] = [
-  {
-    id: 'myOwn',
-    label: '#control.quickfilter.myown',
-  },
-  {
-    id: 'pmCompany',
-    label: '#control.quickfilter.pmcompany',
-  },
-];
-
 interface CooperativesPickerProps<T extends CommonCooperativeModel> {
   multiple?: boolean;
   cooperatives: T[];
@@ -109,7 +98,8 @@ const Body = <T extends CommonCooperativeModel>({
           : prevCoops.concat(currentCooperative)
       );
     } else {
-      setCurrentCooperative(remove ? [] : [currentCooperative]);
+      onSelectCooperatives([currentCooperative]);
+      onClosePicker();
     }
   };
 
@@ -148,7 +138,9 @@ const Body = <T extends CommonCooperativeModel>({
       ? groupedList.filter((cooperative) => {
           return activeQuickFilter === 'myOwn'
             ? cooperative.IsOwn
-            : cooperative.IsPMCompanyEmployee;
+            : activeQuickFilter === 'pmCompany'
+            ? cooperative.IsPMCompanyEmployee
+            : true;
         })
       : groupedList;
   }, [groupedList, activeQuickFilter]);
@@ -158,6 +150,30 @@ const Body = <T extends CommonCooperativeModel>({
       return filterBySearchTerm(cooperative.Name, searchTerm);
     });
   }, [filteredCooperativesByQuickFilter, searchTerm]);
+
+  const quickFilterOptions: QuickFilterOption[] = useMemo(
+    () =>
+      [
+        {
+          id: 'myOwn',
+          label: '#control.quickfilter.myown',
+        },
+        {
+          id: 'pmCompany',
+          label: '#control.quickfilter.pmcompany',
+        },
+      ].concat(
+        multiple
+          ? []
+          : [
+              {
+                id: 'all',
+                label: '#control.quickfilter.all',
+              },
+            ]
+      ),
+    [multiple]
+  );
 
   return (
     <div
@@ -205,27 +221,30 @@ const Body = <T extends CommonCooperativeModel>({
         </Box>
       )}
       <CooperativesList
+        className={classes.list}
         multiple={multiple}
         cooperatives={filteredCooperativesBySearchTerm}
         selected={currentCooperative}
         onClickItem={handleClickItem}
       />
-      <Box
-        display="flex"
-        alignItems="center"
-        justifyContent="flex-end"
-        marginTop="20px"
-      >
-        <CancelButton
-          className={classes.cancelBtnOffsetRight}
-          onClick={onClosePicker}
+      {multiple ? (
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="flex-end"
+          marginTop="20px"
         >
-          {t('#button.cancel')}
-        </CancelButton>
-        <ApplyButton onClick={handleSelectCooperatives}>
-          {t('#button.apply')}
-        </ApplyButton>
-      </Box>
+          <CancelButton
+            className={classes.cancelBtnOffsetRight}
+            onClick={onClosePicker}
+          >
+            {t('#button.cancel')}
+          </CancelButton>
+          <ApplyButton onClick={handleSelectCooperatives}>
+            {t('#button.apply')}
+          </ApplyButton>
+        </Box>
+      ) : null}
     </div>
   );
 };

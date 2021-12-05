@@ -9,6 +9,8 @@ export type {
   ExtendedCooperativeModel,
   FiscalYearModel,
   MettadataAttributeModel,
+  MeetingModel,
+  AuditingModel,
 } from 'services';
 export type { SortModel, SortParamsType } from 'hooks/useSort';
 export type { CalendarYearOption } from 'components/SelectCalendarYear';

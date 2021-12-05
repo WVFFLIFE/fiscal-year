@@ -19,6 +19,13 @@ export const Container = styled('div')(({ theme }) => ({
   boxShadow: '0px 5px 15px rgba(0, 0, 0, 0.05)',
 }));
 
+export const LoadingContainer = styled('div')(() => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: 30,
+}));
+
 export const Logo = styled('img')(() => ({
   display: 'block',
   maxWidth: '100%',
@@ -71,7 +78,7 @@ export const ApplyButton = styled(ButtonShape)(({ theme }) => ({
   color: '#fff',
   letterSpacing: 0.318182,
   '&:hover': {
-    color: theme.color.darkBlue,
+    background: theme.color.blue2,
   },
   '&.Mui-disabled': {
     opacity: 1,
@@ -197,5 +204,14 @@ export const InfoBox = styled('div')(({ theme }) => ({
   fontSize: 18,
   fontFamily: 'Proxima Nova',
   fontWeight: 300,
+  color: '#000',
+}));
+
+export const SubTitle = styled('h3')(({ theme }) => ({
+  margin: 0,
+  padding: 0,
+  fontSize: 18,
+  fontWeight: 600,
+  fontFamily: 'Proxima Nova',
   color: '#000',
 }));

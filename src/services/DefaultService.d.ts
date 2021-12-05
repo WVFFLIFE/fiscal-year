@@ -1,3 +1,5 @@
+import { ResponseStatus } from 'models/response-status-model';
+
 interface BaseResponseModel {
   IsSuccess: boolean;
   Message: string;
@@ -98,7 +100,6 @@ export interface CommonCooperativeModel extends BaseCooperativeModel {
   IsOwn: boolean;
   IsPMCompanyEmployee: boolean;
   LatestClosedDate: string;
-  DefaultFiscalYear: FiscalYearModel | null;
   Name: string;
 }
 
@@ -135,12 +136,130 @@ interface FiscalYearListResponseModel extends BaseResponseModel {
   FiscalYears: FiscalYearModel[];
 }
 
+export interface AuditingModel {
+  ActualEndingDate: string | null;
+  ActualStartingDate: string | null;
+  Id: string;
+  Link: string | null;
+  PlannedEndingDate: string | null;
+  PlannedStartingDate: string | null;
+  Type: string | null;
+}
+
+export interface MeetingModel {
+  ActualEndingDate: string | null;
+  ActualStartingDate: string | null;
+  Id: string;
+  Link: string | null;
+  PlannedEndingDate: string | null;
+  PlannedStartingDate: string | null;
+  Type: string | null;
+}
+
+export interface GeneralFiscalYearModel {
+  AnnualGeneralMeetings: string | null;
+  AnnualGeneralMeetingsFormatted: string | null;
+  AnnualGeneralMeetingsHtml: string | null;
+  Auditings: AuditingModel[];
+  BoardsProposalOnThePL: string | null;
+  BoardsProposalOnThePLFormatted: string | null;
+  BoardsProposalOnThePLHtml: string | null;
+  BudgetComprasion: string | null;
+  BudgetComprasionFormatted: string | null;
+  BudgetComprasionHtml: string | null;
+  ConsumptionData: string | null;
+  ConsumptionDataFormatted: string | null;
+  ConsumptionDataHtml: string | null;
+  CooperativeId: string;
+  CooperativeName: string;
+  EndDate: string | null;
+  EssentialEvents: string | null;
+  EssentialEventsFormatted: string | null;
+  EssentialEventsHtml: string | null;
+  FutureDevelopment: string | null;
+  FutureDevelopmentFormatted: string | null;
+  FutureDevelopmentHtml: string | null;
+  Id: string;
+  IsClosed: boolean | null;
+  Liquidity: string | null;
+  LiquidityFormatted: string | null;
+  LiquidityHtml: string | null;
+  Meetings: MeetingModel[];
+  Name: string;
+  PersistentStrainsAndMortgages: string | null;
+  PersistentStrainsAndMortgagesFormatted: string | null;
+  PersistentStrainsAndMortgagesHtml: string | null;
+  PropertyMeintenanceProductName: string | null;
+  PropertyMeintenanceSurplusDeficitPreviousFY: string | null;
+  SpecFinCalcProductName1: string | null;
+  SpecFinCalcProductName2: string | null;
+  SpecFinCalcProductName3: string | null;
+  SpecFinCalcProductName4: string | null;
+  SpecFinCalcProductName5: string | null;
+  SpecFinCalcSurplusDeficitPreviousFY1: string | null;
+  SpecFinCalcSurplusDeficitPreviousFY2: string | null;
+  SpecFinCalcSurplusDeficitPreviousFY3: string | null;
+  SpecFinCalcSurplusDeficitPreviousFY4: string | null;
+  SpecFinCalcSurplusDeficitPreviousFY5: string | null;
+  StartDate: string | null;
+  TheBoardOfDirectorsConvenedDuringTheFY: string | null;
+  TheBoardOfDirectorsConvenedDuringTheFYFormatted: string | null;
+  TheBoardOfDirectorsConvenedDuringTheFYHtml: string | null;
+  VATCalculationsProductName: string | null;
+  VATCalculationsSurplusDeficitPreviousFY: string | null;
+}
+
+interface GeneralFiscalYearModelRes extends BaseResponseModel {
+  FiscalYear: GeneralFiscalYearModel;
+}
+
+interface CoverImageRes extends BaseResponseModel {
+  Attachment: { Content: string | null };
+}
+
+interface FiscalYearGeneralUpdateRequestModel {
+  FiscalYearId: string;
+  StartDate: string;
+  EndDate: string;
+}
+
+interface FiscalYearCommentsUpdateRequest {
+  FiscalYearId: string;
+  Comments: string;
+}
+
+interface FiscalYearValidationRes extends BaseResponseModel {
+  ValidationResult: ResponseStatus.FiscalYearValidatingStatus | null;
+}
+
 export type SettledResponse = PromiseSettledResult<BaseResponseModel>[];
 
 declare class DefaultService {
-  public fiscalYearCommentsUpdate(
+  public fiscalYearGeneralUpdate(
+    request: FiscalYearGeneralUpdateRequestModel
+  ): Promise<BaseResponseModel>;
+  public validateFiscalYearChanges(
+    cooperativeId: null,
     fiscalYearId: string,
-    comments: string
+    startDate: string,
+    endDate: string
+  ): Promise<FiscalYearValidationRes>;
+  public validateFiscalYearChanges(
+    cooperativeId: string,
+    fiscalYearId: null,
+    startDate: string,
+    endDate: string
+  ): Promise<BaseResponseModel>;
+  public getCooperativeCover(coopId: string): Promise<CoverImageRes>;
+  public updateCooperativeCover(request: {
+    CooperativeId: string;
+    Content: string | null;
+  }): Promise<BaseResponseModel>;
+  public getFiscalYear(
+    fiscalYearId: string
+  ): Promise<GeneralFiscalYearModelRes>;
+  public fiscalYearCommentsUpdate(
+    request: FiscalYearCommentsUpdateRequest
   ): Promise<BaseResponseModel>;
   public getCooperativesList(
     startDate?: string,

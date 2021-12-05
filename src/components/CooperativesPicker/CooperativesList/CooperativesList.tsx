@@ -13,6 +13,7 @@ import 'react-virtualized/styles.css'; // only needs to be imported once
 import { useStyles } from './style';
 
 export interface CooperativesListProps<T extends CommonCooperativeModel> {
+  className?: string;
   multiple: boolean;
   cooperatives: T[];
   selected: T[];
@@ -27,6 +28,7 @@ const rowCache = new CellMeasurerCache({
 });
 
 const CooperativesList = <T extends CommonCooperativeModel>({
+  className,
   multiple,
   cooperatives,
   selected,
@@ -63,6 +65,7 @@ const CooperativesList = <T extends CommonCooperativeModel>({
 
   return (
     <div
+      className={className}
       style={{
         width: '100%',
         minWidth: !!cooperatives.length ? 400 : 0,

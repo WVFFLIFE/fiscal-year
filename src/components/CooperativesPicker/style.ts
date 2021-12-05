@@ -33,6 +33,9 @@ export const useBodyStyles = makeStyles(() => ({
       fontSize: 12,
     },
   },
+  list: {
+    marginBottom: 40,
+  },
 }));
 
 export const useStyles = makeStyles(() => ({

@@ -1,8 +1,7 @@
 import { useState, useEffect, ChangeEvent, memo, MouseEvent } from 'react';
+import useFirstMount from 'hooks/useFirstMount';
 
-import format from 'date-fns/format';
-import isValid from 'date-fns/isValid';
-import { DEFAULT_FORMAT_PATTERN } from 'utils';
+import { defaultFormat, isValid, format } from 'utils/dates';
 
 import { IconButton } from 'components/Styled';
 import { CalendarIcon } from 'components/Icons';
@@ -11,18 +10,28 @@ import clsx from 'clsx';
 import { useStyles } from './style';
 
 function getDateStr(date: Date | null) {
-  return date ? format(date, DEFAULT_FORMAT_PATTERN) : '';
+  return date ? defaultFormat(date) : '';
+}
+
+function validateYear(year: string) {
+  return +year >= 1900 && +year <= 2099;
+}
+
+function validate(date: Date) {
+  return isValid(date) && validateYear(format(date, 'yyyy'));
 }
 
 function parseDate(d: string) {
   let regex = /^(0?[1-9]|[12][0-9]|3[01])[.](0?[1-9]|1[012])[.]\d{4}$/;
   let dateStr = d.replace(/\/|-/g, '.');
 
-  if (!regex.test(dateStr)) return null;
+  if (!regex.test(dateStr)) return new Date('invalid');
 
   let [dd, mm, yyyy] = dateStr.split('.');
 
-  return new Date(`${yyyy}-${mm.padStart(2, '0')}-${dd.padStart(2, '0')}`);
+  return new Date(
+    `${yyyy.padStart(4, '0')}-${mm.padStart(2, '0')}-${dd.padStart(2, '0')}`
+  );
 }
 
 interface InputProps {
@@ -42,6 +51,7 @@ const Input: React.FC<InputProps> = ({
 }) => {
   const classes = useStyles();
 
+  const firstMount = useFirstMount();
   const [value, setValue] = useState('');
   const [validationError, setValidationError] = useState(false);
   const [focused, setFocused] = useState(false);
@@ -55,12 +65,16 @@ const Input: React.FC<InputProps> = ({
   }, [date]);
 
   useEffect(() => {
-    if (value === '') {
-      setValidationError(false);
-    } else {
-      setValidationError(!isValid(parsedDate));
+    if (!firstMount) {
+      if (value) {
+        const valid = validate(parseDate(value));
+        setValidationError(!valid);
+      } else {
+        setValidationError(false);
+      }
+      onChange(value ? parseDate(value) : null);
     }
-  }, [parsedDate, value]);
+  }, [value]);
 
   const handleChangeInput = (e: ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value);

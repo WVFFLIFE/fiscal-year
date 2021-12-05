@@ -1,4 +1,4 @@
-import { memo, useState, useEffect, useRef, ChangeEvent } from 'react';
+import { memo, useState, ChangeEvent } from 'react';
 
 import { ExtendedCooperativeModel } from 'models';
 import { defaultFormat } from 'utils/dates';
@@ -34,8 +34,6 @@ const GeneralCooperativesTableRow: React.FC<GeneralCooperativesTableRowPropsMode
   ({ searchTerm, cooperative, onSelectCooperative, saveComment }) => {
     const classes = useStyles();
 
-    const firstRender = useRef(true);
-
     const [fyComment, setFyComment] = useState(
       cooperative.FiscalYearComments || ''
     );
@@ -63,16 +61,6 @@ const GeneralCooperativesTableRow: React.FC<GeneralCooperativesTableRowPropsMode
 
       setFyComment(value);
     };
-
-    useEffect(() => {
-      if (firstRender.current) {
-        firstRender.current = false;
-      } else {
-        if (!isCommentFieldActive) {
-          handleSaveComment();
-        }
-      }
-    }, [isCommentFieldActive]);
 
     const highlight = getText(searchTerm);
 

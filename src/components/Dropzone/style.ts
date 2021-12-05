@@ -11,6 +11,9 @@ export const useStyles = makeStyles((theme) => ({
     borderRadius: 15,
     transition: 'background .15s linear',
   },
+  disabled: {
+    opacity: 0.4,
+  },
   dragActive: {
     background: theme.color.transparentBlue,
   },

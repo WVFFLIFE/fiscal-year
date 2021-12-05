@@ -151,7 +151,10 @@ const GeneralCooperativeTable: React.FC<GeneralCooperativeTableProps> = ({
         error: null,
       }));
 
-      const res = await Services.fiscalYearCommentsUpdate(fyId, comment);
+      const res = await Services.fiscalYearCommentsUpdate({
+        FiscalYearId: fyId,
+        Comments: comment,
+      });
 
       if (res.IsSuccess) {
         setState((prevState) => ({

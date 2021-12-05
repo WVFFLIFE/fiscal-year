@@ -38,3 +38,4 @@ export { default as RoundQuestionIcon } from './RoundQuestionIcon';
 export { default as ErrorOutlineIcon } from './ErrorOutline';
 export { default as UnpublishedIcon } from './UnpublishedIcon';
 export { default as IcList } from './IcList';
+export { default as EyeIcon } from './EyeIcon';

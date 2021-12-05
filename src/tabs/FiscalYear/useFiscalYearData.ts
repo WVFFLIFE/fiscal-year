@@ -18,7 +18,7 @@ interface StateModel {
   error: ErrorModel | null;
   selectedCalendarYear: CalendarYearOption | null;
   showGeneralPage: boolean;
-  showExtendedList: boolean;
+  showSummaryPage: boolean;
 }
 
 const useFiscalYearData = () => {
@@ -26,13 +26,13 @@ const useFiscalYearData = () => {
     commonCooperatives: [],
     extendedCooperatives: [],
     selectedCooperatives: [],
-    defaultCooperative: null,
-    defaultFiscalYear: null,
+    defaultCooperative: (window.top as any)?.selectedData?.orgId,
+    defaultFiscalYear: (window.top as any)?.selectedData?.fyId,
     error: null,
     loading: true,
     selectedCalendarYear: null,
     showGeneralPage: false,
-    showExtendedList: false,
+    showSummaryPage: false,
   });
 
   const fetchExtendedCooperativesList = async () => {
@@ -122,15 +122,15 @@ const useFiscalYearData = () => {
   useEffect(() => {
     setState((prevState) => ({
       ...prevState,
-      showExtendedList: false,
+      showSummaryPage: false,
     }));
   }, [state.selectedCooperatives, state.selectedCalendarYear]);
 
   useEffect(() => {
-    if (state.showExtendedList) {
+    if (state.showSummaryPage) {
       fetchExtendedCooperativesList();
     }
-  }, [state.showExtendedList]);
+  }, [state.showSummaryPage]);
 
   const handleChangeDefaultCooperative = (coop: ExtendedCooperativeModel) => {
     setState((prevState) => ({
@@ -159,7 +159,7 @@ const useFiscalYearData = () => {
   const handleShowExtendedList = () => {
     setState((prevState) => ({
       ...prevState,
-      showExtendedList: true,
+      showSummaryPage: true,
     }));
   };
 

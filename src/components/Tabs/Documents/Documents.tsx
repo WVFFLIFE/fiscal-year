@@ -49,10 +49,10 @@ const successMessages: { [key: string]: string } = {
 const rowsPerPage = [5, 10, 15];
 
 export interface DocumentsTabProps {
-  fiscalYear: FiscalYearModel;
+  fiscalYearId: string;
 }
 
-const Documents: React.FC<DocumentsTabProps> = ({ fiscalYear }) => {
+const Documents: React.FC<DocumentsTabProps> = ({ fiscalYearId }) => {
   const classes = useStyles();
 
   const {
@@ -110,7 +110,7 @@ const Documents: React.FC<DocumentsTabProps> = ({ fiscalYear }) => {
     handleOpenEditDocumentDialog,
     handleCloseEditDocumentDialog,
     handleInitEditDocumentDialog,
-  } = useDocumentsData(fiscalYear);
+  } = useDocumentsData(fiscalYearId);
 
   return (
     <Box>

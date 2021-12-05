@@ -104,3 +104,18 @@ export function isAllMyOwn(
       !!selectedCooperatives.find((selectedCoop) => selectedCoop.Id === coop.Id)
   );
 }
+
+export async function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export function readFile(file: File): Promise<string> {
+  const reader = new FileReader();
+  return new Promise((resolve, reject) => {
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      resolve(String(reader.result));
+    };
+    reader.onerror = (error) => reject(error);
+  });
+}

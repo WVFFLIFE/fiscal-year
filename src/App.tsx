@@ -1,11 +1,14 @@
+import { GeneralProvider } from 'contexts/GeneralContext';
 import FiscalYear from 'tabs/FiscalYear';
 import { RootContainer } from 'components/Styled';
 
 const App = () => {
   return (
-    <RootContainer>
-      <FiscalYear />
-    </RootContainer>
+    <GeneralProvider>
+      <RootContainer>
+        <FiscalYear />
+      </RootContainer>
+    </GeneralProvider>
   );
 };
 

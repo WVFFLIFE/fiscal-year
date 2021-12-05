@@ -1,8 +1,6 @@
-import { useEffect, useState } from 'react';
-import { Column, SortModel } from 'models';
-import format from 'date-fns/format';
-import isValid from 'date-fns/isValid';
-import { DEFAULT_FORMAT_PATTERN } from 'utils';
+import { useState, useCallback } from 'react';
+import { Column } from 'models';
+import { defaultFormat, isValid } from 'utils/dates';
 
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -13,7 +11,6 @@ import { BodyTableCell, BodyTableRow } from 'components/Styled';
 import { EditIcon, RoundCheckIcon, CloseIcon } from 'components/Icons';
 
 import clsx from 'clsx';
-import { useTheme } from '@mui/material';
 import { useStyles } from './style';
 
 const columns: Column[] = [
@@ -32,7 +29,6 @@ const columns: Column[] = [
     style: { width: 200 },
   },
   { field: 'Closed', label: '#table.generalinfo.closed' },
-  { field: 'Owner', label: '#table.generalinfo.owner' },
   {
     field: '_action',
     label: '#table.generalinfo.action',
@@ -41,16 +37,13 @@ const columns: Column[] = [
   },
 ];
 
-const data = [
-  {
-    Id: 'id1',
-    Name: 'Linnoitustie 19, KANGASALA, Pirkanmaa',
-    StartingDate: '2021-01-01T00:00:00+03:00',
-    EndingDate: null,
-    Closed: false,
-    Owner: 'Teemu Kuusisto',
-  },
-];
+export interface GeneralInformationDataModel {
+  Id: string;
+  Name: string;
+  StartDate: string | null;
+  EndDate: string | null;
+  IsClosed: boolean | null;
+}
 
 interface EditableDataModel {
   startDate: Date | null;
@@ -58,33 +51,22 @@ interface EditableDataModel {
   id: string | null;
 }
 
-const GeneralInformationTable = () => {
-  const theme = useTheme();
+interface GeneralInformationTableProps {
+  list: GeneralInformationDataModel[];
+  onSaveFiscalYear(startDate: Date, endDate: Date): Promise<true | undefined>;
+}
+
+const GeneralInformationTable: React.FC<GeneralInformationTableProps> = ({
+  list,
+  onSaveFiscalYear,
+}) => {
   const classes = useStyles();
 
-  const [sortParams, setSortParams] = useState<SortModel>({
-    order: 'asc',
-    orderBy: 'StartDate',
-    type: 'date',
-  });
   const [editableData, setEditableData] = useState<EditableDataModel>({
     id: null,
     startDate: null,
     endDate: null,
   });
-
-  const handleChangeSortParams = (orderBy: string) => {
-    setSortParams((prevState) => ({
-      order:
-        orderBy === prevState.orderBy
-          ? prevState.order === 'asc'
-            ? 'desc'
-            : 'asc'
-          : 'asc',
-      orderBy,
-      type: 'alphanumeric',
-    }));
-  };
 
   const handleChangeEditableData = (
     key: keyof EditableDataModel,
@@ -96,13 +78,13 @@ const GeneralInformationTable = () => {
     }));
   };
 
-  const handleChangeStartDate = (d: Date | null) => {
+  const handleChangeStartDate = useCallback((d: Date | null) => {
     handleChangeEditableData('startDate', d);
-  };
+  }, []);
 
-  const handleChangeEndDate = (d: Date | null) => {
+  const handleChangeEndDate = useCallback((d: Date | null) => {
     handleChangeEditableData('endDate', d);
-  };
+  }, []);
 
   const handleAllowEdit = (editableData: Partial<EditableDataModel>) => {
     setEditableData((prevState) => ({
@@ -115,19 +97,24 @@ const GeneralInformationTable = () => {
     setEditableData({ id: null, endDate: null, startDate: null });
   };
 
+  const handleSave = async () => {
+    if (editableData.endDate && editableData.startDate) {
+      const isSaved = await onSaveFiscalYear(
+        editableData.startDate,
+        editableData.endDate
+      );
+
+      if (isSaved) handleResetEditableData();
+    }
+  };
+
   return (
     <Table>
-      <TableHead
-        columns={columns}
-        sort={sortParams}
-        onChangeSortParams={handleChangeSortParams}
-      />
+      <TableHead columns={columns} className={classes.row} />
       <TableBody>
-        {data.map((item) => {
-          const startDate = item.StartingDate
-            ? new Date(item.StartingDate)
-            : null;
-          const endDate = item.EndingDate ? new Date(item.EndingDate) : null;
+        {list.map((item, idx) => {
+          const startDate = item.StartDate ? new Date(item.StartDate) : null;
+          const endDate = item.EndDate ? new Date(item.EndDate) : null;
           const open = editableData.id === item.Id;
 
           return (
@@ -138,12 +125,13 @@ const GeneralInformationTable = () => {
               <BodyTableCell>
                 {open ? (
                   <DatePicker
+                    open={true}
                     className={classes.datepicker}
                     date={editableData.startDate}
                     onChange={handleChangeStartDate}
                   />
                 ) : startDate ? (
-                  format(startDate, DEFAULT_FORMAT_PATTERN)
+                  defaultFormat(startDate)
                 ) : (
                   '&#9473;'
                 )}
@@ -156,15 +144,12 @@ const GeneralInformationTable = () => {
                     onChange={handleChangeEndDate}
                   />
                 ) : endDate ? (
-                  format(endDate, DEFAULT_FORMAT_PATTERN)
+                  defaultFormat(endDate)
                 ) : (
                   '-'
                 )}
               </BodyTableCell>
-              <BodyTableCell>{item.Closed ? 'No' : 'Yes'}</BodyTableCell>
-              <BodyTableCell>
-                <span className={classes.link}>{item.Owner}</span>
-              </BodyTableCell>
+              <BodyTableCell>{item.IsClosed ? 'Yes' : 'No'}</BodyTableCell>
               <BodyTableCell align="right">
                 <div className={clsx('cell-actions', classes.centered)}>
                   {open ? (
@@ -179,9 +164,11 @@ const GeneralInformationTable = () => {
                       <ActionButton
                         disableRipple
                         palette="darkBlue"
-                        onClick={() =>
-                          handleAllowEdit({ id: item.Id, startDate, endDate })
+                        disabled={
+                          !isValid(editableData.startDate) ||
+                          !isValid(editableData.endDate)
                         }
+                        onClick={handleSave}
                       >
                         <RoundCheckIcon className={classes.icon} />
                       </ActionButton>
@@ -190,6 +177,7 @@ const GeneralInformationTable = () => {
                     <ActionButton
                       disableRipple
                       palette="darkBlue"
+                      disabled={!!item.IsClosed}
                       onClick={() =>
                         handleAllowEdit({ id: item.Id, startDate, endDate })
                       }

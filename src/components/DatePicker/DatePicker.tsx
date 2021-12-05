@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback, useEffect, memo } from 'react';
 
 import Popover from '@mui/material/Popover';
 import Fade from '@mui/material/Fade';
@@ -7,6 +7,7 @@ import Input from './Input';
 import Body from './Body';
 
 interface DatePickerProps {
+  open?: boolean;
   date: Date | null;
   min?: Date;
   max?: Date;
@@ -16,6 +17,7 @@ interface DatePickerProps {
 }
 
 const DatePicker: React.FC<DatePickerProps> = ({
+  open: openDefault = false,
   date,
   min,
   max,
@@ -26,9 +28,13 @@ const DatePicker: React.FC<DatePickerProps> = ({
   const anchorEl = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
 
-  const handleOpen = () => {
+  useEffect(() => {
+    setOpen(openDefault);
+  }, [openDefault]);
+
+  const handleOpen = useCallback(() => {
     setOpen(true);
-  };
+  }, []);
 
   const handleClose = () => {
     setOpen(false);
@@ -64,4 +70,4 @@ const DatePicker: React.FC<DatePickerProps> = ({
   );
 };
 
-export default DatePicker;
+export default memo(DatePicker);

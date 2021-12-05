@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDropzone } from 'react-dropzone';
 
 import Button from '@mui/material/Button';
@@ -12,6 +13,7 @@ interface DropzoneProps {
   multiple?: boolean;
   accept?: string;
   onChange?(files: File[]): void;
+  disabled?: boolean;
 }
 
 const Dropzone: React.FC<DropzoneProps> = ({
@@ -19,12 +21,15 @@ const Dropzone: React.FC<DropzoneProps> = ({
   maxFiles,
   multiple,
   accept,
+  disabled = false,
   onChange,
 }) => {
   const classes = useStyles();
+  const { t } = useTranslation();
 
   const { getRootProps, getInputProps, open, isDragActive, acceptedFiles } =
     useDropzone({
+      disabled,
       accept,
       maxFiles,
       multiple,
@@ -43,13 +48,20 @@ const Dropzone: React.FC<DropzoneProps> = ({
       {...getRootProps()}
       className={clsx(classes.root, className, {
         [classes.dragActive]: isDragActive,
+        [classes.disabled]: disabled,
       })}
     >
       <input {...getInputProps()} />
-      <span className={classes.text}>Drop attachments here</span>
-      <span className={classes.or}>or</span>
-      <Button className={classes.btn} onClick={open}>
-        Select
+      <span className={classes.text}>
+        {t(
+          maxFiles === 1
+            ? `#control.dropzone.attachment`
+            : '#control.dropzone.attachments'
+        )}
+      </span>
+      <span className={classes.or}>{t('#common.or')}</span>
+      <Button className={classes.btn} onClick={open} disabled={disabled}>
+        {t('#button.select')}
       </Button>
     </div>
   );

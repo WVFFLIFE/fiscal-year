@@ -1,5 +1,10 @@
 {
+  "#error.fiscalyear.validating.status.2": "Selected date(s) incorrect",
+  "#error.fiscalyear.validating.status.3": "The length of the fiscal year is incorrect. Check the length of the fiscal year.",
+  "#error.fiscalyear.validating.status.4": "A record for this date is already exists!",
   "#page.title": "Fiscal Year",
+  "#common.fiscalyear": "Fiscal Year",
+  "#common.or": "OR",
   "#control.cooperativepicker.placeholder": "Select cooperative",
   "#control.fiscalyearpicker.placeholder": "Select fiscal year",
   "#button.lockfydata": "Lock Fiscal Year Data",
@@ -8,6 +13,9 @@
   "#button.cancel": "Cancel",
   "#button.apply": "Apply",
   "#button.delete": "Delete",
+  "#button.select": "Select",
+  "#control.dropzone.attachment": "Drop attachment here",
+  "#control.dropzone.attachmens": "Drop attachments here",
   "#control.quickfilter.myown": "My own",
   "#control.quickfilter.all": "All",
   "#control.quickfilter.pmcompany": "PM Company",
@@ -22,6 +30,7 @@
   "#pagination.direction.previous": "Previous",
   "#pagination.direction.next": "Next",
   "#pagination.count.perpage": "Rows per page",
+  "#tab.generalinformation": "General Information",
   "#tab.documents": "Documents",
   "#table.summary.cooperative": "Cooperative",
   "#table.summary.periodclosed": "Period closed",
@@ -43,5 +52,11 @@
   "#table.documents.modified": "Modified",
   "#table.documents.modifiedby": "Modified by",
   "#table.documents.action": "Action",
-  "#dialog.confirmation.delete": "Are you sure, you want to delete selected elements?"
+  "#dialog.confirmation.delete": "Are you sure, you want to delete selected elements?",
+  "#tab.general.subtitle.events": "Events",
+  "#tab.general.meetings.table.meetingtype": "Meeting type",
+  "#tab.general.meetings.table.startdatetime": "Start date & time",
+  "#tab.general.auditing.table.auditing": "Auditing",
+  "#tab.general.auditing.table.startdate": "Start date",
+  "#tab.general.coverpageimage": "Cover page image"
 }

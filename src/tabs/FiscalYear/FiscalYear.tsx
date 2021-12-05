@@ -1,44 +1,29 @@
+import { useContext } from 'react';
 import useFiscalYearData from './useFiscalYearData';
+import { GeneralCtx } from 'contexts/GeneralContext';
 
 import TopBar from 'components/TopBar';
 import Backdrop from 'components/Backdrop';
 import DialogError from 'components/DialogError';
-import BaseCooperativesList from 'components/BaseCooperativesList';
+import SummaryPage from 'components/SummaryPage';
 import GeneralPage from 'components/GeneralPage';
 
 const FiscalYear = () => {
   const {
-    state,
-    fetchExtendedCooperativesList,
-    handleInitError,
-    handleChangeDefaultCooperative,
-    handleChangeCalendarYear,
-    handleChangeSelectedCooperatives,
-    handleShowExtendedList,
-  } = useFiscalYearData();
+    state: { defaultFiscalYearId, defaultCooperativeId, generalInformation },
+  } = useContext(GeneralCtx);
+  const { state, handleInitError } = useFiscalYearData();
 
   return (
     <>
-      <TopBar />
-      {state.defaultCooperative && state.selectedCalendarYear ? (
+      <TopBar showFiscalYearBtns={!!generalInformation.data} />
+      {defaultCooperativeId && defaultFiscalYearId ? (
         <GeneralPage
-          selectedCalendarYear={state.selectedCalendarYear}
-          defaultCooperativeId={state.defaultCooperative}
-          defaultFiscalYearId={state.defaultFiscalYear}
+          defaultCooperativeId={defaultCooperativeId}
+          defaultFiscalYearId={defaultFiscalYearId}
         />
       ) : (
-        <BaseCooperativesList
-          selectedCooperatives={state.selectedCooperatives}
-          calendarYear={state.selectedCalendarYear}
-          commonCooperatives={state.commonCooperatives}
-          extendedCooperatives={state.extendedCooperatives}
-          fetchExtendedCooperativesList={fetchExtendedCooperativesList}
-          onChangeDefaultCooperative={handleChangeDefaultCooperative}
-          onChangeCalendarYear={handleChangeCalendarYear}
-          onChangeCooperatives={handleChangeSelectedCooperatives}
-          onShowExtendedList={handleShowExtendedList}
-          showExtendedList={state.showExtendedList}
-        />
+        <SummaryPage commonCooperatives={state.commonCooperatives} />
       )}
       <Backdrop loading={state.loading} />
       <DialogError error={state.error} initError={handleInitError} />

@@ -1,5 +1,10 @@
 {
+  "#error.fiscalyear.validating.status.2": "",
+  "#error.fiscalyear.validating.status.3": "Tarkista tilikauden pituus.",
+  "#error.fiscalyear.validating.status.4": "",
   "#page.title": "Tilikausi",
+  "#common.fiscalyear": "Tilikausi",
+  "#common.or": "TAI",
   "#control.cooperativepicker.placeholder": "Valitse yhtiö",
   "#control.fiscalyearpicker.placeholder": "Valitse tilikausi",
   "#button.lockfydata": "Lukitse tilikauden tiedot",
@@ -8,6 +13,9 @@
   "#button.cancel": "Peruuta",
   "#button.apply": "Käytä",
   "#button.delete": "Poista",
+  "#button.select": "SELAA",
+  "#control.dropzone.attachment": "Pudota liite tähän",
+  "#control.dropzone.attachments": "Pudota liitteet tähän",
   "#control.quickfilter.myown": "OMAT YHTIÖT",
   "#control.quickfilter.all": "KAIKKI",
   "#control.quickfilter.pmcompany": "Isännöitsijätoimisto",
@@ -30,6 +38,7 @@
   "#table.summary.auditing": "Tilintarkastus",
   "#table.summary.generalmeeting": "",
   "#table.summary.comments": "Kommentti hyväksyjältä",
+  "#tab.generalinformation": "Yleiset",
   "#tab.documents": "Dokumentit",
   "#table.generalinfo.cooperative": "Taloyhtiö",
   "#table.generalinfo.startingdate": "Aloituspäivä",
@@ -43,5 +52,11 @@
   "#table.documents.modified": "MUOKATTU",
   "#table.documents.modifiedby": "MUOKKAAJA",
   "#table.documents.action": "TOIMINTO",
-  "#dialog.confirmation.delete": "Oletko varma, että haluat poistaa valitut elementit?"
+  "#dialog.confirmation.delete": "Oletko varma, että haluat poistaa valitut elementit?",
+  "#tab.general.subtitle.events": "Tapahtumat",
+  "#tab.general.meetings.table.meetingtype": "KOKOUSTYYPPI",
+  "#tab.general.meetings.table.startdatetime": "ALOITUSAIKA",
+  "#tab.general.auditing.table.auditing": "TILINTARKASTUS",
+  "#tab.general.auditing.table.startdate": "ALOITUSAIKA",
+  "#tab.general.coverpageimage": "Tilinpäätöskuva"
 }

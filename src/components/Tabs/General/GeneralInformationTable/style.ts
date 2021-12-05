@@ -1,6 +1,6 @@
 import { makeStyles } from '@mui/styles';
 
-export const useStyles = makeStyles(() => ({
+export const useStyles = makeStyles((theme) => ({
   link: {
     fontWeight: 700,
     borderBottom: '1px solid #000',
@@ -20,5 +20,8 @@ export const useStyles = makeStyles(() => ({
   },
   closeBtn: {
     marginRight: 10,
+  },
+  row: {
+    background: theme.color.greyLight2,
   },
 }));

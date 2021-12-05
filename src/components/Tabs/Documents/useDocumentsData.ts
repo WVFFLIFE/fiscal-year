@@ -7,7 +7,6 @@ import {
   EntityPublishModel,
   SortModel,
   SortParamsType,
-  FiscalYearModel,
 } from 'models';
 import Services from 'services';
 
@@ -64,7 +63,7 @@ interface State {
   folderExists: boolean;
 }
 
-const useDocumentsData = (fiscalYear: FiscalYearModel) => {
+const useDocumentsData = (fiscalYearId: string) => {
   const [state, setState] = useState<State>({
     breadcrumbsList: [],
     loading: false,
@@ -154,16 +153,12 @@ const useDocumentsData = (fiscalYear: FiscalYearModel) => {
   }, [selectedItems]);
 
   const fetchFolders = async () => {
-    if (fiscalYear) {
+    if (fiscalYearId) {
       try {
         // test '53820CFC-8E4A-E711-8106-005056AC126A'
-        const res = await Services.getDocumentsList(fiscalYear.Id);
+        const res = await Services.getDocumentsList(fiscalYearId);
 
         if (res.IsSuccess) {
-          console.log(
-            res.Folder &&
-              updateBreadcrumbsList(res.Folder, state.breadcrumbsList)
-          );
           setState((prevState) => ({
             ...prevState,
             loading: false,
@@ -210,7 +205,7 @@ const useDocumentsData = (fiscalYear: FiscalYearModel) => {
         loading: true,
       }));
 
-      const res = await Services.getDocumentsList(fiscalYear.Id);
+      const res = await Services.getDocumentsList(fiscalYearId);
 
       if (res.IsSuccess) {
         setState((prevState) => ({

@@ -2,8 +2,8 @@ import { useState, useEffect, ChangeEvent, useCallback } from 'react';
 import { ErrorModel, SelectedAttributesModel, FolderModel } from 'models';
 import Services, { MettadataAttributeModel } from 'services';
 import _uniqBy from 'lodash/uniqBy';
-import { getErrorsList } from 'utils';
-import { isAnySucceed, getFolderDepth } from '../utils';
+import { readFile } from 'utils';
+import { getFolderDepth } from '../utils';
 
 interface State {
   attributes: MettadataAttributeModel[];
@@ -18,17 +18,6 @@ interface State {
 interface NewFolderModel {
   show: boolean;
   name: string;
-}
-
-function readFile(file: File): Promise<string> {
-  const reader = new FileReader();
-  return new Promise((resolve, reject) => {
-    reader.readAsDataURL(file);
-    reader.onload = () => {
-      resolve(String(reader.result));
-    };
-    reader.onerror = (error) => reject(error);
-  });
 }
 
 const useUploadFormData = (

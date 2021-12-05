@@ -1,12 +1,14 @@
-import { useState, useEffect, useCallback } from 'react';
 import {
-  CommonCooperativeModel,
-  FiscalYearModel,
-  ErrorModel,
-  CalendarYearOption,
-} from 'models';
-import format from 'date-fns/format';
-
+  useState,
+  useEffect,
+  useCallback,
+  useContext,
+  useRef,
+  useMemo,
+} from 'react';
+import { CommonCooperativeModel, FiscalYearModel, ErrorModel } from 'models';
+import { serverFormat, isSameDay } from 'utils/dates';
+import { GeneralCtx } from 'contexts/GeneralContext';
 import Services from 'services';
 
 interface SelectedModel {
@@ -20,8 +22,8 @@ interface StateModel {
   loading: boolean;
   error: ErrorModel | null;
   searchTerm: string;
-  showTabs: boolean;
   selected: SelectedModel;
+  prev: SelectedModel;
 }
 
 function findCooperative(
@@ -35,88 +37,130 @@ function findCooperative(
   );
 }
 
+function findFiscalYearById(
+  defaultFYId: string,
+  fiscalYearsList: FiscalYearModel[]
+) {
+  return (
+    fiscalYearsList.find((fiscalYear) => {
+      return fiscalYear.Id === defaultFYId;
+    }) || null
+  );
+}
+
+function findFiscalYearByDate(
+  startDate: string,
+  endDate: string,
+  fiscalYears: FiscalYearModel[]
+) {
+  return (
+    fiscalYears.find((fiscalYear) => {
+      return (
+        isSameDay(new Date(startDate), new Date(fiscalYear.StartDate)) &&
+        isSameDay(new Date(endDate), new Date(fiscalYear.EndDate))
+      );
+    }) || null
+  );
+}
+
 const useGeneralPageData = (
   defaultCooperativeId: string,
-  defaultFiscalYearId: string | null,
-  selectedCalendarYear: CalendarYearOption
+  defaultFiscalYearId: string
 ) => {
+  const firstMount = useRef(true);
+  const { update, fetchGeneralData } = useContext(GeneralCtx);
   const [state, setState] = useState<StateModel>(() => ({
     cooperatives: [],
     fiscalYears: [],
     loading: true,
     error: null,
     searchTerm: '',
-    showTabs: false,
     selected: {
+      cooperative: null,
+      fiscalYear: null,
+    },
+    prev: {
       cooperative: null,
       fiscalYear: null,
     },
   }));
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const start = format(
-          selectedCalendarYear.start,
-          "yyyy-MM-dd'T'00:00:00"
-        );
-        const end = format(selectedCalendarYear.end, "yyyy-MM-dd'T'00:00:00");
-        const cooperativesListResponse = await Services.getCooperativesList(
-          start,
-          end
-        );
+  const fetchData = async () => {
+    try {
+      const fiscalYearsListRespone =
+        await Services.getCooperativeFiscalYearsList(defaultCooperativeId);
 
-        if (!cooperativesListResponse.IsSuccess) {
-          setState((prevState) => ({
-            ...prevState,
-            loading: false,
-            error: { messages: [cooperativesListResponse.Message] },
-          }));
-          return;
-        }
-
-        const coop = findCooperative(
-          defaultCooperativeId,
-          cooperativesListResponse.Cooperatives
-        );
-
-        if (!coop) return;
-
-        const fiscalYearsListRespone =
-          await Services.getCooperativeFiscalYearsList(coop.Id);
-
-        if (!fiscalYearsListRespone.IsSuccess) {
-          setState((prevState) => ({
-            ...prevState,
-            loading: false,
-            error: { messages: [cooperativesListResponse.Message] },
-          }));
-          return;
-        }
-
-        setState((prevState) => ({
-          ...prevState,
-          cooperatives: cooperativesListResponse.Cooperatives,
-          fiscalYears: fiscalYearsListRespone.FiscalYears,
-          selected: {
-            cooperative: coop,
-            fiscalYear: coop.DefaultFiscalYear,
-          },
-          loading: false,
-        }));
-      } catch (err) {
-        console.error(err);
-
+      if (!fiscalYearsListRespone.IsSuccess) {
         setState((prevState) => ({
           ...prevState,
           loading: false,
-          error: { messages: [String(err)] },
+          error: { messages: [cooperativesListResponse.Message] },
         }));
+        return;
       }
-    }
 
-    fetchData();
-  }, [defaultCooperativeId, selectedCalendarYear]);
+      const currentFiscalYear = findFiscalYearById(
+        defaultFiscalYearId,
+        fiscalYearsListRespone.FiscalYears
+      );
+
+      if (!currentFiscalYear) {
+        return;
+      }
+
+      const start = serverFormat(new Date(currentFiscalYear.StartDate));
+      const end = serverFormat(new Date(currentFiscalYear.EndDate));
+      const cooperativesListResponse = await Services.getCooperativesList(
+        start,
+        end,
+        true
+      );
+
+      if (!cooperativesListResponse.IsSuccess) {
+        setState((prevState) => ({
+          ...prevState,
+          loading: false,
+          error: { messages: [cooperativesListResponse.Message] },
+        }));
+        return;
+      }
+
+      const coop = findCooperative(
+        defaultCooperativeId,
+        cooperativesListResponse.Cooperatives
+      );
+
+      if (!coop) return;
+
+      setState((prevState) => ({
+        ...prevState,
+        cooperatives: cooperativesListResponse.Cooperatives,
+        fiscalYears: fiscalYearsListRespone.FiscalYears,
+        selected: {
+          cooperative: coop,
+          fiscalYear: currentFiscalYear,
+        },
+        loading: false,
+      }));
+    } catch (err) {
+      console.error(err);
+
+      setState((prevState) => ({
+        ...prevState,
+        loading: false,
+        error: { messages: [String(err)] },
+      }));
+    }
+  };
+
+  useEffect(() => {
+    (async function () {
+      if (firstMount.current) {
+        await fetchData();
+        firstMount.current = false;
+      }
+    })();
+  }, []);
 
   useEffect(() => {
     async function updateFiscalYearsList(coop: CommonCooperativeModel) {
@@ -142,7 +186,15 @@ const useGeneralPageData = (
           fiscalYears: res.FiscalYears,
           selected: {
             ...prevState.selected,
-            fiscalYear: coop.DefaultFiscalYear,
+            fiscalYear:
+              prevState.selected.fiscalYear?.StartDate &&
+              prevState.selected.fiscalYear?.EndDate
+                ? findFiscalYearByDate(
+                    prevState.selected.fiscalYear.StartDate,
+                    prevState.selected.fiscalYear.EndDate,
+                    res.FiscalYears
+                  )
+                : null,
           },
           loading: false,
         }));
@@ -157,28 +209,14 @@ const useGeneralPageData = (
       }
     }
 
-    if (state.selected.cooperative) {
+    if (state.selected.cooperative && !firstMount.current) {
       updateFiscalYearsList(state.selected.cooperative);
     }
   }, [state.selected.cooperative]);
 
-  useEffect(() => {
-    if (state.showTabs) {
-      setState((prevState) => ({
-        ...prevState,
-        showTabs: false,
-      }));
-    }
-  }, [state.selected.fiscalYear]);
-
   const handleChangeSelectedCooperatives = useCallback(
     (cooperatives: CommonCooperativeModel[]) => {
       const [cooperative] = cooperatives;
-
-      // (window.parent as any).setFrameArg((prevState: any) => ({
-      //   ...prevState,
-      //   orgId: cooperative.Id,
-      // }));
 
       setState((prevState) => ({
         ...prevState,
@@ -223,16 +261,31 @@ const useGeneralPageData = (
     }));
   };
 
-  const handleShowTabs = () => {
-    setState((prevState) => ({
-      ...prevState,
-      showTabs: true,
-    }));
+  const handleApplyClick = () => {
+    if (state.selected.fiscalYear) {
+      setState((prevState) => ({
+        ...prevState,
+        prev: {
+          cooperative: prevState.selected.cooperative,
+          fiscalYear: prevState.selected.fiscalYear,
+        },
+      }));
+      fetchGeneralData(state.selected.fiscalYear.Id);
+    }
   };
+
+  const isDisabledApplyButton = useMemo(() => {
+    if (!state.prev.cooperative || !state.prev.fiscalYear) return false;
+    return (
+      state.selected.cooperative?.Id === state.prev.cooperative?.Id &&
+      state.selected.fiscalYear?.Id === state.prev.fiscalYear?.Id
+    );
+  }, [state.selected, state.prev]);
 
   return {
     state,
-    handleShowTabs,
+    isDisabledApplyButton,
+    handleApplyClick,
     handleInitError,
     handleChangeSearchTerm,
     handleChangeFiscalYear,
