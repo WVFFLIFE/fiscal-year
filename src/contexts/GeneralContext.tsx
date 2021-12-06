@@ -51,6 +51,7 @@ const GeneralCtx = createContext({
   state: defaulValue,
   update: defaultUpdate,
   fetchGeneralData: defaultFetchGeneralData,
+  handleInitGeneralInformationError: () => {},
 });
 
 const GeneralProvider: FC = ({ children }) => {
@@ -114,6 +115,16 @@ const GeneralProvider: FC = ({ children }) => {
     }
   };
 
+  const handleInitGeneralInformationError = () => {
+    update((prevState) => ({
+      ...prevState,
+      generalInformation: {
+        ...prevState.generalInformation,
+        error: null,
+      },
+    }));
+  };
+
   useEffect(() => {
     const set = (window.top as EnhancedWindow)?.setFrameArg;
     if (set) {
@@ -139,6 +150,7 @@ const GeneralProvider: FC = ({ children }) => {
       value={{
         state,
         fetchGeneralData,
+        handleInitGeneralInformationError,
         update,
       }}
     >

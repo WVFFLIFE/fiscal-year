@@ -12,6 +12,11 @@ export const useStyles = makeStyles((theme) => ({
     '&:hover': {
       color: theme.color.darkBlue,
     },
+    '&.Mui-disabled': {
+      background: theme.color.greyBorder,
+      color: '#fff',
+      opacity: 1,
+    },
   },
   list: {
     background: 'rgba(248, 248, 248, 1)',

@@ -99,6 +99,7 @@ const General: React.FC<GeneralTabProps> = ({
         </SubTitle>
         <GeneralInformationTable
           list={generalInformationList}
+          disabled={isClosed}
           onSaveFiscalYear={handleSaveFiscalYear}
         />
       </Box>
@@ -122,7 +123,6 @@ const General: React.FC<GeneralTabProps> = ({
             <Dropzone
               className={classes.dropzone}
               maxFiles={1}
-              disabled={isClosed}
               accept="image/jpeg, image/jpg, image/png"
               onChange={handleChangeCurrentFile}
             />

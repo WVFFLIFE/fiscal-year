@@ -11,12 +11,19 @@ import GeneralPage from 'components/GeneralPage';
 const FiscalYear = () => {
   const {
     state: { defaultFiscalYearId, defaultCooperativeId, generalInformation },
+    handleInitGeneralInformationError,
   } = useContext(GeneralCtx);
   const { state, handleInitError } = useFiscalYearData();
 
+  const showLoader = state.loading || generalInformation.loading;
+  const errors = state.error || generalInformation.error;
+  const initError = state.error
+    ? handleInitError
+    : handleInitGeneralInformationError;
+
   return (
     <>
-      <TopBar showFiscalYearBtns={!!generalInformation.data} />
+      <TopBar />
       {defaultCooperativeId && defaultFiscalYearId ? (
         <GeneralPage
           defaultCooperativeId={defaultCooperativeId}
@@ -25,8 +32,8 @@ const FiscalYear = () => {
       ) : (
         <SummaryPage commonCooperatives={state.commonCooperatives} />
       )}
-      <Backdrop loading={state.loading} />
-      <DialogError error={state.error} initError={handleInitError} />
+      <Backdrop loading={showLoader} />
+      <DialogError error={errors} initError={initError} />
     </>
   );
 };

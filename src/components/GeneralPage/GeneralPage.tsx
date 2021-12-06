@@ -84,9 +84,7 @@ const GeneralPage: React.FC<GeneralPageProps> = ({
           />
         </Box>
       </FiltersWrapper>
-      {state.prev.cooperative &&
-      state.prev.fiscalYear &&
-      !generalInformation.loading ? (
+      {state.prev.cooperative && state.prev.fiscalYear ? (
         <Container className={classes.offsetTop}>
           <SelectedInfo
             selectedCooperative={state.prev.cooperative}
@@ -117,7 +115,7 @@ const GeneralPage: React.FC<GeneralPageProps> = ({
       ) : (
         <InfoBox>You can select another Fiscal Year if needed</InfoBox>
       )}
-      <Backdrop loading={state.loading || generalInformation.loading} />
+      <Backdrop loading={state.loading} />
       <DialogError error={state.error} initError={handleInitError} />
     </>
   );

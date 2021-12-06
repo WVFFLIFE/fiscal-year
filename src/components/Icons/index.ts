@@ -39,3 +39,6 @@ export { default as ErrorOutlineIcon } from './ErrorOutline';
 export { default as UnpublishedIcon } from './UnpublishedIcon';
 export { default as IcList } from './IcList';
 export { default as EyeIcon } from './EyeIcon';
+export { default as RoundWarningIcon } from './RoundWarningIcon';
+export { default as UnlockIcon } from './UnlockIcon';
+export { default as TriangleWarningIcon } from './TriangleWarningIcon';

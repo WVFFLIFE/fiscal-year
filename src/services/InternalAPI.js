@@ -19,6 +19,18 @@ class FiscalYearInternalAPI {
     return userLcid === 1035 ? 'Finnish' : 'Default';
   };
 
+  //FiscalYearCopyResponseCode
+  //{
+  //OK = 0,
+  //PreviousFiscalYearNotFound = 1,
+  //AmbiguityFiscalYearNotFound = 2
+  //}
+  copyFiscalYear = async (fiscalYearId) => {
+    return await this.executeRequest('uds_FiscalYearCopy', {
+      FiscalYearId: fiscalYearId,
+    });
+  };
+
   //Request must contains FiscalYearId or CooperativeId parameter
   //FiscalYearChangesValidationCode
   //{
@@ -43,6 +55,7 @@ class FiscalYearInternalAPI {
 
   //FiscalYearLockResponseCode
   //{
+  //OK = 0,
   //InsuffisantePermission = 1
   //}
   lockFiscalYear = async (fiscalYearId) => {
@@ -54,6 +67,7 @@ class FiscalYearInternalAPI {
 
   //FiscalYearLockResponseCode
   //{
+  //OK = 0,
   //InsuffisantePermission = 1
   //}
   unlockFiscalYear = async (fiscalYearId) => {
@@ -63,7 +77,22 @@ class FiscalYearInternalAPI {
     });
   };
 
-  //request = { CooperativeId: cooperativeId, Content: content }
+  //request = { FiscalYearId:guid, Content:string }
+  updateConsumptionImage = async (request) => {
+    return await this.executeTypeRequest(
+      'uds_FiscalYearAttachmentUpdateRequest',
+      2,
+      request
+    );
+  };
+
+  getConsumptionImage = async (fiscalYearId) => {
+    return await this.executeTypeRequest('uds_FiscalYearAttachmentRequest', 2, {
+      FiscalYearId: fiscalYearId,
+    });
+  };
+
+  //request = { CooperativeId:guid, Content:string }
   updateCooperativeCover = async (request) => {
     return await this.executeTypeRequest(
       'uds_FiscalYearAttachmentUpdateRequest',
@@ -84,12 +113,17 @@ class FiscalYearInternalAPI {
     });
   };
 
-  //request = { FiscalYearId: fiscalYearId, StartDate: startDate, EndDate: endDate, IsClosed: isClosed }  isClosed - bool
+  //request = { FiscalYearId:guid, HeatEnergyOfHotWater:int?, ConsumptionOfHotWater:int?, Population:int?, AddConsumptionReportToClosingTheBookReport:bool }
+  fiscalYearConsumptionUpdate = async (request) => {
+    return await this.executeTypeRequest('uds_FiscalYearUpdate', 5, request);
+  };
+
+  //request = { FiscalYearId:guid, StartDate:datetime, EndDate:datetime }
   fiscalYearGeneralUpdate = async (request) => {
     return await this.executeTypeRequest('uds_FiscalYearUpdate', 3, request);
   };
 
-  //request = { FiscalYearId: fiscalYearId, Comments: comments }
+  //request = { FiscalYearId:guid, Comments:string }
   fiscalYearCommentsUpdate = async (request) => {
     return await this.executeTypeRequest('uds_FiscalYearUpdate', 1, request);
   };

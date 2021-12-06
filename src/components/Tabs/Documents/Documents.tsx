@@ -1,5 +1,5 @@
 import useDocumentsData from './useDocumentsData';
-import { FiscalYearModel, DocumentModel, FolderModel } from 'models';
+import { DocumentModel, FolderModel } from 'models';
 
 import Box from '@mui/material/Box';
 import QuickFilter, { QuickFilterOption } from 'components/QuickFilter';

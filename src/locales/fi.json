@@ -5,6 +5,9 @@
   "#page.title": "Tilikausi",
   "#common.fiscalyear": "Tilikausi",
   "#common.or": "TAI",
+  "#common.lockfiscalyear": "Lukitse tilikauden tiedot",
+  "#common.unlockfiscalyear": "Avaa tilikauden tiedot",
+  "#common.copyfiscalyear": "Kopioi tilikauden tiedot",
   "#control.cooperativepicker.placeholder": "Valitse yhtiö",
   "#control.fiscalyearpicker.placeholder": "Valitse tilikausi",
   "#button.lockfydata": "Lukitse tilikauden tiedot",
@@ -14,6 +17,10 @@
   "#button.apply": "Käytä",
   "#button.delete": "Poista",
   "#button.select": "SELAA",
+  "#button.lock": "Lukitse",
+  "#button.ok": "Ok",
+  "#button.unlock": "Avaa",
+  "#button.copy": "Kopioi",
   "#control.dropzone.attachment": "Pudota liite tähän",
   "#control.dropzone.attachments": "Pudota liitteet tähän",
   "#control.quickfilter.myown": "OMAT YHTIÖT",
@@ -58,5 +65,8 @@
   "#tab.general.meetings.table.startdatetime": "ALOITUSAIKA",
   "#tab.general.auditing.table.auditing": "TILINTARKASTUS",
   "#tab.general.auditing.table.startdate": "ALOITUSAIKA",
-  "#tab.general.coverpageimage": "Tilinpäätöskuva"
+  "#tab.general.coverpageimage": "Tilinpäätöskuva",
+  "#confirmation.lock.description": "Oletko varma, että haluat lukita tilikauden tiedot? Kaikki tilikauden tiedot lukitaan.",
+  "#confirmation.unlock.description": "Oletko varma, että haluat avata tilikauden tiedot?",
+  "#confirmation.copy.description": "Oletko varma, että haluat kopioida edellisen tilikauden tiedot toimintakertomukselle ja liitetietoihin? Kaikki jo syötetyt tiedot korvataan."
 }

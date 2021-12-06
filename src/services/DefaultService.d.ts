@@ -235,6 +235,9 @@ interface FiscalYearValidationRes extends BaseResponseModel {
 export type SettledResponse = PromiseSettledResult<BaseResponseModel>[];
 
 declare class DefaultService {
+  public copyFiscalYear(fiscalYearId: string): Promise<BaseResponseModel>;
+  public lockFiscalYear(fiscalYearId: string): Promise<BaseResponseModel>;
+  public unlockFiscalYear(fiscalYearId: string): Promise<BaseResponseModel>;
   public fiscalYearGeneralUpdate(
     request: FiscalYearGeneralUpdateRequestModel
   ): Promise<BaseResponseModel>;

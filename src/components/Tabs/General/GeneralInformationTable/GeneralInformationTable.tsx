@@ -52,12 +52,14 @@ interface EditableDataModel {
 }
 
 interface GeneralInformationTableProps {
+  disabled?: boolean;
   list: GeneralInformationDataModel[];
   onSaveFiscalYear(startDate: Date, endDate: Date): Promise<true | undefined>;
 }
 
 const GeneralInformationTable: React.FC<GeneralInformationTableProps> = ({
   list,
+  disabled,
   onSaveFiscalYear,
 }) => {
   const classes = useStyles();
@@ -118,7 +120,7 @@ const GeneralInformationTable: React.FC<GeneralInformationTableProps> = ({
           const open = editableData.id === item.Id;
 
           return (
-            <BodyTableRow key={item.Id} hover>
+            <BodyTableRow key={item.Id} hover={!!!disabled}>
               <BodyTableCell>
                 <span className={classes.link}>{item.Name}</span>
               </BodyTableCell>
@@ -177,7 +179,7 @@ const GeneralInformationTable: React.FC<GeneralInformationTableProps> = ({
                     <ActionButton
                       disableRipple
                       palette="darkBlue"
-                      disabled={!!item.IsClosed}
+                      disabled={!!item.IsClosed || disabled}
                       onClick={() =>
                         handleAllowEdit({ id: item.Id, startDate, endDate })
                       }

@@ -4,7 +4,7 @@ import { CloseIcon } from 'components/Icons';
 
 import { useStyles } from './style';
 
-interface DialogProps {
+export interface DialogProps {
   open: MuiDialogProps['open'];
   maxWidth?: MuiDialogProps['maxWidth'];
   fullWidth?: MuiDialogProps['fullWidth'];

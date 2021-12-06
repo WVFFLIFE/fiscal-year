@@ -5,6 +5,9 @@
   "#page.title": "Fiscal Year",
   "#common.fiscalyear": "Fiscal Year",
   "#common.or": "OR",
+  "#common.lockfiscalyear": "Lock Fiscal Year Data",
+  "#common.unlockfiscalyear": "Unlock Fiscal Year Data",
+  "#common.copyfiscalyear": "Copy Fiscal Year",
   "#control.cooperativepicker.placeholder": "Select cooperative",
   "#control.fiscalyearpicker.placeholder": "Select fiscal year",
   "#button.lockfydata": "Lock Fiscal Year Data",
@@ -14,6 +17,10 @@
   "#button.apply": "Apply",
   "#button.delete": "Delete",
   "#button.select": "Select",
+  "#button.lock": "Lock",
+  "#button.ok": "Ok",
+  "#button.unlock": "Unlock",
+  "#button.copy": "Copy",
   "#control.dropzone.attachment": "Drop attachment here",
   "#control.dropzone.attachmens": "Drop attachments here",
   "#control.quickfilter.myown": "My own",
@@ -58,5 +65,8 @@
   "#tab.general.meetings.table.startdatetime": "Start date & time",
   "#tab.general.auditing.table.auditing": "Auditing",
   "#tab.general.auditing.table.startdate": "Start date",
-  "#tab.general.coverpageimage": "Cover page image"
+  "#tab.general.coverpageimage": "Cover page image",
+  "#confirmation.lock.description": "Are you sure you want to lock fiscal year data? All current data will be unavailable to edit",
+  "#confirmation.unlock.description": "Are you sure you want to unlock fiscal year data?",
+  "#confirmation.copy.description": "Are you sure you want to copy previous fiscal year's data to current fiscal year? All current data will be replaced"
 }
