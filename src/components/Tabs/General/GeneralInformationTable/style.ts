@@ -4,8 +4,9 @@ export const useStyles = makeStyles((theme) => ({
   link: {
     fontWeight: 700,
     borderBottom: '1px solid #000',
+    color: '#000',
     cursor: 'pointer',
-    textTransform: 'capitalize',
+    textDecoration: 'none',
   },
   icon: {
     fontSize: 12,

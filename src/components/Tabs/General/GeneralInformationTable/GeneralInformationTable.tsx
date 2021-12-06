@@ -40,6 +40,7 @@ const columns: Column[] = [
 export interface GeneralInformationDataModel {
   Id: string;
   Name: string;
+  CooperativeLink: string | null;
   StartDate: string | null;
   EndDate: string | null;
   IsClosed: boolean | null;
@@ -122,7 +123,18 @@ const GeneralInformationTable: React.FC<GeneralInformationTableProps> = ({
           return (
             <BodyTableRow key={item.Id} hover={!!!disabled}>
               <BodyTableCell>
-                <span className={classes.link}>{item.Name}</span>
+                {item.CooperativeLink ? (
+                  <a
+                    className={classes.link}
+                    href={item.CooperativeLink}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {item.Name}
+                  </a>
+                ) : (
+                  <span className={classes.link}>{item.Name}</span>
+                )}
               </BodyTableCell>
               <BodyTableCell>
                 {open ? (

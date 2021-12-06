@@ -92,6 +92,38 @@ const GeneralPage: React.FC<GeneralPageProps> = ({
           />
           {generalInformation.data && (
             <Tabs
+              BalancesTabProps={{
+                PropertyMeintenanceProductName:
+                  generalInformation.data.PropertyMeintenanceProductName,
+                PropertyMeintenanceSurplusDeficitPreviousFY:
+                  generalInformation.data
+                    .PropertyMeintenanceSurplusDeficitPreviousFY,
+                SpecFinCalcProductName1:
+                  generalInformation.data.SpecFinCalcProductName1,
+                SpecFinCalcProductName2:
+                  generalInformation.data.SpecFinCalcProductName2,
+                SpecFinCalcProductName3:
+                  generalInformation.data.SpecFinCalcProductName3,
+                SpecFinCalcProductName4:
+                  generalInformation.data.SpecFinCalcProductName4,
+                SpecFinCalcProductName5:
+                  generalInformation.data.SpecFinCalcProductName5,
+                SpecFinCalcSurplusDeficitPreviousFY1:
+                  generalInformation.data.SpecFinCalcSurplusDeficitPreviousFY1,
+                SpecFinCalcSurplusDeficitPreviousFY2:
+                  generalInformation.data.SpecFinCalcSurplusDeficitPreviousFY2,
+                SpecFinCalcSurplusDeficitPreviousFY3:
+                  generalInformation.data.SpecFinCalcSurplusDeficitPreviousFY3,
+                SpecFinCalcSurplusDeficitPreviousFY4:
+                  generalInformation.data.SpecFinCalcSurplusDeficitPreviousFY4,
+                SpecFinCalcSurplusDeficitPreviousFY5:
+                  generalInformation.data.SpecFinCalcSurplusDeficitPreviousFY5,
+                VATCalculationsProductName:
+                  generalInformation.data.VATCalculationsProductName,
+                VATCalculationsSurplusDeficitPreviousFY:
+                  generalInformation.data
+                    .VATCalculationsSurplusDeficitPreviousFY,
+              }}
               DocumentsTabProps={{ fiscalYearId: generalInformation.data.Id }}
               GeneralTabProps={{
                 coopId: generalInformation.data.CooperativeId,
@@ -106,6 +138,7 @@ const GeneralPage: React.FC<GeneralPageProps> = ({
                     StartDate: generalInformation.data.StartDate,
                     EndDate: generalInformation.data.EndDate,
                     IsClosed: !!generalInformation.data.IsClosed,
+                    CooperativeLink: generalInformation.data.CooperativeLink,
                   },
                 ],
               }}

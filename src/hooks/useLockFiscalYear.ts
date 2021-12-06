@@ -1,20 +1,28 @@
 import { useState, useContext, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { GeneralCtx } from 'contexts/GeneralContext';
+import {
+  UnlockFiscalYearCodes,
+  LockFiscalYearCodes,
+  CopyFiscalYearCodes,
+} from 'models';
 
 import Services from 'services';
-import { ErrorModel } from 'models';
+
+type EntityType = 'lock' | 'unlock' | 'copy' | null;
 
 interface LockFiscalYearStateModel {
   loading: boolean;
-  error: ErrorModel | null;
+  error: { message: string; type: EntityType } | null;
 }
 
 interface ConfirmationWindowModel {
   open: boolean;
-  type: 'lock' | 'unlock' | 'copy' | null;
+  type: EntityType;
 }
 
 const useLockFiscalYear = () => {
+  const { t } = useTranslation();
   const { state, fetchGeneralData } = useContext(GeneralCtx);
 
   const [lockFiscalYearState, setLockFiscalYearState] =
@@ -83,10 +91,17 @@ const useLockFiscalYear = () => {
           handleCloseConfirmationWindow();
           await fetchGeneralData(state.generalInformation.data.Id);
         } else {
+          handleCloseConfirmationWindow();
           setLockFiscalYearState((prevState) => ({
             ...prevState,
             loading: false,
-            error: { messages: [res.Message] },
+            error: {
+              type: 'lock',
+              message:
+                res.ResponseCode === LockFiscalYearCodes.InsufficientPermission
+                  ? t('#error.fiscalyear.lock.insufficientpermission')
+                  : res.Message,
+            },
           }));
         }
       } catch (err) {
@@ -95,7 +110,7 @@ const useLockFiscalYear = () => {
         setLockFiscalYearState((prevState) => ({
           ...prevState,
           loading: false,
-          error: { messages: [String(err)] },
+          error: { type: null, message: String(err) },
         }));
       }
     }
@@ -114,13 +129,25 @@ const useLockFiscalYear = () => {
         );
 
         if (res.IsSuccess) {
-          handleCloseConfirmationWindow();
-          await fetchGeneralData(state.generalInformation.data.Id);
-        } else {
           setLockFiscalYearState((prevState) => ({
             ...prevState,
             loading: false,
-            error: { messages: [res.Message] },
+          }));
+          handleCloseConfirmationWindow();
+          await fetchGeneralData(state.generalInformation.data.Id);
+        } else {
+          handleCloseConfirmationWindow();
+          setLockFiscalYearState((prevState) => ({
+            ...prevState,
+            loading: false,
+            error: {
+              type: 'unlock',
+              message:
+                res.ResponseCode ===
+                UnlockFiscalYearCodes.InsufficientPermission
+                  ? t('#error.fiscalyear.lock.insufficientpermission')
+                  : res.Message,
+            },
           }));
         }
       } catch (err) {
@@ -128,7 +155,55 @@ const useLockFiscalYear = () => {
         setLockFiscalYearState((prevState) => ({
           ...prevState,
           loading: false,
-          error: { messages: [String(err)] },
+          error: { type: null, message: String(err) },
+        }));
+      }
+    }
+  }, [state.generalInformation.data?.Id]);
+
+  const copyFiscalYear = useCallback(async () => {
+    if (state.generalInformation.data?.Id) {
+      try {
+        setLockFiscalYearState((prevState) => ({
+          ...prevState,
+          loading: true,
+        }));
+
+        const res = await Services.copyFiscalYear(
+          state.generalInformation.data.Id
+        );
+
+        if (res.IsSuccess) {
+          setLockFiscalYearState((prevState) => ({
+            ...prevState,
+            loading: false,
+          }));
+          handleCloseConfirmationWindow();
+          await fetchGeneralData(state.generalInformation.data.Id);
+        } else {
+          handleCloseConfirmationWindow();
+          setLockFiscalYearState((prevState) => ({
+            ...prevState,
+            loading: false,
+            error: {
+              type: 'unlock',
+              message:
+                res.ResponseCode ===
+                CopyFiscalYearCodes.AmbiguityFiscalYearNotFound
+                  ? t('#error.fiscalyear.copy.ambiguityfiscalyearnotfound')
+                  : res.ResponseCode ===
+                    CopyFiscalYearCodes.PreviousFiscalYearNotFound
+                  ? t('#error.fiscalyear.copy.previousfiscalyearnotfound')
+                  : res.Message,
+            },
+          }));
+        }
+      } catch (err) {
+        console.error(err);
+        setLockFiscalYearState((prevState) => ({
+          ...prevState,
+          loading: false,
+          error: { type: null, message: String(err) },
         }));
       }
     }
@@ -150,6 +225,7 @@ const useLockFiscalYear = () => {
     handleCloseConfirmationWindow,
     lockFiscalYear,
     unlockFiscalYear,
+    copyFiscalYear,
     handleInitError,
     handleInitConfirmationWindowType,
     isClosed: !!state.generalInformation.data?.IsClosed,

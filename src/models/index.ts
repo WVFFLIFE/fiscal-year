@@ -15,6 +15,22 @@ export type {
 export type { SortModel, SortParamsType } from 'hooks/useSort';
 export type { CalendarYearOption } from 'components/SelectCalendarYear';
 
+export enum LockFiscalYearCodes {
+  OK,
+  InsufficientPermission,
+}
+
+export enum UnlockFiscalYearCodes {
+  OK,
+  InsufficientPermission,
+}
+
+export enum CopyFiscalYearCodes {
+  OK,
+  PreviousFiscalYearNotFound,
+  AmbiguityFiscalYearNotFound,
+}
+
 export interface FolderModel extends ServiceFolderModel {}
 export interface DocumentModel extends ServiceDocumentModel {}
 export interface BaseEntityModel {

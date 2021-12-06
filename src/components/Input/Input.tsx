@@ -4,8 +4,18 @@ import TextField, { TextFieldProps } from '@mui/material/TextField';
 import clsx from 'clsx';
 import { useStyles } from './style';
 
-const Input = forwardRef<HTMLDivElement, TextFieldProps>(
-  ({ className, classes: propsClasses, children, ...rest }, ref) => {
+interface InputClasses {
+  input?: string;
+}
+
+const Input = forwardRef<
+  HTMLDivElement,
+  TextFieldProps & { inputClasses?: InputClasses }
+>(
+  (
+    { className, classes: propsClasses, inputClasses, children, ...rest },
+    ref
+  ) => {
     const classes = useStyles();
 
     return (
@@ -16,7 +26,7 @@ const Input = forwardRef<HTMLDivElement, TextFieldProps>(
         InputProps={{
           className: clsx(classes.root, propsClasses?.root),
           classes: {
-            input: classes.input,
+            input: clsx(classes.input, inputClasses?.input),
             focused: classes.focus,
           },
           disableUnderline: true,

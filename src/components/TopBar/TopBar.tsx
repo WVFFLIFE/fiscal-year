@@ -4,10 +4,10 @@ import { useTranslation } from 'react-i18next';
 
 import ConfirmationWindow from 'components/ConfirmationWindow';
 import Button from 'components/Button';
+import Error from 'components/Error';
 import AddFiscalYearButton from 'components/AddFiscalYearButton';
 import Title from 'components/Title';
 import Box from '@mui/material/Box';
-import DialogError from 'components/DialogError';
 import {
   LockIcon,
   UnlockIcon,
@@ -30,6 +30,7 @@ const TopBar: React.FC = () => {
     lockFiscalYear,
     unlockFiscalYear,
     handleInitError,
+    copyFiscalYear,
     handleOpenLockConfirmationWindow,
     handleOpenUnlockConfirmationWindow,
     handleOpenCopyConfirmationWindow,
@@ -74,18 +75,30 @@ const TopBar: React.FC = () => {
             <Button
               className={classes.offsetRight}
               classes={cls}
-              disabled={isClosed}
               label={t('#button.copyfy')}
               startIcon={<CopyIcon />}
               onClick={handleOpenCopyConfirmationWindow}
             />
-            <AddFiscalYearButton disabled={isClosed} />
+            <AddFiscalYearButton />
           </Box>
         )}
       </Box>
-      <DialogError
-        error={lockFiscalYearState.error}
-        initError={handleInitError}
+      <Error
+        error={
+          lockFiscalYearState.error ? lockFiscalYearState.error.message : null
+        }
+        title={
+          lockFiscalYearState.error
+            ? lockFiscalYearState.error.type === 'unlock'
+              ? t('#common.unlockfiscalyear')
+              : confirmationWindowState.type === 'lock'
+              ? t('#common.lockfiscalyear')
+              : confirmationWindowState.type === 'copy'
+              ? t('#common.copyfiscalyear')
+              : 'Error'
+            : 'Error'
+        }
+        onInitError={handleInitError}
       />
       <ConfirmationWindow
         maxWidth="sm"
@@ -131,7 +144,14 @@ const TopBar: React.FC = () => {
               : confirmationWindowState.type === 'copy'
               ? t('#button.copy')
               : undefined,
-          onClick: isClosed ? unlockFiscalYear : lockFiscalYear,
+          onClick:
+            confirmationWindowState.type === 'unlock'
+              ? unlockFiscalYear
+              : confirmationWindowState.type === 'lock'
+              ? lockFiscalYear
+              : confirmationWindowState.type === 'copy'
+              ? copyFiscalYear
+              : undefined,
           loading: lockFiscalYearState.loading,
           disabled: lockFiscalYearState.loading,
         }}

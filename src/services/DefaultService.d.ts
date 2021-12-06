@@ -1,8 +1,17 @@
 import { ResponseStatus } from 'models/response-status-model';
+import {
+  CopyFiscalYearCodes,
+  LockFiscalYearCodes,
+  UnlockFiscalYearCodes,
+} from 'models';
 
 interface BaseResponseModel {
   IsSuccess: boolean;
   Message: string;
+}
+
+interface ResponseWithCode<T> extends BaseResponseModel {
+  ResponseCode: T;
 }
 
 interface AttributeHeaderModel {
@@ -172,6 +181,7 @@ export interface GeneralFiscalYearModel {
   ConsumptionDataHtml: string | null;
   CooperativeId: string;
   CooperativeName: string;
+  CooperativeLink: string | null;
   EndDate: string | null;
   EssentialEvents: string | null;
   EssentialEventsFormatted: string | null;
@@ -190,23 +200,23 @@ export interface GeneralFiscalYearModel {
   PersistentStrainsAndMortgagesFormatted: string | null;
   PersistentStrainsAndMortgagesHtml: string | null;
   PropertyMeintenanceProductName: string | null;
-  PropertyMeintenanceSurplusDeficitPreviousFY: string | null;
+  PropertyMeintenanceSurplusDeficitPreviousFY: number | null;
   SpecFinCalcProductName1: string | null;
   SpecFinCalcProductName2: string | null;
   SpecFinCalcProductName3: string | null;
   SpecFinCalcProductName4: string | null;
   SpecFinCalcProductName5: string | null;
-  SpecFinCalcSurplusDeficitPreviousFY1: string | null;
-  SpecFinCalcSurplusDeficitPreviousFY2: string | null;
-  SpecFinCalcSurplusDeficitPreviousFY3: string | null;
-  SpecFinCalcSurplusDeficitPreviousFY4: string | null;
-  SpecFinCalcSurplusDeficitPreviousFY5: string | null;
+  SpecFinCalcSurplusDeficitPreviousFY1: number | null;
+  SpecFinCalcSurplusDeficitPreviousFY2: number | null;
+  SpecFinCalcSurplusDeficitPreviousFY3: number | null;
+  SpecFinCalcSurplusDeficitPreviousFY4: number | null;
+  SpecFinCalcSurplusDeficitPreviousFY5: number | null;
   StartDate: string | null;
   TheBoardOfDirectorsConvenedDuringTheFY: string | null;
   TheBoardOfDirectorsConvenedDuringTheFYFormatted: string | null;
   TheBoardOfDirectorsConvenedDuringTheFYHtml: string | null;
   VATCalculationsProductName: string | null;
-  VATCalculationsSurplusDeficitPreviousFY: string | null;
+  VATCalculationsSurplusDeficitPreviousFY: number | null;
 }
 
 interface GeneralFiscalYearModelRes extends BaseResponseModel {
@@ -232,12 +242,39 @@ interface FiscalYearValidationRes extends BaseResponseModel {
   ValidationResult: ResponseStatus.FiscalYearValidatingStatus | null;
 }
 
+interface BalanceUpdateRequest {
+  FiscalYearId: string;
+  PropertyMeintenanceProductName: string;
+  PropertyMeintenanceSurplusDeficitPreviousFY: number;
+  VATCalculationsProductName: string;
+  VATCalculationsSurplusDeficitPreviousFY: number;
+  SpecFinCalcProductName1: string;
+  SpecFinCalcSurplusDeficitPreviousFY1: string;
+  SpecFinCalcProductName2: string;
+  SpecFinCalcSurplusDeficitPreviousFY2: string;
+  SpecFinCalcProductName3: string;
+  SpecFinCalcSurplusDeficitPreviousFY3: string;
+  SpecFinCalcProductName4: string;
+  SpecFinCalcSurplusDeficitPreviousFY4: string;
+  SpecFinCalcProductName5: string;
+  SpecFinCalcSurplusDeficitPreviousFY5: string;
+}
+
 export type SettledResponse = PromiseSettledResult<BaseResponseModel>[];
 
 declare class DefaultService {
-  public copyFiscalYear(fiscalYearId: string): Promise<BaseResponseModel>;
-  public lockFiscalYear(fiscalYearId: string): Promise<BaseResponseModel>;
-  public unlockFiscalYear(fiscalYearId: string): Promise<BaseResponseModel>;
+  public fiscalYearBalancesUpdate(
+    req: BalanceUpdateRequest
+  ): Promise<BaseResponseModel>;
+  public copyFiscalYear(
+    fiscalYearId: string
+  ): Promise<ResponseWithCode<CopyFiscalYearCodes>>;
+  public lockFiscalYear(
+    fiscalYearId: string
+  ): Promise<ResponseWithCode<LockFiscalYearCodes>>;
+  public unlockFiscalYear(
+    fiscalYearId: string
+  ): Promise<ResponseWithCode<UnlockFiscalYearCodes>>;
   public fiscalYearGeneralUpdate(
     request: FiscalYearGeneralUpdateRequestModel
   ): Promise<BaseResponseModel>;

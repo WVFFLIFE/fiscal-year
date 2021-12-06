@@ -113,6 +113,19 @@ class FiscalYearInternalAPI {
     });
   };
 
+  /* request = { FiscalYearId:guid
+    PropertyMeintenanceProductName:string, PropertyMeintenanceSurplusDeficitPreviousFY:decimal? 
+    VATCalculationsProductName:string, VATCalculationsSurplusDeficitPreviousFY:decimal?
+    SpecFinCalcProductName1:string, SpecFinCalcSurplusDeficitPreviousFY1:decimal?, Show1:bool,
+    SpecFinCalcProductName2:string, SpecFinCalcSurplusDeficitPreviousFY2:decimal?, Show2:bool,
+    SpecFinCalcProductName3:string, SpecFinCalcSurplusDeficitPreviousFY3:decimal?, Show3:bool,
+    SpecFinCalcProductName4:string, SpecFinCalcSurplusDeficitPreviousFY4:decimal?, Show4:bool,
+    SpecFinCalcProductName5:string, SpecFinCalcSurplusDeficitPreviousFY5:decimal?, Show5:bool }
+*/
+  fiscalYearBalancesUpdate = async (request) => {
+    return await this.executeTypeRequest('uds_FiscalYearUpdate', 4, request);
+  };
+
   //request = { FiscalYearId:guid, HeatEnergyOfHotWater:int?, ConsumptionOfHotWater:int?, Population:int?, AddConsumptionReportToClosingTheBookReport:bool }
   fiscalYearConsumptionUpdate = async (request) => {
     return await this.executeTypeRequest('uds_FiscalYearUpdate', 5, request);
