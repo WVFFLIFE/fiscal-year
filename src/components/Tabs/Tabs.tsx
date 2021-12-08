@@ -1,12 +1,12 @@
-import { useState, SyntheticEvent } from 'react';
+import { useState, SyntheticEvent, FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Box from '@mui/material/Box';
 import MuiTabs from '@mui/material/Tabs';
 import MuiTab from '@mui/material/Tab';
-import Documents, { DocumentsTabProps } from './Documents';
-import General, { GeneralTabProps } from './General';
-import Balances, { BalancesProps } from './Balances';
+import Documents from './Documents';
+import General from './General';
+import Balances from './Balances';
 
 import { useStyles } from './style';
 
@@ -31,17 +31,7 @@ const tabsList: TabItemModel[] = [
   { label: 'Comments', value: 'comments', disabled: true },
 ];
 
-interface TabsProps {
-  DocumentsTabProps: DocumentsTabProps;
-  GeneralTabProps: GeneralTabProps;
-  BalancesTabProps: BalancesProps;
-}
-
-const Tabs: React.FC<TabsProps> = ({
-  BalancesTabProps,
-  DocumentsTabProps,
-  GeneralTabProps,
-}) => {
+const Tabs: FC = () => {
   const classes = useStyles();
   const { t } = useTranslation();
 
@@ -74,11 +64,9 @@ const Tabs: React.FC<TabsProps> = ({
         })}
       </MuiTabs>
       <Box className={classes.box}>
-        {selectedTab === 'general' && <General {...GeneralTabProps} />}
-        {selectedTab === 'fiscalYearBalances' && (
-          <Balances {...BalancesTabProps} />
-        )}
-        {selectedTab === 'documents' && <Documents {...DocumentsTabProps} />}
+        {selectedTab === 'general' && <General />}
+        {selectedTab === 'fiscalYearBalances' && <Balances />}
+        {selectedTab === 'documents' && <Documents />}
       </Box>
     </Box>
   );

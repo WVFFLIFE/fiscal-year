@@ -10,8 +10,8 @@ export { default as isPublished } from './isPublished';
 export { default as buildFlatList } from './buildFlatList';
 export { default as extractDocs } from './extractDocs';
 export { default as sort } from './sort';
+export * from './dates';
 
-export const DEFAULT_FORMAT_PATTERN = 'd.M.yyyy';
 export const DEFAULT_PAGINATION_OPTIONS = [5, 10, 15];
 
 export function filterBySearchTerm(val: string, searchTerm: string) {
@@ -86,14 +86,6 @@ export function getErrorsList(res: SettledResponse) {
   }, [] as string[]);
 }
 
-export function defaultFormat(date: null): null;
-export function defaultFormat(date: Date): string;
-export function defaultFormat(date: Date | null) {
-  if (!date) return null;
-
-  return format(date, DEFAULT_FORMAT_PATTERN);
-}
-
 export function isAllMyOwn(
   cooperatives: CommonCooperativeModel[],
   selectedCooperatives: CommonCooperativeModel[]
@@ -118,4 +110,12 @@ export function readFile(file: File): Promise<string> {
     };
     reader.onerror = (error) => reject(error);
   });
+}
+
+export function toNumberFormat(num: number | null | undefined) {
+  if (!num) return null;
+  return num
+    .toFixed(2)
+    .replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
+    .replace(/\./g, ',');
 }

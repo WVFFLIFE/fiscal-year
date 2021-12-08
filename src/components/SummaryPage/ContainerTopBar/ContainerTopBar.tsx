@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { CommonCooperativeModel, CalendarYearOption } from 'models';
-import { defaultFormat, isAllMyOwn } from 'utils';
+import { isAllMyOwn } from 'utils';
+import { defaultFormat } from 'utils/dates';
 
 import clsx from 'clsx';
 import { useStyles } from './style';

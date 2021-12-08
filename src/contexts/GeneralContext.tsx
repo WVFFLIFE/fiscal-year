@@ -20,7 +20,7 @@ interface GeneralInformationModel {
   error: ErrorModel | null;
 }
 
-interface StateModel {
+export interface StateModel {
   defaultCooperativeId: string | null;
   defaultFiscalYearId: string | null;
   generalInformation: GeneralInformationModel;

@@ -11,6 +11,7 @@ export type {
   MettadataAttributeModel,
   MeetingModel,
   AuditingModel,
+  GeneralFiscalYearModel,
 } from 'services';
 export type { SortModel, SortParamsType } from 'hooks/useSort';
 export type { CalendarYearOption } from 'components/SelectCalendarYear';

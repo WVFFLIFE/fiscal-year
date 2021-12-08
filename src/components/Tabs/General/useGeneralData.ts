@@ -1,7 +1,7 @@
-import { GeneralCtx } from 'contexts/GeneralContext';
 import { ErrorModel } from 'models';
-import { useState, useEffect, useCallback, useContext } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import useGeneralCtx from 'hooks/useGeneralCtx';
 import { sleep, readFile } from 'utils';
 import { serverFormat } from 'utils/dates';
 
@@ -18,9 +18,12 @@ interface StateModel {
   saving: boolean;
 }
 
-const useGeneralData = (coopId: string, fiscalYearId: string) => {
+const useGeneralData = () => {
   const { t } = useTranslation();
-  const { fetchGeneralData } = useContext(GeneralCtx);
+  const {
+    fetchGeneralData,
+    state: { generalInformation },
+  } = useGeneralCtx();
   const [state, setState] = useState<StateModel>({
     file: null,
     progress: 0,
@@ -31,6 +34,9 @@ const useGeneralData = (coopId: string, fiscalYearId: string) => {
     src: null,
     saving: false,
   });
+
+  const coopId = generalInformation.data?.CooperativeId || null;
+  const fiscalYearId = generalInformation.data?.Id || null;
 
   useEffect(() => {
     async function getCoverImage(id: string) {
@@ -83,12 +89,14 @@ const useGeneralData = (coopId: string, fiscalYearId: string) => {
       }
     }
 
-    getCoverImage(coopId);
+    if (coopId) {
+      getCoverImage(coopId);
+    }
   }, [coopId]);
 
   const handleChangeCurrentFile = useCallback(
     async (files: File[]) => {
-      if (!files.length) return;
+      if (!files.length || !coopId) return;
 
       const [file] = files;
 
@@ -152,6 +160,7 @@ const useGeneralData = (coopId: string, fiscalYearId: string) => {
    * Delete cover page image
    */
   const handleDeleteCurrentFile = async () => {
+    if (!coopId) return;
     try {
       setState((prevState) => ({
         ...prevState,
@@ -218,6 +227,7 @@ const useGeneralData = (coopId: string, fiscalYearId: string) => {
    * else - undefined
    */
   const validate = async (startDate: Date, endDate: Date) => {
+    if (!fiscalYearId) return;
     try {
       setState((prevState) => ({
         ...prevState,
@@ -261,6 +271,7 @@ const useGeneralData = (coopId: string, fiscalYearId: string) => {
 
   const handleSaveFiscalYear = useCallback(
     async (startDate: Date, endDate: Date) => {
+      if (!fiscalYearId) return;
       const isValid = await validate(startDate, endDate);
 
       if (isValid) {
@@ -299,8 +310,29 @@ const useGeneralData = (coopId: string, fiscalYearId: string) => {
     [fiscalYearId]
   );
 
+  const generalInformationList = useMemo(
+    () =>
+      generalInformation.data
+        ? [
+            {
+              Id: generalInformation.data.CooperativeId,
+              Name: generalInformation.data.CooperativeName,
+              StartDate: generalInformation.data.StartDate,
+              EndDate: generalInformation.data.EndDate,
+              IsClosed: !!generalInformation.data.IsClosed,
+              CooperativeLink: generalInformation.data.CooperativeLink,
+            },
+          ]
+        : [],
+    [generalInformation.data]
+  );
+
   return {
     ...state,
+    isClosed: !!generalInformation.data?.IsClosed,
+    auditings: generalInformation.data?.Auditings || [],
+    meetings: generalInformation.data?.Meetings || [],
+    generalInformationList,
     handleChangeCurrentFile,
     handleDeleteCurrentFile,
     handleSaveFiscalYear,

@@ -18,6 +18,9 @@ export const useStyles = makeStyles((theme) => ({
   disabled: {
     '&:hover': {
       background: 'transparent',
+      '& $actions': {
+        opacity: 0,
+      },
     },
   },
   item: {
@@ -56,5 +59,8 @@ export const useStyles = makeStyles((theme) => ({
   },
   input: {
     height: 24,
+  },
+  warning: {
+    borderColor: theme.color.red,
   },
 }));

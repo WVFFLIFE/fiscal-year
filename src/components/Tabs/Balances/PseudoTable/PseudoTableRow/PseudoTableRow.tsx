@@ -1,5 +1,6 @@
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useState, useEffect, memo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toNumberFormat } from 'utils';
 
 import { PseudoTableColumn } from '../PseudoTable';
 import Input from 'components/Input';
@@ -14,11 +15,20 @@ interface EditStateModel {
   field: string;
 }
 
+function toNumber(val: string) {
+  return Number(val.replace(/ /g, '').replace(/,/g, '.'));
+}
+
+function isValidNumber(val: string) {
+  return !!val && !isNaN(toNumber(val));
+}
+
 interface PseudoTableRowProps<T extends { [key: string]: any } = {}> {
   data: T;
   column: PseudoTableColumn<T>;
   disabled?: boolean;
   className?: string;
+  onSave(options: { [key: string]: string | number }, cb?: () => void): void;
 }
 
 const PseudoTableRow = <T extends { [key: string]: any } = {}>({
@@ -26,6 +36,7 @@ const PseudoTableRow = <T extends { [key: string]: any } = {}>({
   column,
   disabled,
   className,
+  onSave,
 }: PseudoTableRowProps<T>) => {
   const classes = useStyles();
   const { t } = useTranslation();
@@ -39,7 +50,14 @@ const PseudoTableRow = <T extends { [key: string]: any } = {}>({
     const val = data[column.field];
     setEditState({
       open: true,
-      field: typeof val === 'string' ? val : '',
+      field:
+        column.type === 'number'
+          ? val
+            ? toNumberFormat(val) || ''
+            : ''
+          : val
+          ? String(val)
+          : '',
     });
   };
 
@@ -59,6 +77,45 @@ const PseudoTableRow = <T extends { [key: string]: any } = {}>({
     }));
   };
 
+  const handleChangeNumber = (e: ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value
+      .replace(/[^0-9,]/g, '')
+      .replace(/[,](?=.*[,])/g, '')
+      .replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+
+    const [num, decimal] = value.split(',');
+
+    if (decimal?.length > 2) {
+      value = `${num},${decimal.substr(0, 2)}`;
+    }
+
+    setEditState((prevState) => ({
+      ...prevState,
+      field: value,
+    }));
+  };
+
+  const handleSave = () => {
+    onSave(
+      {
+        [column.field]:
+          column.type === 'number'
+            ? toNumber(editState.field)
+            : editState.field,
+      },
+      handleCloseEditMode
+    );
+  };
+
+  useEffect(() => {
+    handleCloseEditMode();
+  }, [data]);
+
+  const isValid =
+    column.type === 'number'
+      ? isValidNumber(editState.field)
+      : !!editState.field;
+
   return (
     <div
       className={clsx(classes.row, className, {
@@ -69,11 +126,21 @@ const PseudoTableRow = <T extends { [key: string]: any } = {}>({
       <div className={clsx(classes.item, classes.inputWrapper)}>
         {editState.open ? (
           <Input
-            value={editState.field}
-            onChange={handleChangeActiveField}
-            classes={{ root: classes.input }}
+            value={String(editState.field)}
+            onChange={
+              column.type === 'number'
+                ? handleChangeNumber
+                : handleChangeActiveField
+            }
+            classes={{
+              root: clsx(classes.input, {
+                [classes.warning]: !isValid,
+              }),
+            }}
             inputClasses={{ input: classes.input }}
           />
+        ) : column.render ? (
+          column.render(data)
         ) : (
           data[column.field]
         )}
@@ -87,10 +154,16 @@ const PseudoTableRow = <T extends { [key: string]: any } = {}>({
                 size="small"
                 className={classes.btnOffset}
                 onClick={handleCloseEditMode}
+                disabled={disabled}
               >
                 <CloseIcon className={classes.icon} />
               </ActionButton>
-              <ActionButton palette="darkBlue" size="small">
+              <ActionButton
+                palette="darkBlue"
+                size="small"
+                disabled={!isValid || disabled}
+                onClick={handleSave}
+              >
                 <RoundCheckIcon className={classes.icon} />
               </ActionButton>
             </>
@@ -99,6 +172,7 @@ const PseudoTableRow = <T extends { [key: string]: any } = {}>({
               palette="darkBlue"
               size="small"
               onClick={handleOpenEditModel}
+              disabled={disabled}
             >
               <EditIcon className={classes.icon} />
             </ActionButton>
@@ -109,4 +183,4 @@ const PseudoTableRow = <T extends { [key: string]: any } = {}>({
   );
 };
 
-export default PseudoTableRow;
+export default memo(PseudoTableRow);

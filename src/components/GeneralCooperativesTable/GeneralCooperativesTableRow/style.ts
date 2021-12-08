@@ -6,7 +6,7 @@ export const useStyles = makeStyles((theme) => ({
     borderColor: theme.color.red,
   },
   cell: {
-    padding: 16,
+    padding: '14px 16px',
     fontSize: 16,
     fontFamily: 'Lato',
     lineHeight: 1,
@@ -46,6 +46,9 @@ export const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
   },
   disabledInput: {
+    display: 'flex',
+    alignItems: 'center',
+    height: 34,
     fontSize: 16,
     fontFamily: 'Lato',
     fontWeight: 400,

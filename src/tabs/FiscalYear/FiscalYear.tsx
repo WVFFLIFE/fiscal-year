@@ -1,6 +1,5 @@
-import { useContext } from 'react';
 import useFiscalYearData from './useFiscalYearData';
-import { GeneralCtx } from 'contexts/GeneralContext';
+import useGeneralCtx from 'hooks/useGeneralCtx';
 
 import TopBar from 'components/TopBar';
 import Backdrop from 'components/Backdrop';
@@ -12,7 +11,7 @@ const FiscalYear = () => {
   const {
     state: { defaultFiscalYearId, defaultCooperativeId, generalInformation },
     handleInitGeneralInformationError,
-  } = useContext(GeneralCtx);
+  } = useGeneralCtx();
   const { state, handleInitError } = useFiscalYearData();
 
   const showLoader = state.loading || generalInformation.loading;

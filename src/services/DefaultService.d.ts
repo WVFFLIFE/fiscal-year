@@ -201,6 +201,11 @@ export interface GeneralFiscalYearModel {
   PersistentStrainsAndMortgagesHtml: string | null;
   PropertyMeintenanceProductName: string | null;
   PropertyMeintenanceSurplusDeficitPreviousFY: number | null;
+  Show1: boolean;
+  Show2: boolean;
+  Show3: boolean;
+  Show4: boolean;
+  Show5: boolean;
   SpecFinCalcProductName1: string | null;
   SpecFinCalcProductName2: string | null;
   SpecFinCalcProductName3: string | null;
@@ -242,22 +247,27 @@ interface FiscalYearValidationRes extends BaseResponseModel {
   ValidationResult: ResponseStatus.FiscalYearValidatingStatus | null;
 }
 
-interface BalanceUpdateRequest {
+export interface BalanceUpdateRequest {
   FiscalYearId: string;
-  PropertyMeintenanceProductName: string;
-  PropertyMeintenanceSurplusDeficitPreviousFY: number;
-  VATCalculationsProductName: string;
-  VATCalculationsSurplusDeficitPreviousFY: number;
-  SpecFinCalcProductName1: string;
-  SpecFinCalcSurplusDeficitPreviousFY1: string;
-  SpecFinCalcProductName2: string;
-  SpecFinCalcSurplusDeficitPreviousFY2: string;
-  SpecFinCalcProductName3: string;
-  SpecFinCalcSurplusDeficitPreviousFY3: string;
-  SpecFinCalcProductName4: string;
-  SpecFinCalcSurplusDeficitPreviousFY4: string;
-  SpecFinCalcProductName5: string;
-  SpecFinCalcSurplusDeficitPreviousFY5: string;
+  PropertyMeintenanceProductName: string | null;
+  PropertyMeintenanceSurplusDeficitPreviousFY: number | null;
+  VATCalculationsProductName: string | null;
+  VATCalculationsSurplusDeficitPreviousFY: number | null;
+  SpecFinCalcProductName1: string | null;
+  SpecFinCalcSurplusDeficitPreviousFY1: number | null;
+  SpecFinCalcProductName2: string | null;
+  SpecFinCalcSurplusDeficitPreviousFY2: number | null;
+  SpecFinCalcProductName3: string | null;
+  SpecFinCalcSurplusDeficitPreviousFY3: number | null;
+  SpecFinCalcProductName4: string | null;
+  SpecFinCalcSurplusDeficitPreviousFY4: number | null;
+  SpecFinCalcProductName5: string | null;
+  SpecFinCalcSurplusDeficitPreviousFY5: number | null;
+  Show1: boolean;
+  Show2: boolean;
+  Show3: boolean;
+  Show4: boolean;
+  Show5: boolean;
 }
 
 export type SettledResponse = PromiseSettledResult<BaseResponseModel>[];

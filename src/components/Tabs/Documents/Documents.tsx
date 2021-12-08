@@ -1,3 +1,4 @@
+import { FC } from 'react';
 import useDocumentsData from './useDocumentsData';
 import { DocumentModel, FolderModel } from 'models';
 
@@ -52,7 +53,7 @@ export interface DocumentsTabProps {
   fiscalYearId: string;
 }
 
-const Documents: React.FC<DocumentsTabProps> = ({ fiscalYearId }) => {
+const Documents: FC = () => {
   const classes = useStyles();
 
   const {
@@ -110,7 +111,7 @@ const Documents: React.FC<DocumentsTabProps> = ({ fiscalYearId }) => {
     handleOpenEditDocumentDialog,
     handleCloseEditDocumentDialog,
     handleInitEditDocumentDialog,
-  } = useDocumentsData(fiscalYearId);
+  } = useDocumentsData();
 
   return (
     <Box>

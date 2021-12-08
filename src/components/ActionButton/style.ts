@@ -22,17 +22,18 @@ export const useStyles = makeStyles((theme) => ({
       color: '#fff',
       filter: 'drop-shadow(0px 2px 7px rgba(151, 151, 151, 0.4))',
     },
+    '&.Mui-disabled': {
+      background: theme.color.greyBorder,
+      color: '#fff',
+      filter: 'none',
+    },
   },
   white: {
     background: '#fff',
     color: theme.color.darkBlue,
     filter: 'drop-shadow(0px 2px 7px rgba(151, 151, 151, 0.4))',
-  },
-  disabled: {
     '&.Mui-disabled': {
-      background: '#fff',
       color: theme.color.greyBorder,
-      filter: 'drop-shadow(0px 2px 7px rgba(151, 151, 151, 0.4))',
     },
   },
 }));

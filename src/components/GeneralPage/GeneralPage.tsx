@@ -1,5 +1,3 @@
-import { useContext } from 'react';
-import { GeneralCtx } from 'contexts/GeneralContext';
 import useGeneralPageData from './useGeneralPageData';
 import { useTranslation } from 'react-i18next';
 
@@ -9,7 +7,9 @@ import {
   ApplyButton,
   InfoBox,
   Container,
+  IconButton,
 } from 'components/Styled';
+import { RefreshIcon } from 'components/Icons';
 import Tabs from 'components/Tabs';
 import CooperativesPicker from 'components/CooperativesPicker';
 import FiscalYearPicker from 'components/FiscalYearPicker';
@@ -32,11 +32,10 @@ const GeneralPage: React.FC<GeneralPageProps> = ({
   const classes = useStyles();
   const { t } = useTranslation();
   const {
-    state: { generalInformation },
-  } = useContext(GeneralCtx);
-  const {
     state,
+    generalData,
     isDisabledApplyButton,
+    handleRefreshData,
     handleApplyClick,
     handleInitError,
     handleChangeFiscalYear,
@@ -71,17 +70,21 @@ const GeneralPage: React.FC<GeneralPageProps> = ({
             {t('#button.apply')}
           </ApplyButton>
         </Box>
-        <Box
-          display="flex"
-          flex={1}
-          justifyContent="flex-end"
-          padding={4}
-          paddingX={2}
-        >
-          <PageSearch
-            searchTerm={state.searchTerm}
-            onChange={handleChangeSearchTerm}
-          />
+        <Box display="flex" flex={1} justifyContent="flex-end">
+          <Box padding={4} paddingLeft={2} paddingRight={1}>
+            <IconButton
+              className={classes.refreshBtn}
+              onClick={handleRefreshData}
+            >
+              <RefreshIcon className={classes.refreshIcon} />
+            </IconButton>
+          </Box>
+          <Box padding={4} paddingRight={2} paddingLeft={1}>
+            <PageSearch
+              searchTerm={state.searchTerm}
+              onChange={handleChangeSearchTerm}
+            />
+          </Box>
         </Box>
       </FiltersWrapper>
       {state.prev.cooperative && state.prev.fiscalYear ? (
@@ -90,63 +93,10 @@ const GeneralPage: React.FC<GeneralPageProps> = ({
             selectedCooperative={state.prev.cooperative}
             fiscalYear={state.prev.fiscalYear}
           />
-          {generalInformation.data && (
-            <Tabs
-              BalancesTabProps={{
-                PropertyMeintenanceProductName:
-                  generalInformation.data.PropertyMeintenanceProductName,
-                PropertyMeintenanceSurplusDeficitPreviousFY:
-                  generalInformation.data
-                    .PropertyMeintenanceSurplusDeficitPreviousFY,
-                SpecFinCalcProductName1:
-                  generalInformation.data.SpecFinCalcProductName1,
-                SpecFinCalcProductName2:
-                  generalInformation.data.SpecFinCalcProductName2,
-                SpecFinCalcProductName3:
-                  generalInformation.data.SpecFinCalcProductName3,
-                SpecFinCalcProductName4:
-                  generalInformation.data.SpecFinCalcProductName4,
-                SpecFinCalcProductName5:
-                  generalInformation.data.SpecFinCalcProductName5,
-                SpecFinCalcSurplusDeficitPreviousFY1:
-                  generalInformation.data.SpecFinCalcSurplusDeficitPreviousFY1,
-                SpecFinCalcSurplusDeficitPreviousFY2:
-                  generalInformation.data.SpecFinCalcSurplusDeficitPreviousFY2,
-                SpecFinCalcSurplusDeficitPreviousFY3:
-                  generalInformation.data.SpecFinCalcSurplusDeficitPreviousFY3,
-                SpecFinCalcSurplusDeficitPreviousFY4:
-                  generalInformation.data.SpecFinCalcSurplusDeficitPreviousFY4,
-                SpecFinCalcSurplusDeficitPreviousFY5:
-                  generalInformation.data.SpecFinCalcSurplusDeficitPreviousFY5,
-                VATCalculationsProductName:
-                  generalInformation.data.VATCalculationsProductName,
-                VATCalculationsSurplusDeficitPreviousFY:
-                  generalInformation.data
-                    .VATCalculationsSurplusDeficitPreviousFY,
-              }}
-              DocumentsTabProps={{ fiscalYearId: generalInformation.data.Id }}
-              GeneralTabProps={{
-                coopId: generalInformation.data.CooperativeId,
-                auditings: generalInformation.data.Auditings,
-                fiscalYearId: generalInformation.data.Id,
-                isClosed: !!generalInformation.data.IsClosed,
-                meetings: generalInformation.data.Meetings,
-                generalInformationList: [
-                  {
-                    Id: generalInformation.data.CooperativeId,
-                    Name: generalInformation.data.CooperativeName,
-                    StartDate: generalInformation.data.StartDate,
-                    EndDate: generalInformation.data.EndDate,
-                    IsClosed: !!generalInformation.data.IsClosed,
-                    CooperativeLink: generalInformation.data.CooperativeLink,
-                  },
-                ],
-              }}
-            />
-          )}
+          {generalData && <Tabs />}
         </Container>
       ) : (
-        <InfoBox>You can select another Fiscal Year if needed</InfoBox>
+        <InfoBox>{t('#info.selectanotherfiscalyear')}</InfoBox>
       )}
       <Backdrop loading={state.loading} />
       <DialogError error={state.error} initError={handleInitError} />

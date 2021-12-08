@@ -1,5 +1,4 @@
-import { memo, useState, ChangeEvent } from 'react';
-
+import { memo, useState, ChangeEvent, KeyboardEvent, useEffect } from 'react';
 import { ExtendedCooperativeModel } from 'models';
 import { defaultFormat } from 'utils/dates';
 import { getText } from 'utils/search';
@@ -39,14 +38,12 @@ const GeneralCooperativesTableRow: React.FC<GeneralCooperativesTableRowPropsMode
     );
     const [isCommentFieldActive, setIsCommentFieldActive] = useState(false);
 
-    const handleSaveComment = () => {
-      if (
-        fyComment !== (cooperative.FiscalYearComments || '') &&
-        cooperative.FiscalYearId
-      ) {
-        saveComment(cooperative.FiscalYearId, fyComment);
-      }
-    };
+    useEffect(() => {
+      setFyComment(cooperative.FiscalYearComments || '');
+    }, [cooperative]);
+
+    const hasUnsavedComment =
+      fyComment !== (cooperative.FiscalYearComments || '');
 
     const handleHoverRow = () => {
       setIsCommentFieldActive(true);
@@ -54,12 +51,28 @@ const GeneralCooperativesTableRow: React.FC<GeneralCooperativesTableRowPropsMode
 
     const handleHoverRowOut = () => {
       setIsCommentFieldActive(false);
+      setFyComment(cooperative.FiscalYearComments || '');
+    };
+
+    const handleSaveComment = async () => {
+      if (hasUnsavedComment && cooperative.FiscalYearId) {
+        await saveComment(cooperative.FiscalYearId, fyComment);
+        setIsCommentFieldActive(false);
+      }
     };
 
     const handleChangeComment = (e: ChangeEvent<HTMLInputElement>) => {
       const { value } = e.target;
 
       setFyComment(value);
+    };
+
+    const handleInputKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+
+        handleSaveComment();
+      }
     };
 
     const highlight = getText(searchTerm);
@@ -70,8 +83,12 @@ const GeneralCooperativesTableRow: React.FC<GeneralCooperativesTableRowPropsMode
           [classes.rowBorder]: isEmptyDate(cooperative),
         })}
         hover
-        onMouseEnter={handleHoverRow}
-        onMouseLeave={handleHoverRowOut}
+        onMouseEnter={
+          cooperative.IsFiscalYearClosed ? undefined : handleHoverRow
+        }
+        onMouseLeave={
+          cooperative.IsFiscalYearClosed ? undefined : handleHoverRowOut
+        }
       >
         <BodyTableCell className={clsx(classes.cell, classes.bold)}>
           <Box className={classes.box}>
@@ -127,11 +144,10 @@ const GeneralCooperativesTableRow: React.FC<GeneralCooperativesTableRowPropsMode
               value={fyComment}
               onChange={handleChangeComment}
               onBlur={handleSaveComment}
+              onKeyDown={handleInputKeyDown}
             />
           ) : (
-            <span className={classes.disabledInput}>
-              {highlight(fyComment)}
-            </span>
+            <div className={classes.disabledInput}>{highlight(fyComment)}</div>
           )}
         </BodyTableCell>
         <BodyTableCell className={classes.cell}>

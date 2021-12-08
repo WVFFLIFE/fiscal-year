@@ -15,6 +15,11 @@ export const useStyles = makeStyles((theme) => ({
       background: theme.color.greyLight2,
     },
   },
+  specFinCalcRow: {
+    '&:first-child': {
+      background: alpha('#DB76001A', 0.1),
+    },
+  },
   addBtn: {
     fontSize: 14,
     fontFamily: 'Proxima Nova',
@@ -26,5 +31,19 @@ export const useStyles = makeStyles((theme) => ({
     '& .MuiSvgIcon-root': {
       fontSize: 12,
     },
+  },
+  oddBox: {
+    '&:nth-child(2n-1)': {
+      marginRight: 20,
+    },
+  },
+  initMargin: {
+    margin: 0,
+  },
+  deficit: {
+    fontSize: 14,
+    fontFamily: 'Lato',
+    fontWeight: 300,
+    color: '#333',
   },
 }));

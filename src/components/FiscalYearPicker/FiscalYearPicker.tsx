@@ -9,7 +9,8 @@ import {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FiscalYearModel } from 'models';
-import { filterBySearchTerm, defaultFormat } from 'utils';
+import { filterBySearchTerm } from 'utils';
+import { defaultFormat } from 'utils/dates';
 import _orderBy from 'lodash/orderBy';
 
 import Picker from 'components/controls/Picker';

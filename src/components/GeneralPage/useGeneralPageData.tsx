@@ -1,14 +1,7 @@
-import {
-  useState,
-  useEffect,
-  useCallback,
-  useContext,
-  useRef,
-  useMemo,
-} from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { CommonCooperativeModel, FiscalYearModel, ErrorModel } from 'models';
+import useGeneralCtx from 'hooks/useGeneralCtx';
 import { serverFormat, isSameDay } from 'utils/dates';
-import { GeneralCtx } from 'contexts/GeneralContext';
 import Services from 'services';
 
 interface SelectedModel {
@@ -68,7 +61,10 @@ const useGeneralPageData = (
   defaultFiscalYearId: string
 ) => {
   const firstMount = useRef(true);
-  const { update, fetchGeneralData } = useContext(GeneralCtx);
+  const {
+    fetchGeneralData,
+    state: { generalInformation },
+  } = useGeneralCtx();
   const [state, setState] = useState<StateModel>(() => ({
     cooperatives: [],
     fiscalYears: [],
@@ -87,6 +83,11 @@ const useGeneralPageData = (
 
   const fetchData = async () => {
     try {
+      setState((prevState) => ({
+        ...prevState,
+        loading: true,
+      }));
+
       const fiscalYearsListRespone =
         await Services.getCooperativeFiscalYearsList(defaultCooperativeId);
 
@@ -105,6 +106,10 @@ const useGeneralPageData = (
       );
 
       if (!currentFiscalYear) {
+        setState((prevState) => ({
+          ...prevState,
+          loading: false,
+        }));
         return;
       }
 
@@ -130,7 +135,13 @@ const useGeneralPageData = (
         cooperativesListResponse.Cooperatives
       );
 
-      if (!coop) return;
+      if (!coop) {
+        setState((prevState) => ({
+          ...prevState,
+          loading: false,
+        }));
+        return;
+      }
 
       setState((prevState) => ({
         ...prevState,
@@ -212,7 +223,19 @@ const useGeneralPageData = (
     if (state.selected.cooperative && !firstMount.current) {
       updateFiscalYearsList(state.selected.cooperative);
     }
-  }, [state.selected.cooperative]);
+  }, [state.selected.cooperative, generalInformation.data?.IsClosed]);
+
+  const handleRefreshData = async () => {
+    await fetchData();
+    if (state.prev.fiscalYear?.Id) {
+      await fetchGeneralData(state.prev.fiscalYear.Id);
+      return;
+    }
+    if (state.selected.fiscalYear?.Id) {
+      await fetchGeneralData(state.selected.fiscalYear.Id);
+      return;
+    }
+  };
 
   const handleChangeSelectedCooperatives = useCallback(
     (cooperatives: CommonCooperativeModel[]) => {
@@ -284,12 +307,14 @@ const useGeneralPageData = (
 
   return {
     state,
+    generalData: generalInformation.data,
     isDisabledApplyButton,
     handleApplyClick,
     handleInitError,
     handleChangeSearchTerm,
     handleChangeFiscalYear,
     handleChangeSelectedCooperatives,
+    handleRefreshData,
   };
 };
 

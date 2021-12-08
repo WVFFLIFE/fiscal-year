@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import usePagination, { slice } from 'hooks/usePagination';
 import {
   SortModel,
@@ -143,7 +143,7 @@ const GeneralCooperativeTable: React.FC<GeneralCooperativeTableProps> = ({
     }));
   };
 
-  const saveComment = async (fyId: string, comment: string) => {
+  const saveComment = useCallback(async (fyId: string, comment: string) => {
     try {
       setState((prevState) => ({
         ...prevState,
@@ -180,7 +180,7 @@ const GeneralCooperativeTable: React.FC<GeneralCooperativeTableProps> = ({
         error: { messages: [String(err)] },
       }));
     }
-  };
+  }, []);
 
   const activeCooperatives = useMemo(() => {
     return search(

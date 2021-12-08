@@ -1,4 +1,4 @@
-import { useMemo, memo } from 'react';
+import { useMemo, memo, FC } from 'react';
 import useLockFiscalYear from 'hooks/useLockFiscalYear';
 import { useTranslation } from 'react-i18next';
 
@@ -18,7 +18,7 @@ import {
 
 import { useStyles } from './style';
 
-const TopBar: React.FC = () => {
+const TopBar: FC = () => {
   const classes = useStyles();
   const { t } = useTranslation();
 
@@ -78,6 +78,7 @@ const TopBar: React.FC = () => {
               label={t('#button.copyfy')}
               startIcon={<CopyIcon />}
               onClick={handleOpenCopyConfirmationWindow}
+              disabled={isClosed}
             />
             <AddFiscalYearButton />
           </Box>

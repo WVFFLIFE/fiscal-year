@@ -45,7 +45,8 @@ const SummaryPage: React.FC<SummaryPageProps> = ({ commonCooperatives }) => {
     state,
     handleInitError,
     isDisabledApplyButton,
-    fetchExtendedCooperativesList,
+    handleLoadCooperatives,
+    handleRefreshCooperatives,
     handleChangeActiveQuickFilter,
     handleChangeCalendarYear,
     handleSelectCooperative,
@@ -97,7 +98,7 @@ const SummaryPage: React.FC<SummaryPageProps> = ({ commonCooperatives }) => {
         <Box marginRight={4} padding={4} paddingX={2}>
           <ApplyButton
             disabled={isDisabledApplyButton}
-            onClick={fetchExtendedCooperativesList}
+            onClick={handleLoadCooperatives}
           >
             {t('#button.apply')}
           </ApplyButton>
@@ -125,20 +126,20 @@ const SummaryPage: React.FC<SummaryPageProps> = ({ commonCooperatives }) => {
       {show ? (
         state.extendedCooperatives.length ? (
           <Container className={classes.offsetTop}>
-            {state.prev.selectedCooperatives?.length &&
-              state.prev.selectedCalendarYear && (
+            {state.current.cooperatives.length &&
+              state.current.calendarYear && (
                 <ContainerTopBar
                   className={classes.offsetBottom}
                   cooperatives={commonCooperatives}
-                  selectedCooperatives={state.prev.selectedCooperatives}
-                  selectedCalendarYear={state.prev.selectedCalendarYear}
+                  selectedCooperatives={state.current.cooperatives}
+                  selectedCalendarYear={state.current.calendarYear}
                 />
               )}
             <GeneralCooperativeTable
               searchTerm={searchTerm}
               cooperatives={filteredExtendedCooperatives}
               onSelectCooperative={handleSelectCooperative}
-              fetchExtendedCooperativesList={fetchExtendedCooperativesList}
+              fetchExtendedCooperativesList={handleRefreshCooperatives}
             />
           </Container>
         ) : (

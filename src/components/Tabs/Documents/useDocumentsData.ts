@@ -8,6 +8,7 @@ import {
   SortModel,
   SortParamsType,
 } from 'models';
+import useGeneralCtx from 'hooks/useGeneralCtx';
 import Services from 'services';
 
 import { saveAs } from 'file-saver';
@@ -63,7 +64,11 @@ interface State {
   folderExists: boolean;
 }
 
-const useDocumentsData = (fiscalYearId: string) => {
+const useDocumentsData = () => {
+  const {
+    state: { generalInformation },
+  } = useGeneralCtx();
+  const fiscalYearId = generalInformation.data?.Id || null;
   const [state, setState] = useState<State>({
     breadcrumbsList: [],
     loading: false,
@@ -199,6 +204,7 @@ const useDocumentsData = (fiscalYearId: string) => {
   };
 
   const refreshData = async () => {
+    if (!fiscalYearId) return null;
     try {
       setState((prevState) => ({
         ...prevState,

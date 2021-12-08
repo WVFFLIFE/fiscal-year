@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import useGeneralData from './useGeneralData';
 import { MeetingModel, AuditingModel } from 'models';
@@ -27,18 +27,15 @@ export interface GeneralTabProps {
   isClosed: boolean;
 }
 
-const General: React.FC<GeneralTabProps> = ({
-  coopId,
-  fiscalYearId,
-  auditings,
-  meetings,
-  generalInformationList,
-  isClosed,
-}) => {
+const General: FC = () => {
   const classes = useStyles();
   const { t } = useTranslation();
 
   const {
+    auditings,
+    meetings,
+    generalInformationList,
+    isClosed,
     src,
     progress,
     loading,
@@ -50,19 +47,19 @@ const General: React.FC<GeneralTabProps> = ({
     handleChangeCurrentFile,
     handleDeleteCurrentFile,
     handleSaveFiscalYear,
-  } = useGeneralData(coopId, fiscalYearId);
+  } = useGeneralData();
 
   const meetingColumns: CommonTableColumn<MeetingModel>[] = useMemo(
     () => [
       {
-        label: 'Meeting Type',
+        label: '#tab.general.meetings.table.meetingtype',
         accessor: 'Type',
         type: 'string',
         headStyle: { width: '70%' },
         render: (el) => <TypeLink href={el.Link}>{el.Type}</TypeLink>,
       },
       {
-        label: 'Start Date & Time',
+        label: '#tab.general.meetings.table.startdatetime',
         accessor: 'PlannedStartingDate',
         type: 'datetime',
         cellClassName: clsx(classes.commonTableCell, classes.date),
@@ -74,7 +71,7 @@ const General: React.FC<GeneralTabProps> = ({
   const auditingColumns: CommonTableColumn<AuditingModel>[] = useMemo(
     () => [
       {
-        label: 'Auditing',
+        label: '#tab.general.auditing.table.auditing',
         accessor: 'Type',
         type: 'string',
         headStyle: { width: '70%' },
@@ -82,7 +79,7 @@ const General: React.FC<GeneralTabProps> = ({
         render: (el) => <TypeLink href={el.Link}>{el.Type}</TypeLink>,
       },
       {
-        label: 'Start Date',
+        label: '#tab.general.auditing.table.startdate',
         accessor: 'PlannedStartingDate',
         type: 'date',
         cellClassName: clsx(classes.commonTableCell, classes.date),

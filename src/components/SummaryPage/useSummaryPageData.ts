@@ -1,5 +1,5 @@
-import { useState, useCallback, useMemo, useContext } from 'react';
-import { GeneralCtx } from 'contexts/GeneralContext';
+import { useState, useCallback, useMemo } from 'react';
+import useGeneralCtx from 'hooks/useGeneralCtx';
 import {
   CommonCooperativeModel,
   ExtendedCooperativeModel,
@@ -22,9 +22,9 @@ interface StateModel {
   error: ErrorModel | null;
   showGrid: boolean;
   selected: SelectedModel;
-  prev: {
-    selectedCooperatives: CommonCooperativeModel[];
-    selectedCalendarYear: CalendarYearOption | null;
+  current: {
+    cooperatives: CommonCooperativeModel[];
+    calendarYear: CalendarYearOption | null;
   };
 }
 
@@ -39,26 +39,26 @@ const useSummaryPageData = () => {
       cooperatives: [],
       quickFilter: null,
     },
-    prev: {
-      selectedCalendarYear: null,
-      selectedCooperatives: [],
+    current: {
+      calendarYear: null,
+      cooperatives: [],
     },
   });
-  const { update } = useContext(GeneralCtx);
+  const { update } = useGeneralCtx();
 
-  const fetchExtendedCooperativesList = async () => {
-    if (!state.selected.cooperatives.length || !state.selected.calendarYear)
-      return;
-
+  const fetchExtendedCooperativesList = async (
+    selectedCooperatives: CommonCooperativeModel[],
+    selectedCalendarYear: CalendarYearOption
+  ) => {
     try {
       setState((prevState) => ({
         ...prevState,
         loading: true,
       }));
 
-      const coopIds = state.selected.cooperatives.map((coop) => coop.Id);
-      const startDate = serverFormat(state.selected.calendarYear.start);
-      const endDate = serverFormat(state.selected.calendarYear.end);
+      const coopIds = selectedCooperatives.map((coop) => coop.Id);
+      const startDate = serverFormat(selectedCalendarYear.start);
+      const endDate = serverFormat(selectedCalendarYear.end);
 
       const res = await Services.getCooperativesInformationList(
         coopIds,
@@ -66,14 +66,14 @@ const useSummaryPageData = () => {
         endDate
       );
 
+      console.log(selectedCooperatives, selectedCalendarYear);
+
       if (res.IsSuccess) {
         setState((prevState) => ({
           ...prevState,
-          prev: {
-            selectedCooperatives: [...state.selected.cooperatives],
-            selectedCalendarYear: state.selected.calendarYear && {
-              ...state.selected.calendarYear,
-            },
+          current: {
+            cooperatives: [...selectedCooperatives],
+            calendarYear: { ...selectedCalendarYear },
           },
           loading: false,
           extendedCooperatives: res.Cooperatives,
@@ -95,13 +95,34 @@ const useSummaryPageData = () => {
     }
   };
 
-  const handleSelectCooperative = (coop: ExtendedCooperativeModel) => {
-    update((prevState) => ({
-      ...prevState,
-      defaultCooperativeId: coop.Id,
-      defaultFiscalYearId: coop.FiscalYearId,
-    }));
+  const handleLoadCooperatives = async () => {
+    if (state.selected.cooperatives.length && state.selected.calendarYear) {
+      fetchExtendedCooperativesList(
+        state.selected.cooperatives,
+        state.selected.calendarYear
+      );
+    }
   };
+
+  const handleRefreshCooperatives = async () => {
+    if (state.current.cooperatives.length && state.current.calendarYear) {
+      fetchExtendedCooperativesList(
+        state.current.cooperatives,
+        state.current.calendarYear
+      );
+    }
+  };
+
+  const handleSelectCooperative = useCallback(
+    (coop: ExtendedCooperativeModel) => {
+      update((prevState) => ({
+        ...prevState,
+        defaultCooperativeId: coop.Id,
+        defaultFiscalYearId: coop.FiscalYearId,
+      }));
+    },
+    []
+  );
 
   const handleChangeCalendarYear = useCallback((newVal: CalendarYearOption) => {
     setState((prevState) => ({
@@ -153,46 +174,40 @@ const useSummaryPageData = () => {
     if (!state.selected.cooperatives.length || !state.selected.calendarYear)
       return true;
     function checkCoopEquality() {
-      if (!state.prev.selectedCooperatives) return false;
+      if (!state.current.cooperatives.length) return false;
       const coopIds = getIdsList(state.selected.cooperatives);
 
       return (
-        coopIds.length === state.prev.selectedCooperatives.length &&
-        state.prev.selectedCooperatives.every((coop) =>
-          coopIds.includes(coop.Id)
-        )
+        coopIds.length === state.current.cooperatives.length &&
+        state.current.cooperatives.every((coop) => coopIds.includes(coop.Id))
       );
     }
 
     function checkCalendarYearEquality() {
-      if (!state.prev.selectedCalendarYear || !state.selected.calendarYear)
+      if (!state.current.calendarYear || !state.selected.calendarYear)
         return false;
 
       return (
         isSameDay(
           state.selected.calendarYear.start,
-          state.prev.selectedCalendarYear.start
+          state.current.calendarYear.start
         ) &&
         isSameDay(
           state.selected.calendarYear.end,
-          state.prev.selectedCalendarYear.end
+          state.current.calendarYear.end
         )
       );
     }
 
     return checkCoopEquality() && checkCalendarYearEquality();
-  }, [
-    state.selected.cooperatives,
-    state.selected.calendarYear,
-    state.prev.selectedCalendarYear,
-    state.prev.selectedCooperatives,
-  ]);
+  }, [state]);
 
   return {
     state,
     isDisabledApplyButton,
     handleInitError,
-    fetchExtendedCooperativesList,
+    handleLoadCooperatives,
+    handleRefreshCooperatives,
     handleSelectCooperative,
     handleChangeCalendarYear,
     handleChangeActiveQuickFilter,
