@@ -68,11 +68,6 @@ const Body = <T extends CommonCooperativeModel>({
     }
   };
 
-  /**
-   * Reset selected cooperatives
-   * while searching or filtering
-   * if it's not the first render
-   */
   useEffect(() => {
     focusSearchField();
   }, [activeQuickFilter]);
@@ -106,10 +101,6 @@ const Body = <T extends CommonCooperativeModel>({
   const handleSelectCooperatives = () => {
     onSelectCooperatives(currentCooperative);
     onClosePicker();
-  };
-
-  const handleToggleSelectAll = () => {
-    setCurrentCooperative(currentCooperative.length ? [] : [...cooperatives]);
   };
 
   const resetFilters = () => {
@@ -150,6 +141,12 @@ const Body = <T extends CommonCooperativeModel>({
       return filterBySearchTerm(cooperative.Name, searchTerm);
     });
   }, [filteredCooperativesByQuickFilter, searchTerm]);
+
+  const handleToggleSelectAll = () => {
+    setCurrentCooperative(
+      currentCooperative.length ? [] : [...filteredCooperativesBySearchTerm]
+    );
+  };
 
   const quickFilterOptions: QuickFilterOption[] = useMemo(
     () =>
@@ -253,10 +250,11 @@ function isAllMyOwn(
   cooperatives: CommonCooperativeModel[],
   selectedCooperatives: CommonCooperativeModel[]
 ) {
-  const allMyOwnCoops = cooperatives.filter((coop) => coop.IsOwn);
-  return allMyOwnCoops.every(
-    (coop) =>
-      !!selectedCooperatives.find((selectedCoop) => selectedCoop.Id === coop.Id)
+  const allMyOwnCoops = cooperatives
+    .filter((coop) => coop.IsOwn)
+    .map((coop) => coop.Id);
+  return selectedCooperatives.every((selectedCoop) =>
+    allMyOwnCoops.includes(selectedCoop.Id)
   );
 }
 

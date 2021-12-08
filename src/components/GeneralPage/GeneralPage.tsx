@@ -34,6 +34,7 @@ const GeneralPage: React.FC<GeneralPageProps> = ({
   const {
     state,
     generalData,
+    backwardToSummaryPage,
     isDisabledApplyButton,
     handleRefreshData,
     handleApplyClick,
@@ -92,6 +93,7 @@ const GeneralPage: React.FC<GeneralPageProps> = ({
           <SelectedInfo
             selectedCooperative={state.prev.cooperative}
             fiscalYear={state.prev.fiscalYear}
+            backwardToSummaryPage={backwardToSummaryPage}
           />
           {generalData && <Tabs />}
         </Container>

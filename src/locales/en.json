@@ -87,6 +87,11 @@
   "#tab.balances.addnewproduct.enterproductname": "Enter product name",
   "#tab.balances.addnewproduct.deficit": "Surplus/deficit of the previous fiscal year",
   "#tab.balances.addnewproduct.enterdeficit": "Enter surplus/deficit",
+  "#tab.consumption.subtitle.waterconsumption": "Water Consumption",
+  "#tab.consumption.subtitle.meterbasedconsumption": "Meter Based Consumption",
+  "#tab.consumption.table.heatenergyofhotwater": "The heat energy of hot water",
+  "#tab.consumption.table.consumptionofhotwater": "Consumption of hot water",
+  "#tab.consumption.table.population": "Population",
   "#confirmation.lock.description": "Are you sure you want to lock fiscal year data? All current data will be unavailable to edit",
   "#confirmation.unlock.description": "Are you sure you want to unlock fiscal year data?",
   "#confirmation.copy.description": "Are you sure you want to copy previous fiscal year's data to current fiscal year? All current data will be replaced"

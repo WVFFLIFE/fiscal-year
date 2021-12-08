@@ -16,7 +16,7 @@ function isEmptyDate(cooperative: ExtendedCooperativeModel) {
   return (
     (!cooperative.BoardMeetingActualDate &&
       !cooperative.BoardMeetingPlannedDate) ||
-    (!cooperative.AuditingActualDate && !cooperative.AuditingPlannedDate) ||
+    (!cooperative.AuditDoneDate && !cooperative.AuditReturnNeededDate) ||
     (!cooperative.GeneralMeetingActualDate &&
       !cooperative.GeneralMeetingPlannedDate)
   );
@@ -126,8 +126,8 @@ const GeneralCooperativesTableRow: React.FC<GeneralCooperativesTableRowPropsMode
         <BodyTableCell className={classes.cell} align="center">
           <MeetingDate
             highlight={highlight}
-            actualDate={cooperative.AuditingActualDate}
-            plannedDate={cooperative.AuditingPlannedDate}
+            actualDate={cooperative.AuditDoneDate}
+            plannedDate={cooperative.AuditReturnNeededDate}
           />
         </BodyTableCell>
         <BodyTableCell className={classes.cell} align="center">

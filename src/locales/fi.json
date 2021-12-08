@@ -87,6 +87,11 @@
   "#tab.balances.addnewproduct.enterproductname": "Syötä vastikeryhmän nimi",
   "#tab.balances.addnewproduct.deficit": "Edellisen tilikauden vastikejäämä",
   "#tab.balances.addnewproduct.enterdeficit": "Syötä vastikejäämä",
+  "#tab.consumption.subtitle.waterconsumption": "Laskelma erikseen peritystä vesimaksusta",
+  "#tab.consumption.subtitle.meterbasedconsumption": "Kulutusseuranta",
+  "#tab.consumption.table.heatenergyofhotwater": "Lämpimän veden lämpöenergia osuus",
+  "#tab.consumption.table.consumptionofhotwater": "Lämpimän veden kulutusosuus",
+  "#tab.consumption.table.population": "Asukasluku",
   "#confirmation.lock.description": "Oletko varma, että haluat lukita tilikauden tiedot? Kaikki tilikauden tiedot lukitaan.",
   "#confirmation.unlock.description": "Oletko varma, että haluat avata tilikauden tiedot?",
   "#confirmation.copy.description": "Oletko varma, että haluat kopioida edellisen tilikauden tiedot toimintakertomukselle ja liitetietoihin? Kaikki jo syötetyt tiedot korvataan."

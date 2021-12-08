@@ -7,6 +7,7 @@ import MuiTab from '@mui/material/Tab';
 import Documents from './Documents';
 import General from './General';
 import Balances from './Balances';
+import Consumption from './Consumption';
 
 import { useStyles } from './style';
 
@@ -22,7 +23,7 @@ const tabsList: TabItemModel[] = [
     label: 'Fiscal Year Balances',
     value: 'fiscalYearBalances',
   },
-  { label: 'Consumption data', value: 'consumptionData', disabled: true },
+  { label: 'Consumption data', value: 'consumptionData' },
   { label: 'Annual report', value: 'annualReport', disabled: true },
   { label: 'Toimijat', value: 'toimijat', disabled: true },
   { label: 'Appendexis', value: 'appendexis', disabled: true },
@@ -66,6 +67,7 @@ const Tabs: FC = () => {
       <Box className={classes.box}>
         {selectedTab === 'general' && <General />}
         {selectedTab === 'fiscalYearBalances' && <Balances />}
+        {selectedTab === 'consumptionData' && <Consumption />}
         {selectedTab === 'documents' && <Documents />}
       </Box>
     </Box>

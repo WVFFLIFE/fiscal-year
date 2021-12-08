@@ -113,9 +113,10 @@ export interface CommonCooperativeModel extends BaseCooperativeModel {
 }
 
 export interface ExtendedCooperativeModel extends BaseCooperativeModel {
-  AuditingActualDate: string | null;
+  AuditDeliveryDate: string | null;
+  AuditDoneDate: string | null;
   AuditMeetingType: string | null;
-  AuditingPlannedDate: string | null;
+  AuditReturnNeededDate: string | null;
   BoardMeetingActualDate: string | null;
   BoardMeetingPlannedDate: string | null;
   BoardMeetingType: string | null;
@@ -146,12 +147,11 @@ interface FiscalYearListResponseModel extends BaseResponseModel {
 }
 
 export interface AuditingModel {
-  ActualEndingDate: string | null;
-  ActualStartingDate: string | null;
+  AuditingDone: string | null;
+  DeliveryDate: string | null;
   Id: string;
   Link: string | null;
-  PlannedEndingDate: string | null;
-  PlannedStartingDate: string | null;
+  ReturnNeededDate: string | null;
   Type: string | null;
 }
 

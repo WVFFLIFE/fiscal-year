@@ -17,7 +17,9 @@ import {
   ApplyButton,
   InfoBox,
   Container,
+  IconButton,
 } from 'components/Styled';
+import { RefreshIcon } from 'components/Icons';
 import GeneralCooperativeTable from 'components/GeneralCooperativesTable';
 import ContainerTopBar from './ContainerTopBar';
 
@@ -112,14 +114,18 @@ const SummaryPage: React.FC<SummaryPageProps> = ({ commonCooperatives }) => {
             disabled={!show && !state.extendedCooperatives.length}
           />
         </Box>
-        <Box
-          display="flex"
-          flex={1}
-          justifyContent="flex-end"
-          padding={4}
-          paddingX={2}
-        >
-          <PageSearch searchTerm={searchTerm} onChange={onChangeSearchTerm} />
+        <Box display="flex" flex={1} justifyContent="flex-end">
+          <Box padding={4} paddingLeft={2} paddingRight={1}>
+            <IconButton
+              className={classes.refreshBtn}
+              onClick={handleRefreshCooperatives}
+            >
+              <RefreshIcon className={classes.refreshIcon} />
+            </IconButton>
+          </Box>
+          <Box padding={4} paddingRight={2} paddingLeft={1}>
+            <PageSearch searchTerm={searchTerm} onChange={onChangeSearchTerm} />
+          </Box>
         </Box>
       </FiltersWrapper>
       {isEmptyFilter && <InfoBox>{t(hint)}</InfoBox>}

@@ -1,6 +1,6 @@
 import { makeStyles } from '@mui/styles';
 
-export const useStyles = makeStyles(() => ({
+export const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
     alignItems: 'center',
@@ -16,5 +16,14 @@ export const useStyles = makeStyles(() => ({
     height: 20,
     margin: '0 10px',
     background: 'currentColor',
+  },
+  iconBtn: {
+    marginRight: 15,
+    padding: '6px 8px',
+    borderRadius: 20,
+    color: theme.color.greyDark,
+  },
+  icon: {
+    fontSize: 16,
   },
 }));

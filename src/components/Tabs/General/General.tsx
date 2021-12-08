@@ -80,7 +80,7 @@ const General: FC = () => {
       },
       {
         label: '#tab.general.auditing.table.startdate',
-        accessor: 'PlannedStartingDate',
+        accessor: 'ReturnNeededDate',
         type: 'date',
         cellClassName: clsx(classes.commonTableCell, classes.date),
       },

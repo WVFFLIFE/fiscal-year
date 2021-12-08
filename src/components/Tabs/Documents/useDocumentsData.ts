@@ -204,7 +204,7 @@ const useDocumentsData = () => {
   };
 
   const refreshData = async () => {
-    if (!fiscalYearId) return null;
+    if (!fiscalYearId) return;
     try {
       setState((prevState) => ({
         ...prevState,
@@ -644,8 +644,10 @@ const useDocumentsData = () => {
   };
 
   useEffect(() => {
-    refreshData();
-  }, []);
+    if (fiscalYearId) {
+      refreshData();
+    }
+  }, [fiscalYearId]);
 
   useEffect(() => {
     resetSortParms();

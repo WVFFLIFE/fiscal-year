@@ -52,7 +52,7 @@ const columns: Column[] = [
     type: 'date',
   },
   {
-    field: 'AuditingPlannedDate',
+    field: 'AuditReturnNeededDate',
     label: '#table.summary.auditing',
     align: 'center',
     style: { width: 115 },
@@ -198,9 +198,9 @@ const GeneralCooperativeTable: React.FC<GeneralCooperativeTableProps> = ({
         },
         {
           accessor: (coop) => {
-            if (coop.AuditingActualDate) return 'AuditingActualDate';
-            if (coop.AuditingPlannedDate) return 'AuditingPlannedDate';
-            return 'AuditingPlannedDate';
+            if (coop.AuditDoneDate) return 'AuditDoneDate';
+            if (coop.AuditReturnNeededDate) return 'AuditReturnNeededDate';
+            return 'AuditReturnNeededDate';
           },
           type: 'date',
         },
@@ -227,8 +227,8 @@ const GeneralCooperativeTable: React.FC<GeneralCooperativeTableProps> = ({
     return orderBy(
       activeCooperatives,
       (coop) => {
-        if (sortParams.orderBy === 'AuditingPlannedDate') {
-          let d = coop.AuditingActualDate || coop.AuditingPlannedDate;
+        if (sortParams.orderBy === 'AuditReturnNeededDate') {
+          let d = coop.AuditDoneDate || coop.AuditReturnNeededDate;
 
           return d ? new Date(d).getTime() : null;
         }

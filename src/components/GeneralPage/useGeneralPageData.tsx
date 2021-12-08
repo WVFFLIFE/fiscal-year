@@ -63,6 +63,7 @@ const useGeneralPageData = (
   const firstMount = useRef(true);
   const {
     fetchGeneralData,
+    update,
     state: { generalInformation },
   } = useGeneralCtx();
   const [state, setState] = useState<StateModel>(() => ({
@@ -80,6 +81,14 @@ const useGeneralPageData = (
       fiscalYear: null,
     },
   }));
+
+  const backwardToSummaryPage = useCallback(() => {
+    update((prevState) => ({
+      ...prevState,
+      defaultCooperativeId: null,
+      defaultFiscalYearId: null,
+    }));
+  }, []);
 
   const fetchData = async () => {
     try {
@@ -308,6 +317,7 @@ const useGeneralPageData = (
   return {
     state,
     generalData: generalInformation.data,
+    backwardToSummaryPage,
     isDisabledApplyButton,
     handleApplyClick,
     handleInitError,
