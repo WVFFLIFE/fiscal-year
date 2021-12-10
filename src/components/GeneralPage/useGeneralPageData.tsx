@@ -90,7 +90,7 @@ const useGeneralPageData = (
     }));
   }, []);
 
-  const fetchData = async () => {
+  const fetchData = async (coopId: string, fiscalYearId: string) => {
     try {
       setState((prevState) => ({
         ...prevState,
@@ -98,7 +98,7 @@ const useGeneralPageData = (
       }));
 
       const fiscalYearsListRespone =
-        await Services.getCooperativeFiscalYearsList(defaultCooperativeId);
+        await Services.getCooperativeFiscalYearsList(coopId);
 
       if (!fiscalYearsListRespone.IsSuccess) {
         setState((prevState) => ({
@@ -110,7 +110,7 @@ const useGeneralPageData = (
       }
 
       const currentFiscalYear = findFiscalYearById(
-        defaultFiscalYearId,
+        fiscalYearId,
         fiscalYearsListRespone.FiscalYears
       );
 
@@ -140,7 +140,7 @@ const useGeneralPageData = (
       }
 
       const coop = findCooperative(
-        defaultCooperativeId,
+        coopId,
         cooperativesListResponse.Cooperatives
       );
 
@@ -160,6 +160,16 @@ const useGeneralPageData = (
           cooperative: coop,
           fiscalYear: currentFiscalYear,
         },
+        prev: {
+          cooperative:
+            prevState.prev.cooperative?.Id === coop.Id
+              ? coop
+              : prevState.prev.cooperative,
+          fiscalYear:
+            prevState.prev.fiscalYear?.Id === currentFiscalYear.Id
+              ? currentFiscalYear
+              : prevState.prev.fiscalYear,
+        },
         loading: false,
       }));
     } catch (err) {
@@ -176,11 +186,11 @@ const useGeneralPageData = (
   useEffect(() => {
     (async function () {
       if (firstMount.current) {
-        await fetchData();
+        await fetchData(defaultCooperativeId, defaultFiscalYearId);
         firstMount.current = false;
       }
     })();
-  }, []);
+  }, [defaultCooperativeId, defaultFiscalYearId]);
 
   useEffect(() => {
     async function updateFiscalYearsList(coop: CommonCooperativeModel) {
@@ -235,7 +245,12 @@ const useGeneralPageData = (
   }, [state.selected.cooperative, generalInformation.data?.IsClosed]);
 
   const handleRefreshData = async () => {
-    await fetchData();
+    if (state.selected.cooperative && state.selected.fiscalYear) {
+      await fetchData(
+        state.selected.cooperative.Id,
+        state.selected.fiscalYear.Id
+      );
+    }
     if (state.prev.fiscalYear?.Id) {
       await fetchGeneralData(state.prev.fiscalYear.Id);
       return;

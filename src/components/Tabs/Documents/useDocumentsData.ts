@@ -647,7 +647,7 @@ const useDocumentsData = () => {
     if (fiscalYearId) {
       refreshData();
     }
-  }, [fiscalYearId]);
+  }, [generalInformation.data]);
 
   useEffect(() => {
     resetSortParms();

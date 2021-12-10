@@ -37,6 +37,7 @@
   "#control.allcooperativesselected": "Kaikki omat yhtiöt ovat valittuina",
   "#control.allowncooperativeselected": "Kaikki omat yhtiöt ovat valittuina",
   "#control.partailcooperativesselected": "{{num}} yhtiötä valittuna",
+  "#control.checkbox.addconsumptionreporttoclosingthebookreport": "Lisää Kulutusseurantaraportti tilinpäätöksen liitteeksi",
   "#info.selectcooperative": "Valitse taloyhtiö",
   "#info.nocooperatives": "Valitulle vuodelle ei löytynyt yhtään yhtiötä",
   "#info.selectanotherfiscalyear": "Voit valita tarvittaessa toisen tilikauden",

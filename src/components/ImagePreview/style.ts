@@ -12,6 +12,11 @@ export const useStyles = makeStyles((theme) => ({
       opacity: 1,
     },
   },
+  disabled: {
+    '&:hover $mask': {
+      opacity: 0,
+    },
+  },
   mask: {
     position: 'absolute',
     display: 'flex',

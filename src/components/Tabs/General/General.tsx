@@ -9,7 +9,7 @@ import GeneralInformationTable, {
 } from './GeneralInformationTable';
 import CommonTable, { CommonTableColumn } from 'components/CommonTable';
 import Dropzone from 'components/Dropzone';
-import Preview from './Preview';
+import ImagePreview from 'components/ImagePreview';
 import TypeLink from './TypeLink';
 import Backdrop from 'components/Backdrop';
 import DialogError from 'components/DialogError';
@@ -123,14 +123,15 @@ const General: FC = () => {
               accept="image/jpeg, image/jpg, image/png"
               onChange={handleChangeCurrentFile}
             />
-            <Preview
+            <ImagePreview
               className={classes.preview}
               loading={loading}
               uploading={uploading}
               deleting={deleting}
               src={src}
               progress={progress}
-              handleDeleteCurrentFile={handleDeleteCurrentFile}
+              onDelete={handleDeleteCurrentFile}
+              overviewTitle={t('#tab.general.coverpageimage')}
             />
           </Box>
         </Box>

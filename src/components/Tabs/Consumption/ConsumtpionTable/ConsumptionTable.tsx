@@ -11,36 +11,42 @@ interface Data {
 
 interface ConsumptionTableProps {
   data: Data;
+  onSaveConsumption(
+    option: { [key: string]: number },
+    cb?: () => void
+  ): Promise<unknown>;
   disabled?: boolean;
 }
 
 const ConsumptionTable: React.FC<ConsumptionTableProps> = ({
   data,
+  onSaveConsumption,
   disabled,
 }) => {
   const { t } = useTranslation();
-
-  const mock = () => new Promise(() => {});
 
   return (
     <Box>
       <ConsumptionTableRow
         data={data.HeatEnergyOfHotWater}
+        field="HeatEnergyOfHotWater"
         label={t('#tab.consumption.table.heatenergyofhotwater')}
         disabled={disabled}
-        onSave={mock}
+        onSave={onSaveConsumption}
       />
       <ConsumptionTableRow
         data={data.ConsumptionOfHotWater}
+        field="ConsumptionOfHotWater"
         label={t('#tab.consumption.table.consumptionofhotwater')}
         disabled={disabled}
-        onSave={mock}
+        onSave={onSaveConsumption}
       />
       <ConsumptionTableRow
         data={data.Population}
+        field="Population"
         label={t('#tab.consumption.table.population')}
         disabled={disabled}
-        onSave={mock}
+        onSave={onSaveConsumption}
       />
     </Box>
   );

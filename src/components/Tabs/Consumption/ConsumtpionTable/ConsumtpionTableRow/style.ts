@@ -16,6 +16,11 @@ export const useStyles = makeStyles((theme) => ({
       },
     },
   },
+  disabled: {
+    '&:hover': {
+      background: 'transparent',
+    },
+  },
   cell: {
     display: 'flex',
     alignItems: 'center',

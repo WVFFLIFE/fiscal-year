@@ -4,6 +4,10 @@ import {
   LockFiscalYearCodes,
   UnlockFiscalYearCodes,
 } from 'models';
+import { AnnualReportModel } from 'models/AnnualReportModel';
+import { BalancesModel } from 'models/BalancesModel';
+import { ConsumptionModel } from 'models/ConsumptionModel';
+import { GeneralModel } from 'models/GeneralModel';
 
 interface BaseResponseModel {
   IsSuccess: boolean;
@@ -146,83 +150,10 @@ interface FiscalYearListResponseModel extends BaseResponseModel {
   FiscalYears: FiscalYearModel[];
 }
 
-export interface AuditingModel {
-  AuditingDone: string | null;
-  DeliveryDate: string | null;
-  Id: string;
-  Link: string | null;
-  ReturnNeededDate: string | null;
-  Type: string | null;
-}
-
-export interface MeetingModel {
-  ActualEndingDate: string | null;
-  ActualStartingDate: string | null;
-  Id: string;
-  Link: string | null;
-  PlannedEndingDate: string | null;
-  PlannedStartingDate: string | null;
-  Type: string | null;
-}
-
-export interface GeneralFiscalYearModel {
-  AnnualGeneralMeetings: string | null;
-  AnnualGeneralMeetingsFormatted: string | null;
-  AnnualGeneralMeetingsHtml: string | null;
-  Auditings: AuditingModel[];
-  BoardsProposalOnThePL: string | null;
-  BoardsProposalOnThePLFormatted: string | null;
-  BoardsProposalOnThePLHtml: string | null;
-  BudgetComprasion: string | null;
-  BudgetComprasionFormatted: string | null;
-  BudgetComprasionHtml: string | null;
-  ConsumptionData: string | null;
-  ConsumptionDataFormatted: string | null;
-  ConsumptionDataHtml: string | null;
-  CooperativeId: string;
-  CooperativeName: string;
-  CooperativeLink: string | null;
-  EndDate: string | null;
-  EssentialEvents: string | null;
-  EssentialEventsFormatted: string | null;
-  EssentialEventsHtml: string | null;
-  FutureDevelopment: string | null;
-  FutureDevelopmentFormatted: string | null;
-  FutureDevelopmentHtml: string | null;
-  Id: string;
-  IsClosed: boolean | null;
-  Liquidity: string | null;
-  LiquidityFormatted: string | null;
-  LiquidityHtml: string | null;
-  Meetings: MeetingModel[];
-  Name: string;
-  PersistentStrainsAndMortgages: string | null;
-  PersistentStrainsAndMortgagesFormatted: string | null;
-  PersistentStrainsAndMortgagesHtml: string | null;
-  PropertyMeintenanceProductName: string | null;
-  PropertyMeintenanceSurplusDeficitPreviousFY: number | null;
-  Show1: boolean;
-  Show2: boolean;
-  Show3: boolean;
-  Show4: boolean;
-  Show5: boolean;
-  SpecFinCalcProductName1: string | null;
-  SpecFinCalcProductName2: string | null;
-  SpecFinCalcProductName3: string | null;
-  SpecFinCalcProductName4: string | null;
-  SpecFinCalcProductName5: string | null;
-  SpecFinCalcSurplusDeficitPreviousFY1: number | null;
-  SpecFinCalcSurplusDeficitPreviousFY2: number | null;
-  SpecFinCalcSurplusDeficitPreviousFY3: number | null;
-  SpecFinCalcSurplusDeficitPreviousFY4: number | null;
-  SpecFinCalcSurplusDeficitPreviousFY5: number | null;
-  StartDate: string | null;
-  TheBoardOfDirectorsConvenedDuringTheFY: string | null;
-  TheBoardOfDirectorsConvenedDuringTheFYFormatted: string | null;
-  TheBoardOfDirectorsConvenedDuringTheFYHtml: string | null;
-  VATCalculationsProductName: string | null;
-  VATCalculationsSurplusDeficitPreviousFY: number | null;
-}
+export type GeneralFiscalYearModel = GeneralModel &
+  AnnualReportModel &
+  BalancesModel &
+  ConsumptionModel;
 
 interface GeneralFiscalYearModelRes extends BaseResponseModel {
   FiscalYear: GeneralFiscalYearModel;
@@ -272,7 +203,23 @@ export interface BalanceUpdateRequest {
 
 export type SettledResponse = PromiseSettledResult<BaseResponseModel>[];
 
+interface ConsumptionUpdateRequest {
+  FiscalYearId: string;
+  HeatEnergyOfHotWater: number | null;
+  ConsumptionOfHotWater: number | null;
+  Population: number | null;
+  AddConsumptionReportToClosingTheBookReport: boolean;
+}
+
 declare class DefaultService {
+  public fiscalYearConsumptionUpdate(
+    req: ConsumptionUpdateRequest
+  ): Promise<BaseResponseModel>;
+  public getConsumptionImage(fiscalYearId: string): Promise<CoverImageRes>;
+  public updateConsumptionImage(req: {
+    FiscalYearId: string;
+    Content: string | null;
+  }): Promise<BaseResponseModel>;
   public fiscalYearBalancesUpdate(
     req: BalanceUpdateRequest
   ): Promise<BaseResponseModel>;

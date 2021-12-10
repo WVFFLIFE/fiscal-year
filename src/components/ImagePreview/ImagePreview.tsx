@@ -16,7 +16,9 @@ interface PreviewProps {
   loading: boolean;
   uploading: boolean;
   deleting: boolean;
-  handleDeleteCurrentFile(): Promise<void>;
+  onDelete(): Promise<void>;
+  overviewTitle?: string;
+  disabled?: boolean;
 }
 
 const Preview: React.FC<PreviewProps> = ({
@@ -26,7 +28,9 @@ const Preview: React.FC<PreviewProps> = ({
   loading,
   uploading,
   deleting,
-  handleDeleteCurrentFile,
+  disabled,
+  onDelete,
+  overviewTitle,
 }) => {
   const classes = useStyles();
   const [showFullImage, setShowFullImage] = useState(false);
@@ -59,22 +63,25 @@ const Preview: React.FC<PreviewProps> = ({
 
   return (
     <>
-      <div className={clsx(classes.wrapper, className)}>
+      <div
+        className={clsx(classes.wrapper, className, {
+          [classes.disabled]: disabled,
+        })}
+      >
         <img className={classes.img} src={src} alt="Preview" />
-        <div className={classes.mask}>
-          <ActionButton
-            className={clsx(classes.btn, classes.btnOffset)}
-            onClick={handleOpenFullImageModal}
-          >
-            <EyeIcon className={classes.icon} />
-          </ActionButton>
-          <ActionButton
-            className={classes.btn}
-            onClick={handleDeleteCurrentFile}
-          >
-            <DeleteIcon className={classes.icon} />
-          </ActionButton>
-        </div>
+        {!disabled && (
+          <div className={classes.mask}>
+            <ActionButton
+              className={clsx(classes.btn, classes.btnOffset)}
+              onClick={handleOpenFullImageModal}
+            >
+              <EyeIcon className={classes.icon} />
+            </ActionButton>
+            <ActionButton className={classes.btn} onClick={onDelete}>
+              <DeleteIcon className={classes.icon} />
+            </ActionButton>
+          </div>
+        )}
       </div>
       <Dialog
         maxWidth="md"
@@ -82,7 +89,7 @@ const Preview: React.FC<PreviewProps> = ({
         handleClose={handleCloseFullImageModal}
         fullWidth={false}
       >
-        <h3 className={classes.title}>Cover page image</h3>
+        <h3 className={classes.title}>{overviewTitle}</h3>
         <FullImage src={src} />
       </Dialog>
     </>

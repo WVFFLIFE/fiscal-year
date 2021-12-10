@@ -6,5 +6,9 @@ export const useStyles = makeStyles(() => ({
   },
   dropzone: {
     maxWidth: 500,
+    flex: 1,
+  },
+  preview: {
+    marginLeft: 20,
   },
 }));

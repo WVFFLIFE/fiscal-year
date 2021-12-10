@@ -92,7 +92,7 @@ const useGeneralData = () => {
     if (coopId) {
       getCoverImage(coopId);
     }
-  }, [coopId]);
+  }, [generalInformation.data]);
 
   const handleChangeCurrentFile = useCallback(
     async (files: File[]) => {

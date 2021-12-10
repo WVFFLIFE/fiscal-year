@@ -19,6 +19,10 @@ class FiscalYearInternalAPI {
     return userLcid === 1035 ? 'Finnish' : 'Default';
   };
 
+  getSettings = async () => {
+    return await this.executeRequest('uds_FiscalYearCopy', {});
+  };
+
   //FiscalYearCopyResponseCode
   //{
   //OK = 0,
@@ -111,6 +115,16 @@ class FiscalYearInternalAPI {
     return await this.executeRequest('uds_FiscalYearRequest', {
       FiscalYearId: fiscalYearId,
     });
+  };
+
+  //https://dev.azure.com/uds-cloud-devops/Premis/_git/CSharpCode?path=/Modules/Accounting/Property.Accounting.FiscalYear/Property.Accounting.FiscalYear/Data/Requests/FiscalYearAppendexisPartUpdateRequest.cs&version=GBm.mishko/FINN-14051&_a=contents
+  fiscalYearAnnualReportUpdate = async (request) => {
+    return await this.executeTypeRequest('uds_FiscalYearUpdate', 6, request);
+  };
+
+  //https://dev.azure.com/uds-cloud-devops/Premis/_git/CSharpCode?path=/Modules/Accounting/Property.Accounting.FiscalYear/Property.Accounting.FiscalYear/Data/Requests/FiscalYearAnnualReportPartUpdateRequest.cs&version=GBm.mishko/FINN-14051&_a=contents
+  fiscalYearAnnualReportUpdate = async (request) => {
+    return await this.executeTypeRequest('uds_FiscalYearUpdate', 2, request);
   };
 
   /* request = { FiscalYearId:guid

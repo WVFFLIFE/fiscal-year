@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Input from 'components/Input';
@@ -10,9 +10,10 @@ import { useStyles } from './style';
 
 interface ConsumptionTableRowProps {
   data: number | null;
+  field: string;
   label: string;
   disabled?: boolean;
-  onSave(num: number): Promise<unknown>;
+  onSave(option: { [key: string]: number }): Promise<unknown>;
 }
 
 function isValidNumber(val: number) {
@@ -21,6 +22,7 @@ function isValidNumber(val: number) {
 
 const ConsumptionTableRow: React.FC<ConsumptionTableRowProps> = ({
   data,
+  field,
   label,
   disabled,
   onSave,
@@ -38,6 +40,11 @@ const ConsumptionTableRow: React.FC<ConsumptionTableRowProps> = ({
     setEditMode(false);
   };
 
+  const handleResetField = () => {
+    setFieldData('');
+    handleCloseEditMode();
+  };
+
   const handleChangeData = (e: ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value;
 
@@ -47,12 +54,28 @@ const ConsumptionTableRow: React.FC<ConsumptionTableRowProps> = ({
   };
 
   const handleSave = async () => {
-    await onSave(+fieldData);
-    handleCloseEditMode();
+    await onSave({ [field]: +fieldData });
+    handleResetField();
   };
 
+  useEffect(() => {
+    if (editMode) {
+      setFieldData(data ? String(data) : '');
+    } else {
+      setFieldData('');
+    }
+  }, [editMode, data]);
+
+  useEffect(() => {
+    handleResetField();
+  }, [data]);
+
   return (
-    <Box className={classes.root}>
+    <Box
+      className={clsx(classes.root, {
+        [classes.disabled]: disabled,
+      })}
+    >
       <Box className={clsx(classes.cell, classes.label)}>{label}</Box>
       <Box className={clsx(classes.cell, classes.value)}>
         {editMode ? (
@@ -70,32 +93,34 @@ const ConsumptionTableRow: React.FC<ConsumptionTableRowProps> = ({
         )}
       </Box>
       <Box className={clsx(classes.cell, classes.actions)}>
-        {editMode ? (
-          <>
-            <ActionButton
-              palette="white"
-              className={classes.btnOffset}
-              onClick={handleCloseEditMode}
-            >
-              <CloseIcon className={classes.icon} />
-            </ActionButton>
+        {!disabled ? (
+          editMode ? (
+            <>
+              <ActionButton
+                palette="white"
+                className={classes.btnOffset}
+                onClick={handleCloseEditMode}
+              >
+                <CloseIcon className={classes.icon} />
+              </ActionButton>
+              <ActionButton
+                palette="darkBlue"
+                onClick={handleSave}
+                disabled={!isValidNumber(+fieldData)}
+              >
+                <RoundCheckIcon className={classes.icon} />
+              </ActionButton>
+            </>
+          ) : (
             <ActionButton
               palette="darkBlue"
-              onClick={handleSave}
-              disabled={!isValidNumber(+fieldData)}
+              onClick={handleOpenEditMode}
+              disabled={disabled}
             >
-              <RoundCheckIcon className={classes.icon} />
+              <EditIcon className={classes.icon} />
             </ActionButton>
-          </>
-        ) : (
-          <ActionButton
-            palette="darkBlue"
-            onClick={handleOpenEditMode}
-            disabled={disabled}
-          >
-            <EditIcon className={classes.icon} />
-          </ActionButton>
-        )}
+          )
+        ) : null}
       </Box>
     </Box>
   );
