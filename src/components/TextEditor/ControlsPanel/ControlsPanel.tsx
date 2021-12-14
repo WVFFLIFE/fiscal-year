@@ -15,6 +15,7 @@ export interface Control {
 }
 
 interface ControlsPanelProps {
+  className?: string;
   controls: Control[];
   currentInlineStyle: DraftInlineStyle;
   onToggleInlineStyle(style: string): void;
@@ -22,6 +23,7 @@ interface ControlsPanelProps {
 }
 
 const ControlsPanel: React.FC<ControlsPanelProps> = ({
+  className,
   controls,
   currentInlineStyle,
   onToggleInlineStyle,
@@ -30,7 +32,7 @@ const ControlsPanel: React.FC<ControlsPanelProps> = ({
   const classes = useStyles();
 
   return (
-    <div className={classes.root}>
+    <div className={clsx(classes.root, className)}>
       {controls.map(
         ({ icon: Icon, style, type, divider = false, offset = true }) => {
           const active = currentInlineStyle.has(style);

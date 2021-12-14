@@ -1,5 +1,6 @@
 import { useState, SyntheticEvent, FC } from 'react';
 import { useTranslation } from 'react-i18next';
+import useGeneralCtx from 'hooks/useGeneralCtx';
 
 import Box from '@mui/material/Box';
 import MuiTabs from '@mui/material/Tabs';
@@ -8,6 +9,8 @@ import Documents from './Documents';
 import General from './General';
 import Balances from './Balances';
 import Consumption from './Consumption';
+import AnnualReport from './AnnualReport';
+import Appendexis from './Appendexis';
 
 import { useStyles } from './style';
 
@@ -23,10 +26,10 @@ const tabsList: TabItemModel[] = [
     label: 'Fiscal Year Balances',
     value: 'fiscalYearBalances',
   },
-  { label: 'Consumption data', value: 'consumptionData' },
-  { label: 'Annual report', value: 'annualReport', disabled: true },
+  { label: '#tab.consumption', value: 'consumptionData' },
+  { label: '#tab.annualreport', value: 'annualReport' },
   { label: 'Toimijat', value: 'toimijat', disabled: true },
-  { label: 'Appendexis', value: 'appendexis', disabled: true },
+  { label: '#tab.appendexis', value: 'appendexis' },
   { label: 'Liabilities', value: 'liabilities', disabled: true },
   { label: '#tab.documents', value: 'documents' },
   { label: 'Comments', value: 'comments', disabled: true },
@@ -35,12 +38,15 @@ const tabsList: TabItemModel[] = [
 const Tabs: FC = () => {
   const classes = useStyles();
   const { t } = useTranslation();
+  const { fiscalYear } = useGeneralCtx().state;
 
   const [selectedTab, setSelectedTab] = useState<string>('general');
 
   const handleChangeSelectedTab = (e: SyntheticEvent, newValue: string) => {
     setSelectedTab(newValue);
   };
+
+  if (!fiscalYear) return null;
 
   return (
     <Box className={classes.root}>
@@ -65,9 +71,13 @@ const Tabs: FC = () => {
         })}
       </MuiTabs>
       <Box className={classes.box}>
-        {selectedTab === 'general' && <General />}
+        {selectedTab === 'general' && <General data={fiscalYear.general} />}
         {selectedTab === 'fiscalYearBalances' && <Balances />}
         {selectedTab === 'consumptionData' && <Consumption />}
+        {selectedTab === 'annualReport' && (
+          <AnnualReport data={fiscalYear.annualReport} />
+        )}
+        {selectedTab === 'appendexis' && <Appendexis />}
         {selectedTab === 'documents' && <Documents />}
       </Box>
     </Box>

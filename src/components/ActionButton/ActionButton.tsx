@@ -18,6 +18,7 @@ const ActionButton = forwardRef<HTMLButtonElement, DefaultButtonProps>(
 
     return (
       <Button
+        {...rest}
         ref={ref}
         className={clsx(classes.root, className, {
           [classes.darkBlue]: palette === 'darkBlue',
@@ -25,8 +26,8 @@ const ActionButton = forwardRef<HTMLButtonElement, DefaultButtonProps>(
         })}
         classes={{
           sizeSmall: classes.small,
+          ...rest.classes,
         }}
-        {...rest}
       >
         {children}
       </Button>

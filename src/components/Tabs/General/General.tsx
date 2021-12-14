@@ -1,12 +1,10 @@
 import { useMemo, FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import useGeneralData from './useGeneralData';
-import { MeetingModel, AuditingModel } from 'models';
+import { MeetingModel, AuditingModel, GeneralModel } from 'utils/fiscalYear';
 
 import Box from '@mui/material/Box';
-import GeneralInformationTable, {
-  GeneralInformationDataModel,
-} from './GeneralInformationTable';
+import GeneralInformationTable from './GeneralInformationTable';
 import CommonTable, { CommonTableColumn } from 'components/CommonTable';
 import Dropzone from 'components/Dropzone';
 import ImagePreview from 'components/ImagePreview';
@@ -19,23 +17,15 @@ import clsx from 'clsx';
 import { useStyles } from './style';
 
 export interface GeneralTabProps {
-  coopId: string;
-  fiscalYearId: string;
-  meetings: MeetingModel[];
-  auditings: AuditingModel[];
-  generalInformationList: GeneralInformationDataModel[];
-  isClosed: boolean;
+  data: GeneralModel;
 }
 
-const General: FC = () => {
+const General: FC<GeneralTabProps> = ({ data }) => {
   const classes = useStyles();
   const { t } = useTranslation();
 
   const {
-    auditings,
-    meetings,
     generalInformationList,
-    isClosed,
     src,
     progress,
     loading,
@@ -47,20 +37,20 @@ const General: FC = () => {
     handleChangeCurrentFile,
     handleDeleteCurrentFile,
     handleSaveFiscalYear,
-  } = useGeneralData();
+  } = useGeneralData(data);
 
   const meetingColumns: CommonTableColumn<MeetingModel>[] = useMemo(
     () => [
       {
         label: '#tab.general.meetings.table.meetingtype',
-        accessor: 'Type',
+        accessor: 'type',
         type: 'string',
         headStyle: { width: '70%' },
-        render: (el) => <TypeLink href={el.Link}>{el.Type}</TypeLink>,
+        render: (el) => <TypeLink href={el.link}>{el.type}</TypeLink>,
       },
       {
         label: '#tab.general.meetings.table.startdatetime',
-        accessor: 'PlannedStartingDate',
+        accessor: 'plannedStartingDate',
         type: 'datetime',
         cellClassName: clsx(classes.commonTableCell, classes.date),
       },
@@ -72,15 +62,15 @@ const General: FC = () => {
     () => [
       {
         label: '#tab.general.auditing.table.auditing',
-        accessor: 'Type',
+        accessor: 'type',
         type: 'string',
         headStyle: { width: '70%' },
         cellClassName: clsx(classes.commonTableCell, classes.type),
-        render: (el) => <TypeLink href={el.Link}>{el.Type}</TypeLink>,
+        render: (el) => <TypeLink href={el.link}>{el.type}</TypeLink>,
       },
       {
         label: '#tab.general.auditing.table.startdate',
-        accessor: 'ReturnNeededDate',
+        accessor: 'returnNeededDate',
         type: 'date',
         cellClassName: clsx(classes.commonTableCell, classes.date),
       },
@@ -96,7 +86,7 @@ const General: FC = () => {
         </SubTitle>
         <GeneralInformationTable
           list={generalInformationList}
-          disabled={isClosed}
+          disabled={data.isClosed}
           onSaveFiscalYear={handleSaveFiscalYear}
         />
       </Box>
@@ -108,9 +98,9 @@ const General: FC = () => {
           <CommonTable
             className={classes.meetingTable}
             columns={meetingColumns}
-            list={meetings}
+            list={data.meetings}
           />
-          <CommonTable columns={auditingColumns} list={auditings} />
+          <CommonTable columns={auditingColumns} list={data.auditings} />
         </Box>
         <Box flex={1} paddingLeft={8}>
           <SubTitle className={classes.titleOffset}>

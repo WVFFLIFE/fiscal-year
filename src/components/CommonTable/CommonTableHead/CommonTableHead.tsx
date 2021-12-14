@@ -7,11 +7,11 @@ import MuiTableRow from '@mui/material/TableRow';
 import { HeadTableCell } from '../style';
 import { useStyles } from './style';
 
-interface CommonTableHeadProps<D extends { Id: string }> {
+interface CommonTableHeadProps<D extends { id: string }> {
   columns: CommonTableColumn<D>[];
 }
 
-const CommonTableHead = <D extends { Id: string }>({
+const CommonTableHead = <D extends { id: string }>({
   columns,
 }: CommonTableHeadProps<D>) => {
   const classes = useStyles();

@@ -27,3 +27,9 @@ export function defaultFormat(date: Date | null) {
 
   return format(date, DEFAULT_FORMAT_PATTERN);
 }
+
+export function toDate(input: string | null) {
+  if (!input) return null;
+
+  return new Date(input);
+}

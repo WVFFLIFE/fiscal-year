@@ -1,5 +1,5 @@
 import { localeFormat, getYearsList } from 'utils';
-import { addMonths, addYears, subMonths, subYears } from 'date-fns/esm';
+import { addMonths, addYears, subMonths, subYears, Locale } from 'date-fns';
 
 import Button from '@mui/material/Button';
 import {
@@ -15,6 +15,7 @@ import { useStyles } from './style';
 export type CalendarViewType = 'days' | 'months' | 'decade';
 
 interface ControlPanelProps {
+  locale: Locale;
   date: Date | null;
   calendarView: CalendarViewType;
   onChangeDate(date: Date): void;
@@ -22,6 +23,7 @@ interface ControlPanelProps {
 }
 
 const ControlPanel: React.FC<ControlPanelProps> = ({
+  locale,
   date,
   calendarView,
   onChangeDate,
@@ -37,7 +39,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
         className={classes.textBtn}
         onClick={() => onChangeCalendarView('months')}
       >
-        {localeFormat(tempDate, 'MMMM yyyy')}
+        {localeFormat(tempDate, 'MMMM yyyy', locale)}
       </Button>
     );
   };
@@ -48,7 +50,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
         className={classes.textBtn}
         onClick={() => onChangeCalendarView('decade')}
       >
-        {localeFormat(tempDate, 'yyyy')}
+        {localeFormat(tempDate, 'yyyy', locale)}
       </Button>
     );
   };

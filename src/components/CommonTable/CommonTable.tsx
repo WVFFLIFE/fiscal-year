@@ -13,7 +13,7 @@ import { useStyles, TableCell } from './style';
 export type StringKey<D> = Extract<keyof D, string>;
 export type IdType<D> = StringKey<D> | string;
 
-export type CommonTableColumn<D extends { Id: string }> = {
+export type CommonTableColumn<D extends { id: string }> = {
   label: string;
   accessor: keyof D;
   type: DataType;
@@ -25,13 +25,13 @@ export type CommonTableColumn<D extends { Id: string }> = {
   render: (el: D) => JSX.Element;
 }>;
 
-interface CommonTableProps<D extends { Id: string }> {
+interface CommonTableProps<D extends { id: string }> {
   className?: string;
   columns: CommonTableColumn<D>[];
   list: D[];
 }
 
-const CommonTable = <D extends { Id: string }>({
+const CommonTable = <D extends { id: string }>({
   className,
   columns,
   list,
@@ -45,7 +45,7 @@ const CommonTable = <D extends { Id: string }>({
         {list.length ? (
           list.map((item) => {
             return (
-              <TableRow key={item.Id}>
+              <TableRow key={item.id}>
                 {columns.map((column, idx) => {
                   return (
                     <TableCell

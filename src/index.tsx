@@ -8,6 +8,7 @@ import 'configs/i18n';
 import 'assets/fonts/fonts.css';
 import './index.css';
 
+import { GeneralProvider } from 'contexts/GeneralContext';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import theme from 'configs/theme';
 
@@ -42,7 +43,9 @@ async function launch() {
   ReactDOM.render(
     <ThemeProvider theme={theme}>
       <StyledEngineProvider injectFirst>
-        <App />
+        <GeneralProvider>
+          <App />
+        </GeneralProvider>
       </StyledEngineProvider>
     </ThemeProvider>,
     document.getElementById('root')

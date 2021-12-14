@@ -64,7 +64,7 @@ const useGeneralPageData = (
   const {
     fetchGeneralData,
     update,
-    state: { generalInformation },
+    state: { fiscalYear },
   } = useGeneralCtx();
   const [state, setState] = useState<StateModel>(() => ({
     cooperatives: [],
@@ -242,7 +242,7 @@ const useGeneralPageData = (
     if (state.selected.cooperative && !firstMount.current) {
       updateFiscalYearsList(state.selected.cooperative);
     }
-  }, [state.selected.cooperative, generalInformation.data?.IsClosed]);
+  }, [state.selected.cooperative, fiscalYear?.isClosed]);
 
   const handleRefreshData = async () => {
     if (state.selected.cooperative && state.selected.fiscalYear) {
@@ -331,7 +331,7 @@ const useGeneralPageData = (
 
   return {
     state,
-    generalData: generalInformation.data,
+    generalData: fiscalYear,
     backwardToSummaryPage,
     isDisabledApplyButton,
     handleApplyClick,

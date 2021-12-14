@@ -20,7 +20,7 @@ class FiscalYearInternalAPI {
   };
 
   getSettings = async () => {
-    return await this.executeRequest('uds_FiscalYearCopy', {});
+    return await this.executeRequest('uds_FiscalYearSettings', {});
   };
 
   //FiscalYearCopyResponseCode
@@ -118,7 +118,7 @@ class FiscalYearInternalAPI {
   };
 
   //https://dev.azure.com/uds-cloud-devops/Premis/_git/CSharpCode?path=/Modules/Accounting/Property.Accounting.FiscalYear/Property.Accounting.FiscalYear/Data/Requests/FiscalYearAppendexisPartUpdateRequest.cs&version=GBm.mishko/FINN-14051&_a=contents
-  fiscalYearAnnualReportUpdate = async (request) => {
+  fiscalYearAppendexisUpdate = async (request) => {
     return await this.executeTypeRequest('uds_FiscalYearUpdate', 6, request);
   };
 

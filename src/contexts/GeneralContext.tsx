@@ -1,6 +1,8 @@
 import { ErrorModel } from 'models';
 import { useState, useEffect, createContext, FC, Dispatch } from 'react';
-import Services, { GeneralFiscalYearModel } from 'services';
+import Services, { SettingsModel } from 'services';
+
+import { makeFiscalYear, FiscalYearModel } from 'utils/fiscalYear';
 
 interface SelectedDataModel {
   orgId: string | null;
@@ -14,16 +16,12 @@ interface EnhancedWindow extends Window {
   setFrameArg?: Dispatch<React.SetStateAction<SelectedDataModel>>;
 }
 
-interface GeneralInformationModel {
-  data: GeneralFiscalYearModel | null;
-  loading: boolean;
-  error: ErrorModel | null;
-}
-
 export interface StateModel {
   defaultCooperativeId: string | null;
   defaultFiscalYearId: string | null;
-  generalInformation: GeneralInformationModel;
+  fiscalYear: FiscalYearModel | null;
+  loading: boolean;
+  error: ErrorModel | null;
 }
 
 type UpdateType = Dispatch<React.SetStateAction<StateModel>>;
@@ -31,11 +29,9 @@ type UpdateType = Dispatch<React.SetStateAction<StateModel>>;
 const defaulValue: StateModel = {
   defaultCooperativeId: null,
   defaultFiscalYearId: null,
-  generalInformation: {
-    data: null,
-    loading: false,
-    error: null,
-  },
+  fiscalYear: null,
+  loading: false,
+  error: null,
 };
 const defaultUpdate: UpdateType = () => ({
   defaultCooperativeId: null,
@@ -60,22 +56,17 @@ const GeneralProvider: FC = ({ children }) => {
       (window.top as EnhancedWindow)?.selectedData?.orgId || null,
     defaultFiscalYearId:
       (window.top as EnhancedWindow)?.selectedData?.fyId || null,
-    generalInformation: {
-      data: null,
-      error: null,
-      loading: false,
-    },
+    fiscalYear: null,
+    loading: false,
+    error: null,
   });
 
   const fetchGeneralData = async (fiscalYearId: string) => {
     try {
       update((prevState) => ({
         ...prevState,
-        generalInformation: {
-          ...prevState.generalInformation,
-          loading: true,
-          error: null,
-        },
+        loading: true,
+        error: null,
       }));
 
       const res = await Services.getFiscalYear(fiscalYearId);
@@ -83,34 +74,21 @@ const GeneralProvider: FC = ({ children }) => {
       if (res.IsSuccess) {
         update((prevState) => ({
           ...prevState,
-          generalInformation: {
-            ...prevState.generalInformation,
-            data: res.FiscalYear,
-            loading: false,
-          },
+          fiscalYear: makeFiscalYear(res.FiscalYear),
+          loading: false,
         }));
 
         return true;
       } else {
-        update((prevState) => ({
-          ...prevState,
-          generalInformation: {
-            data: null,
-            loading: false,
-            error: { messages: [String(res.Message)] },
-          },
-        }));
+        throw new Error(res.Message);
       }
     } catch (err) {
       console.error(err);
 
       update((prevState) => ({
         ...prevState,
-        generalInformation: {
-          data: null,
-          loading: false,
-          error: { messages: [String(err)] },
-        },
+        loading: false,
+        error: { messages: [String(err)] },
       }));
     }
   };
@@ -118,10 +96,7 @@ const GeneralProvider: FC = ({ children }) => {
   const handleInitGeneralInformationError = () => {
     update((prevState) => ({
       ...prevState,
-      generalInformation: {
-        ...prevState.generalInformation,
-        error: null,
-      },
+      error: null,
     }));
   };
 

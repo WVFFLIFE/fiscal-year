@@ -9,7 +9,7 @@ import { BalancesModel } from 'models/BalancesModel';
 import { ConsumptionModel } from 'models/ConsumptionModel';
 import { GeneralModel } from 'models/GeneralModel';
 
-interface BaseResponseModel {
+export interface BaseResponseModel {
   IsSuccess: boolean;
   Message: string;
 }
@@ -150,17 +150,45 @@ interface FiscalYearListResponseModel extends BaseResponseModel {
   FiscalYears: FiscalYearModel[];
 }
 
+export interface AppendexisInput {
+  AccountingBasis: string | null;
+  AccountingBasisFormatted: string | null;
+  AccountingBasisHtml: string | null;
+
+  AccountingBooks: string | null;
+  AccountingBooksFormatted: string | null;
+  AccountingBooksHtml: string | null;
+
+  BalanceSheetNotes: string | null;
+  BalanceSheetNotesFormatted: string | null;
+  BalanceSheetNotesHtml: string | null;
+
+  LoansMaturingOverFiveYears: string | null;
+  LoansMaturingOverFiveYearsFormatted: string | null;
+  LoansMaturingOverFiveYearsHtml: string | null;
+
+  Personnel: string | null;
+  PersonnelFormatted: string | null;
+  PersonnelHtml: string | null;
+}
+
+export interface AppendexisResponseModel extends AppendexisInput {}
+export interface AppendexisRequestModel extends AppendexisInput {
+  FiscalYearId: string;
+}
+
 export type GeneralFiscalYearModel = GeneralModel &
   AnnualReportModel &
   BalancesModel &
-  ConsumptionModel;
+  ConsumptionModel &
+  AppendexisResponseModel;
 
 interface GeneralFiscalYearModelRes extends BaseResponseModel {
   FiscalYear: GeneralFiscalYearModel;
 }
 
 interface CoverImageRes extends BaseResponseModel {
-  Attachment: { Content: string | null };
+  Attachment: { Content: string | null } | null;
 }
 
 interface FiscalYearGeneralUpdateRequestModel {
@@ -211,7 +239,26 @@ interface ConsumptionUpdateRequest {
   AddConsumptionReportToClosingTheBookReport: boolean;
 }
 
+export interface SettingsModel {
+  CooperativeCoverImageMaxLength: number;
+  CooperativeCoverImageMaxSize: number;
+  FiscalYearConsumptionImageMaxLength: number;
+  FiscalYearConsumptionImageMaxSize: number;
+  LanguageCode: number;
+}
+
+interface SettingsResponse extends BaseResponseModel {
+  Settings: SettingsModel;
+}
+
 declare class DefaultService {
+  public getSettings(): Promise<SettingsResponse>;
+  public fiscalYearAnnualReportUpdate(req: {
+    [key: string]: string | null;
+  }): Promise<BaseResponseModel>;
+  public fiscalYearAppendexisUpdate(
+    req: AppendexisRequestModel
+  ): Promise<BaseResponseModel>;
   public fiscalYearConsumptionUpdate(
     req: ConsumptionUpdateRequest
   ): Promise<BaseResponseModel>;

@@ -1,6 +1,7 @@
 import { useState, KeyboardEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import { setMonth, setYear, getMonth, getYear } from 'date-fns';
+import { setMonth, setYear, getMonth, getYear, Locale } from 'date-fns';
+import { enGB } from 'date-fns/locale';
 
 import Control, { CalendarViewType } from './ControlPanel';
 import Calendar from 'components/Calendar';
@@ -12,6 +13,7 @@ import { useStyles } from './style';
 
 interface BodyProps {
   date: Date | null;
+  locale?: Locale;
   min?: Date;
   max?: Date;
   disabled?: boolean;
@@ -21,6 +23,7 @@ interface BodyProps {
 
 const Body: React.FC<BodyProps> = ({
   date,
+  locale = enGB,
   onChange,
   onClose,
   disabled,
@@ -66,6 +69,7 @@ const Body: React.FC<BodyProps> = ({
     <div className={classes.root}>
       <div className={classes.calendar}>
         <Control
+          locale={locale}
           date={tempDate}
           calendarView={calendarView}
           onChangeDate={handleChangeTempDate}
@@ -74,6 +78,7 @@ const Body: React.FC<BodyProps> = ({
         {calendarView === 'days' && (
           <Calendar
             date={tempDate}
+            locale={locale}
             selectedDate={date}
             onChangeDate={handleChangeTempDate}
             maxDate={max}
@@ -83,7 +88,11 @@ const Body: React.FC<BodyProps> = ({
           />
         )}
         {calendarView === 'months' && (
-          <MonthsView date={tempDate} onChangeMonth={handleChangeMonth} />
+          <MonthsView
+            locale={locale}
+            date={tempDate}
+            onChangeMonth={handleChangeMonth}
+          />
         )}
         {calendarView === 'decade' && (
           <DecadeView date={tempDate} onChangeYear={handleChangeYear} />

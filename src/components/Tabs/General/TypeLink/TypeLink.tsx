@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import { useStyles } from './style';
 
 interface TypeLinkProps {
-  href: string | null;
+  href?: string | null;
 }
 
 const TypeLink: React.FC<TypeLinkProps> = ({ href, children }) => {

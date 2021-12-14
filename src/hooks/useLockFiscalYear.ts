@@ -6,6 +6,7 @@ import {
   LockFiscalYearCodes,
   CopyFiscalYearCodes,
 } from 'models';
+import { getFiscalYearId } from 'utils/fiscalYear';
 
 import Services from 'services';
 
@@ -23,7 +24,12 @@ interface ConfirmationWindowModel {
 
 const useLockFiscalYear = () => {
   const { t } = useTranslation();
-  const { state, fetchGeneralData } = useContext(GeneralCtx);
+  const {
+    state: { fiscalYear },
+    fetchGeneralData,
+  } = useContext(GeneralCtx);
+
+  const fiscalYearId = getFiscalYearId(fiscalYear);
 
   const [lockFiscalYearState, setLockFiscalYearState] =
     useState<LockFiscalYearStateModel>({
@@ -72,16 +78,14 @@ const useLockFiscalYear = () => {
   };
 
   const lockFiscalYear = useCallback(async () => {
-    if (state.generalInformation.data?.Id) {
+    if (fiscalYearId) {
       try {
         setLockFiscalYearState((prevState) => ({
           ...prevState,
           loading: true,
         }));
 
-        const res = await Services.lockFiscalYear(
-          state.generalInformation.data.Id
-        );
+        const res = await Services.lockFiscalYear(fiscalYearId);
 
         if (res.IsSuccess) {
           setLockFiscalYearState((prevState) => ({
@@ -89,7 +93,7 @@ const useLockFiscalYear = () => {
             loading: false,
           }));
           handleCloseConfirmationWindow();
-          await fetchGeneralData(state.generalInformation.data.Id);
+          await fetchGeneralData(fiscalYearId);
         } else {
           handleCloseConfirmationWindow();
           setLockFiscalYearState((prevState) => ({
@@ -114,19 +118,17 @@ const useLockFiscalYear = () => {
         }));
       }
     }
-  }, [state.generalInformation.data?.Id]);
+  }, [fiscalYearId]);
 
   const unlockFiscalYear = useCallback(async () => {
-    if (state.generalInformation.data?.Id) {
+    if (fiscalYearId) {
       try {
         setLockFiscalYearState((prevState) => ({
           ...prevState,
           loading: true,
         }));
 
-        const res = await Services.unlockFiscalYear(
-          state.generalInformation.data.Id
-        );
+        const res = await Services.unlockFiscalYear(fiscalYearId);
 
         if (res.IsSuccess) {
           setLockFiscalYearState((prevState) => ({
@@ -134,7 +136,7 @@ const useLockFiscalYear = () => {
             loading: false,
           }));
           handleCloseConfirmationWindow();
-          await fetchGeneralData(state.generalInformation.data.Id);
+          await fetchGeneralData(fiscalYearId);
         } else {
           handleCloseConfirmationWindow();
           setLockFiscalYearState((prevState) => ({
@@ -159,19 +161,17 @@ const useLockFiscalYear = () => {
         }));
       }
     }
-  }, [state.generalInformation.data?.Id]);
+  }, [fiscalYearId]);
 
   const copyFiscalYear = useCallback(async () => {
-    if (state.generalInformation.data?.Id) {
+    if (fiscalYearId) {
       try {
         setLockFiscalYearState((prevState) => ({
           ...prevState,
           loading: true,
         }));
 
-        const res = await Services.copyFiscalYear(
-          state.generalInformation.data.Id
-        );
+        const res = await Services.copyFiscalYear(fiscalYearId);
 
         if (res.IsSuccess) {
           setLockFiscalYearState((prevState) => ({
@@ -179,7 +179,7 @@ const useLockFiscalYear = () => {
             loading: false,
           }));
           handleCloseConfirmationWindow();
-          await fetchGeneralData(state.generalInformation.data.Id);
+          await fetchGeneralData(fiscalYearId);
         } else {
           handleCloseConfirmationWindow();
           setLockFiscalYearState((prevState) => ({
@@ -207,7 +207,7 @@ const useLockFiscalYear = () => {
         }));
       }
     }
-  }, [state.generalInformation.data?.Id]);
+  }, [fiscalYearId]);
 
   const handleInitError = () => {
     setLockFiscalYearState((prevState) => ({
@@ -228,8 +228,8 @@ const useLockFiscalYear = () => {
     copyFiscalYear,
     handleInitError,
     handleInitConfirmationWindowType,
-    isClosed: !!state.generalInformation.data?.IsClosed,
-    showFYBtns: !!state.generalInformation.data,
+    isClosed: !!fiscalYear?.isClosed,
+    showFYBtns: !!fiscalYear,
   };
 };
 

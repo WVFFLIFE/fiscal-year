@@ -1,7 +1,14 @@
 import { ChangeEvent, FormEvent, useCallback, useState } from 'react';
-import { ErrorModel } from 'models';
+import { ErrorModel, OptionalNumber, OptionalString } from 'models';
 import useGeneralCtx from 'hooks/useGeneralCtx';
-import { isProductEmpty } from '../utils';
+import {
+  isProductEmpty,
+  isProductVisible,
+  getBalancesData,
+  getBalancesProducts,
+  BalanceProductModel,
+  unzipProducts,
+} from 'utils/fiscalYear';
 
 import Services, { GeneralFiscalYearModel } from 'services';
 
@@ -17,58 +24,20 @@ function toNumber(val: string) {
   return Number(val.replace(/ /g, '').replace(/,/g, '.'));
 }
 
-function getFieldIdx(generalData: GeneralFiscalYearModel) {
-  if (
-    isProductEmpty(
-      generalData.SpecFinCalcProductName1,
-      generalData.SpecFinCalcSurplusDeficitPreviousFY1
-    ) &&
-    generalData.Show1
-  ) {
-    return 1;
-  }
-  if (
-    isProductEmpty(
-      generalData.SpecFinCalcProductName2,
-      generalData.SpecFinCalcSurplusDeficitPreviousFY2
-    ) &&
-    generalData.Show2
-  ) {
-    return 2;
-  }
-  if (
-    isProductEmpty(
-      generalData.SpecFinCalcProductName3,
-      generalData.SpecFinCalcSurplusDeficitPreviousFY3
-    ) &&
-    generalData.Show3
-  ) {
-    return 3;
-  }
-  if (
-    isProductEmpty(
-      generalData.SpecFinCalcProductName4,
-      generalData.SpecFinCalcSurplusDeficitPreviousFY4
-    ) &&
-    generalData.Show4
-  ) {
-    return 4;
-  }
-  if (
-    isProductEmpty(
-      generalData.SpecFinCalcProductName5,
-      generalData.SpecFinCalcSurplusDeficitPreviousFY5
-    ) &&
-    generalData.Show1
-  ) {
-    return 5;
-  }
+function getFieldIdx(products: BalanceProductModel[]) {
+  const nextProduct = products.find(
+    (product) =>
+      isProductEmpty(product.productName, product.surplusDeficitPreviousFY) &&
+      isProductVisible(product)
+  );
+
+  return nextProduct?.index;
 }
 
 const useAddFormData = (onClose: () => void) => {
   const {
     fetchGeneralData,
-    state: { generalInformation },
+    state: { fiscalYear },
   } = useGeneralCtx();
   const [formState, setFormState] = useState<FormStateModel>({
     deficit: '',
@@ -139,15 +108,19 @@ const useAddFormData = (onClose: () => void) => {
     e.preventDefault();
     try {
       const isValid = validate();
-      if (!isValid || !generalInformation.data?.Id) return;
+      const balancesData = getBalancesData(fiscalYear);
+
+      if (!isValid || !fiscalYear || !fiscalYear.id || !balancesData) return;
+
+      const products = getBalancesProducts(balancesData);
+      const unzippedProducts = unzipProducts(products);
 
       setFormState((prevState) => ({
         ...prevState,
         uploading: true,
       }));
 
-      const generalData = generalInformation.data;
-      const fieldIdx = getFieldIdx(generalData);
+      const fieldIdx = getFieldIdx(products);
 
       const options = fieldIdx
         ? {
@@ -159,34 +132,49 @@ const useAddFormData = (onClose: () => void) => {
         : {};
 
       const reqBody = {
-        FiscalYearId: generalData.Id,
+        FiscalYearId: fiscalYear.id,
         PropertyMeintenanceProductName:
-          generalData.PropertyMeintenanceProductName,
+          balancesData.propertyMaintenanceProductName,
         PropertyMeintenanceSurplusDeficitPreviousFY:
-          generalData.PropertyMeintenanceSurplusDeficitPreviousFY,
+          balancesData.propertyMaintenanceSurplusDeficitPreviousFY,
         Show1: true,
         Show2: true,
         Show3: true,
         Show4: true,
         Show5: true,
-        SpecFinCalcProductName1: generalData.SpecFinCalcProductName1,
-        SpecFinCalcProductName2: generalData.SpecFinCalcProductName2,
-        SpecFinCalcProductName3: generalData.SpecFinCalcProductName3,
-        SpecFinCalcProductName4: generalData.SpecFinCalcProductName4,
-        SpecFinCalcProductName5: generalData.SpecFinCalcProductName5,
-        SpecFinCalcSurplusDeficitPreviousFY1:
-          generalData.SpecFinCalcSurplusDeficitPreviousFY1,
-        SpecFinCalcSurplusDeficitPreviousFY2:
-          generalData.SpecFinCalcSurplusDeficitPreviousFY2,
-        SpecFinCalcSurplusDeficitPreviousFY3:
-          generalData.SpecFinCalcSurplusDeficitPreviousFY3,
-        SpecFinCalcSurplusDeficitPreviousFY4:
-          generalData.SpecFinCalcSurplusDeficitPreviousFY4,
-        SpecFinCalcSurplusDeficitPreviousFY5:
-          generalData.SpecFinCalcSurplusDeficitPreviousFY5,
-        VATCalculationsProductName: generalData.VATCalculationsProductName,
+        SpecFinCalcProductName1: unzippedProducts[
+          'productName1'
+        ] as OptionalString,
+        SpecFinCalcProductName2: unzippedProducts[
+          'productName2'
+        ] as OptionalString,
+        SpecFinCalcProductName3: unzippedProducts[
+          'productName3'
+        ] as OptionalString,
+        SpecFinCalcProductName4: unzippedProducts[
+          'productName4'
+        ] as OptionalString,
+        SpecFinCalcProductName5: unzippedProducts[
+          'productName5'
+        ] as OptionalString,
+        SpecFinCalcSurplusDeficitPreviousFY1: unzippedProducts[
+          'surplusDeficitPreviousFY1'
+        ] as OptionalNumber,
+        SpecFinCalcSurplusDeficitPreviousFY2: unzippedProducts[
+          'surplusDeficitPreviousFY2'
+        ] as OptionalNumber,
+        SpecFinCalcSurplusDeficitPreviousFY3: unzippedProducts[
+          'surplusDeficitPreviousFY3'
+        ] as OptionalNumber,
+        SpecFinCalcSurplusDeficitPreviousFY4: unzippedProducts[
+          'surplusDeficitPreviousFY4'
+        ] as OptionalNumber,
+        SpecFinCalcSurplusDeficitPreviousFY5: unzippedProducts[
+          'surplusDeficitPreviousFY5'
+        ] as OptionalNumber,
+        VATCalculationsProductName: balancesData.vatCalculationsProductName,
         VATCalculationsSurplusDeficitPreviousFY:
-          generalData.VATCalculationsSurplusDeficitPreviousFY,
+          balancesData.vatCalculationsSurplusDeficitPreviousFY,
         ...options,
       };
 
@@ -198,7 +186,7 @@ const useAddFormData = (onClose: () => void) => {
           uploading: false,
         }));
         onClose();
-        fetchGeneralData(generalData.Id);
+        fetchGeneralData(fiscalYear.id);
       } else {
         setFormState((prevState) => ({
           ...prevState,

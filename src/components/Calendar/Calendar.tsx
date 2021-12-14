@@ -1,4 +1,4 @@
-import { KeyboardEvent, useState, useEffect, useRef, HTMLProps } from 'react';
+import { KeyboardEvent, useEffect, useRef, HTMLProps, useMemo } from 'react';
 import {
   getDaysInMonth,
   getDate,
@@ -10,16 +10,16 @@ import {
   isSameDay,
   isToday,
   startOfDay,
+  Locale,
 } from 'date-fns';
-import { getLocale } from 'utils';
+import { enGB } from 'date-fns/locale';
 
 import Button from '@mui/material/Button';
 
 import clsx from 'clsx';
 import { useStyles } from './style';
 
-function getShortWeeks() {
-  const locale = getLocale();
+function getShortWeeks(locale: Locale = enGB) {
   const firstDOW = startOfWeek(new Date(), { weekStartsOn: 1 });
 
   return Array.from(Array(7)).map((e, i) =>
@@ -28,7 +28,6 @@ function getShortWeeks() {
 }
 
 const DAYS_IN_WEEK = 7;
-const weeksShort = getShortWeeks();
 
 function getDays(date: Date) {
   let daysInMonth = getDaysInMonth(date);
@@ -105,6 +104,11 @@ function getWeeks(
 
 export interface CalendarProps extends HTMLProps<HTMLDivElement> {
   /**
+   * Date-fns locale is used for displaying localized labels
+   * @default enGB
+   */
+  locale?: Locale;
+  /**
    * Date for rendering calendar view
    */
   date: Date | null;
@@ -134,6 +138,7 @@ export interface CalendarProps extends HTMLProps<HTMLDivElement> {
 
 const Calendar: React.FC<CalendarProps> = ({
   className,
+  locale = enGB,
   date,
   selectedDate,
   minDate,
@@ -147,6 +152,8 @@ const Calendar: React.FC<CalendarProps> = ({
 
   const defaultDate = date || new Date();
   const weeks = getWeeks(defaultDate);
+
+  const weeksShort = useMemo(() => getShortWeeks(locale), [locale]);
 
   useEffect(() => {
     if (pickedRef.current) {

@@ -1,8 +1,8 @@
 import { CommonCooperativeModel } from 'models';
 import { SettledResponse } from 'services';
 
+import { format, Locale } from 'date-fns';
 import { enGB, fi } from 'date-fns/locale';
-import { format } from 'date-fns';
 import _toLower from 'lodash/toLower';
 
 export { default as isFolder } from './isFolder';
@@ -18,20 +18,20 @@ export function filterBySearchTerm(val: string, searchTerm: string) {
   return _toLower(val).includes(_toLower(searchTerm));
 }
 
-export function getLangString() {
-  return window.USER_LANGUAGE_CODE === 1035
-    ? 'fi'
-    : window.USER_LANGUAGE_CODE === 1033
-    ? 'en'
-    : 'en';
+export function getLangString(langCode: number) {
+  return langCode === 1035 ? 'fi' : langCode === 1033 ? 'en' : 'en';
 }
 
-export function getLocale() {
-  return window.USER_LANGUAGE_CODE === 1035 ? fi : enGB;
+export function getLocale(langCode: number) {
+  return langCode === 1035 ? fi : enGB;
 }
 
-export function localeFormat(date: Date, formatStr: string) {
-  return format(date, formatStr, { locale: getLocale() });
+export function localeFormat(
+  date: Date,
+  formatStr: string,
+  locale: Locale = enGB
+) {
+  return format(date, formatStr, { locale });
 }
 
 export function getYearsList(from: number, to: number) {
@@ -44,9 +44,8 @@ export function getYearsList(from: number, to: number) {
   return list;
 }
 
-export function getMonthsList() {
+export function getMonthsList(locale: Locale = enGB) {
   const months = [];
-  const locale = getLocale();
 
   for (let i = 0; i < 12; i++) {
     months.push(locale.localize?.month(i, { width: 'wide' }));
@@ -118,4 +117,33 @@ export function toNumberFormat(num: number | null | undefined) {
     .toFixed(2)
     .replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
     .replace(/\./g, ',');
+}
+
+export function isNull(input: any) {
+  return input === null;
+}
+export function isArray(input: any) {
+  return Array.isArray(input);
+}
+export function isObject(input: any) {
+  return typeof input === 'object' && !isArray(input) && !isNull(input);
+}
+
+export function toFloatStr(input: string) {
+  let value = input.replace(/[^0-9,]/g, '').replace(/[,](?=.*[,])/g, '');
+
+  const [num, decimal] = value.split(',');
+
+  if (decimal?.length > 2) {
+    value = `${num.replace(/\B(?=(\d{3})+(?!\d))/g, ' ')},${decimal.substring(
+      0,
+      2
+    )}`;
+  }
+
+  return value;
+}
+
+export function toIntStr(input: string) {
+  return input.replace(/[^0-9]/g, '');
 }

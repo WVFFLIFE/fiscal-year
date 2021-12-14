@@ -1,4 +1,4 @@
-import { eachMonthOfInterval, startOfYear, endOfYear } from 'date-fns';
+import { eachMonthOfInterval, startOfYear, endOfYear, Locale } from 'date-fns';
 import { localeFormat } from 'utils';
 
 import { DateBlock } from 'components/Styled';
@@ -6,10 +6,15 @@ import { useStyles } from './style';
 
 interface MonthsViewProps {
   date: Date | null;
+  locale: Locale;
   onChangeMonth(monthDate: Date): void;
 }
 
-const MonthsView: React.FC<MonthsViewProps> = ({ date, onChangeMonth }) => {
+const MonthsView: React.FC<MonthsViewProps> = ({
+  date,
+  locale,
+  onChangeMonth,
+}) => {
   const classes = useStyles();
 
   const tempDate = date || new Date();
@@ -27,7 +32,7 @@ const MonthsView: React.FC<MonthsViewProps> = ({ date, onChangeMonth }) => {
             key={month.toDateString()}
             onClick={() => onChangeMonth(month)}
           >
-            {localeFormat(month, 'MMMM')}
+            {localeFormat(month, 'MMMM', locale)}
           </DateBlock>
         );
       })}

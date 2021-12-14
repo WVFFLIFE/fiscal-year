@@ -9,12 +9,13 @@ export type {
   ExtendedCooperativeModel,
   FiscalYearModel,
   MettadataAttributeModel,
-  MeetingModel,
-  AuditingModel,
   GeneralFiscalYearModel,
 } from 'services';
 export type { SortModel, SortParamsType } from 'hooks/useSort';
 export type { CalendarYearOption } from 'components/SelectCalendarYear';
+export type { AuditingModel } from './AuditingModel';
+export type { MeetingModel } from './MeetingModel';
+export type { EditorData } from 'hooks/useEditor';
 
 export enum LockFiscalYearCodes {
   OK,
@@ -38,6 +39,9 @@ export interface BaseEntityModel {
   Id: string;
   Name: string;
 }
+
+export type OptionalString = string | null;
+export type OptionalNumber = number | null;
 
 export interface BaseOptionSetModel {
   Value: number;

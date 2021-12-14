@@ -9,13 +9,18 @@ import GeneralPage from 'components/GeneralPage';
 
 const FiscalYear = () => {
   const {
-    state: { defaultFiscalYearId, defaultCooperativeId, generalInformation },
+    state: {
+      defaultFiscalYearId,
+      defaultCooperativeId,
+      loading: fiscalYearLoading,
+      error: fiscalYearError,
+    },
     handleInitGeneralInformationError,
   } = useGeneralCtx();
   const { state, handleInitError } = useFiscalYearData();
 
-  const showLoader = state.loading || generalInformation.loading;
-  const errors = state.error || generalInformation.error;
+  const showLoader = state.loading || fiscalYearLoading;
+  const errors = state.error || fiscalYearError;
   const initError = state.error
     ? handleInitError
     : handleInitGeneralInformationError;

@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect, memo } from 'react';
+import { Locale } from 'date-fns';
 
 import Popover from '@mui/material/Popover';
 import Fade from '@mui/material/Fade';
@@ -9,6 +10,7 @@ import Body from './Body';
 interface DatePickerProps {
   open?: boolean;
   date: Date | null;
+  locale?: Locale;
   min?: Date;
   max?: Date;
   disabled?: boolean;
@@ -19,6 +21,7 @@ interface DatePickerProps {
 const DatePicker: React.FC<DatePickerProps> = ({
   open: openDefault = false,
   date,
+  locale,
   min,
   max,
   disabled,
@@ -64,7 +67,12 @@ const DatePicker: React.FC<DatePickerProps> = ({
         }}
         TransitionComponent={Fade}
       >
-        <Body date={date} onChange={onChange} onClose={handleClose} />
+        <Body
+          date={date}
+          locale={locale}
+          onChange={onChange}
+          onClose={handleClose}
+        />
       </Popover>
     </>
   );

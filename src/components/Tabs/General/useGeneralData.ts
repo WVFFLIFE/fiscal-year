@@ -4,7 +4,8 @@ import { useTranslation } from 'react-i18next';
 import useGeneralCtx from 'hooks/useGeneralCtx';
 import { sleep, readFile } from 'utils';
 import { serverFormat } from 'utils/dates';
-
+import { GeneralModel } from 'utils/fiscalYear';
+import { GeneralInformationDataModel } from './GeneralInformationTable';
 import Services from 'services';
 
 interface StateModel {
@@ -18,12 +19,9 @@ interface StateModel {
   saving: boolean;
 }
 
-const useGeneralData = () => {
+const useGeneralData = (data: GeneralModel) => {
   const { t } = useTranslation();
-  const {
-    fetchGeneralData,
-    state: { generalInformation },
-  } = useGeneralCtx();
+  const { fetchGeneralData } = useGeneralCtx();
   const [state, setState] = useState<StateModel>({
     file: null,
     progress: 0,
@@ -35,8 +33,8 @@ const useGeneralData = () => {
     saving: false,
   });
 
-  const coopId = generalInformation.data?.CooperativeId || null;
-  const fiscalYearId = generalInformation.data?.Id || null;
+  const coopId = data.cooperativeId;
+  const fiscalYearId = data.id;
 
   useEffect(() => {
     async function getCoverImage(id: string) {
@@ -89,10 +87,10 @@ const useGeneralData = () => {
       }
     }
 
-    if (coopId) {
-      getCoverImage(coopId);
+    if (data && data.cooperativeId) {
+      getCoverImage(data.cooperativeId);
     }
-  }, [generalInformation.data]);
+  }, [data]);
 
   const handleChangeCurrentFile = useCallback(
     async (files: File[]) => {
@@ -131,16 +129,11 @@ const useGeneralData = () => {
           setState((prevState) => ({
             ...prevState,
             progress: 0,
-            src: getRes.Attachment.Content,
+            src: getRes.Attachment?.Content || null,
             uploading: false,
           }));
         } else {
-          setState((prevState) => ({
-            ...prevState,
-            progress: 0,
-            uploading: false,
-            error: { messages: [String(updateRes.Message || getRes.Message)] },
-          }));
+          throw new Error(String(updateRes.Message || getRes.Message));
         }
       } catch (err) {
         console.error(err);
@@ -194,12 +187,7 @@ const useGeneralData = () => {
           src: null,
         }));
       } else {
-        setState((prevState) => ({
-          ...prevState,
-          progress: 0,
-          deleting: false,
-          error: { messages: [String(updateRes.Message)] },
-        }));
+        throw new Error(updateRes.Message);
       }
     } catch (err) {
       console.error(err);
@@ -241,23 +229,13 @@ const useGeneralData = () => {
         serverFormat(endDate)
       );
 
-      if (res.IsSuccess) {
-        return true;
-      } else {
-        setState((prevState) => ({
-          ...prevState,
-          saving: false,
-          error: {
-            messages: [
-              res.ValidationResult
-                ? t(
-                    `#error.fiscalyear.validating.status.${res.ValidationResult}`
-                  )
-                : res.Message,
-            ],
-          },
-        }));
-      }
+      if (res.IsSuccess) return true;
+
+      throw new Error(
+        res.ValidationResult
+          ? t(`#error.fiscalyear.validating.status.${res.ValidationResult}`)
+          : res.Message
+      );
     } catch (err) {
       console.error(err);
 
@@ -290,11 +268,7 @@ const useGeneralData = () => {
 
             return await fetchGeneralData(fiscalYearId);
           } else {
-            setState((prevState) => ({
-              ...prevState,
-              saving: false,
-              error: { messages: [String(res.Message)] },
-            }));
+            throw new Error(res.Message);
           }
         } catch (err) {
           console.error(err);
@@ -310,28 +284,22 @@ const useGeneralData = () => {
     [fiscalYearId]
   );
 
-  const generalInformationList = useMemo(
-    () =>
-      generalInformation.data
-        ? [
-            {
-              Id: generalInformation.data.CooperativeId,
-              Name: generalInformation.data.CooperativeName,
-              StartDate: generalInformation.data.StartDate,
-              EndDate: generalInformation.data.EndDate,
-              IsClosed: !!generalInformation.data.IsClosed,
-              CooperativeLink: generalInformation.data.CooperativeLink,
-            },
-          ]
-        : [],
-    [generalInformation.data]
+  const generalInformationList: GeneralInformationDataModel[] = useMemo(
+    () => [
+      {
+        id: data.id,
+        cooperativeLink: data.cooperativeId,
+        endDate: data.endDate,
+        isClosed: data.isClosed,
+        name: data.cooperativeName,
+        startDate: data.startDate,
+      },
+    ],
+    [data]
   );
 
   return {
     ...state,
-    isClosed: !!generalInformation.data?.IsClosed,
-    auditings: generalInformation.data?.Auditings || [],
-    meetings: generalInformation.data?.Meetings || [],
     generalInformationList,
     handleChangeCurrentFile,
     handleDeleteCurrentFile,

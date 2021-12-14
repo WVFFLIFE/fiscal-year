@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { Column } from 'models';
-import { defaultFormat, isValid } from 'utils/dates';
+import { defaultFormat, isValid, toDate } from 'utils/dates';
 
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -38,12 +38,12 @@ const columns: Column[] = [
 ];
 
 export interface GeneralInformationDataModel {
-  Id: string;
-  Name: string;
-  CooperativeLink: string | null;
-  StartDate: string | null;
-  EndDate: string | null;
-  IsClosed: boolean | null;
+  id: string;
+  name: string | null;
+  cooperativeLink: string | null;
+  startDate: string | null;
+  endDate: string | null;
+  isClosed: boolean;
 }
 
 interface EditableDataModel {
@@ -116,24 +116,24 @@ const GeneralInformationTable: React.FC<GeneralInformationTableProps> = ({
       <TableHead columns={columns} className={classes.row} />
       <TableBody>
         {list.map((item, idx) => {
-          const startDate = item.StartDate ? new Date(item.StartDate) : null;
-          const endDate = item.EndDate ? new Date(item.EndDate) : null;
-          const open = editableData.id === item.Id;
+          const startDate = toDate(item.startDate);
+          const endDate = toDate(item.endDate);
+          const open = editableData.id === item.id;
 
           return (
-            <BodyTableRow key={item.Id} hover={!!!disabled}>
+            <BodyTableRow key={item.id} hover={!!!disabled}>
               <BodyTableCell>
-                {item.CooperativeLink ? (
+                {item.cooperativeLink ? (
                   <a
                     className={classes.link}
-                    href={item.CooperativeLink}
+                    href={item.cooperativeLink}
                     target="_blank"
                     rel="noreferrer"
                   >
-                    {item.Name}
+                    {item.name}
                   </a>
                 ) : (
-                  <span className={classes.link}>{item.Name}</span>
+                  <span className={classes.link}>{item.name}</span>
                 )}
               </BodyTableCell>
               <BodyTableCell>
@@ -163,7 +163,7 @@ const GeneralInformationTable: React.FC<GeneralInformationTableProps> = ({
                   '-'
                 )}
               </BodyTableCell>
-              <BodyTableCell>{item.IsClosed ? 'Yes' : 'No'}</BodyTableCell>
+              <BodyTableCell>{item.isClosed ? 'Yes' : 'No'}</BodyTableCell>
               <BodyTableCell align="right">
                 <div className={clsx('cell-actions', classes.centered)}>
                   {open ? (
@@ -191,9 +191,9 @@ const GeneralInformationTable: React.FC<GeneralInformationTableProps> = ({
                     <ActionButton
                       disableRipple
                       palette="darkBlue"
-                      disabled={!!item.IsClosed || disabled}
+                      disabled={!!item.isClosed || disabled}
                       onClick={() =>
-                        handleAllowEdit({ id: item.Id, startDate, endDate })
+                        handleAllowEdit({ id: item.id, startDate, endDate })
                       }
                     >
                       <EditIcon className={classes.icon} />

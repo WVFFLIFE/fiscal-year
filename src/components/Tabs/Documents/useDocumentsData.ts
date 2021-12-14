@@ -15,6 +15,7 @@ import { saveAs } from 'file-saver';
 import _first from 'lodash/first';
 import _last from 'lodash/last';
 import { isPublished, isFolder, extractDocs, getErrorsList } from 'utils';
+import { getFiscalYearId } from 'utils/fiscalYear';
 import {
   prepareData,
   countEntitiesAmount,
@@ -66,9 +67,9 @@ interface State {
 
 const useDocumentsData = () => {
   const {
-    state: { generalInformation },
+    state: { fiscalYear },
   } = useGeneralCtx();
-  const fiscalYearId = generalInformation.data?.Id || null;
+  const fiscalYearId = getFiscalYearId(fiscalYear);
   const [state, setState] = useState<State>({
     breadcrumbsList: [],
     loading: false,
@@ -647,7 +648,7 @@ const useDocumentsData = () => {
     if (fiscalYearId) {
       refreshData();
     }
-  }, [generalInformation.data]);
+  }, [fiscalYear]);
 
   useEffect(() => {
     resetSortParms();

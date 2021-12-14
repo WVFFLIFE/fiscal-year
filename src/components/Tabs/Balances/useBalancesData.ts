@@ -1,6 +1,16 @@
 import { useState, useCallback, useMemo } from 'react';
-import { ErrorModel } from 'models';
+import { ErrorModel, OptionalNumber, OptionalString } from 'models';
+import {
+  getFiscalYearId,
+  getBalancesData,
+  getBalancesProducts,
+  unzipProducts,
+  hasEmptyProduct,
+  getPropertyMaintenanceData,
+  getVATCalculationData,
+} from 'utils/fiscalYear';
 import useGeneralCtx from 'hooks/useGeneralCtx';
+import useToggleSwitch from 'hooks/useToggleSwitch';
 
 import Services from 'services';
 
@@ -9,66 +19,79 @@ interface RequestStateModel {
   error: ErrorModel | null;
 }
 
-export function isProductEmpty(
-  productName: string | null,
-  deficit: number | null
-) {
-  return !productName && !deficit;
-}
-
 const useBalancesData = () => {
   const {
-    state: { generalInformation },
     fetchGeneralData,
+    state: { fiscalYear },
   } = useGeneralCtx();
 
-  const [openAddProductDialog, setOpenAddProductDialog] = useState(false);
+  const fiscalYearId = fiscalYear && getFiscalYearId(fiscalYear);
+  const balancesData = fiscalYear && getBalancesData(fiscalYear);
+  const products = balancesData && getBalancesProducts(balancesData);
+  const propertyMaintenanceData =
+    balancesData && getPropertyMaintenanceData(balancesData);
+  const vatCalculationData =
+    balancesData && getVATCalculationData(balancesData);
+
+  const [showDialog, toggleShowDialog] = useToggleSwitch(false);
   const [requestState, setRequestState] = useState<RequestStateModel>({
     loading: false,
     error: null,
   });
 
-  const handleOpenProductDialog = () => {
-    setOpenAddProductDialog(true);
-  };
-
-  const handleCloseProductDialog = () => {
-    setOpenAddProductDialog(false);
-  };
-
   const handleSaveFields = useCallback(
-    async (options: { [key: string]: string | number }, cb?: () => void) => {
-      if (!generalInformation.data?.Id) return;
-      const generalData = generalInformation.data;
+    async (
+      options: { [key: string]: OptionalNumber | OptionalString },
+      cb?: () => void
+    ) => {
+      if (!fiscalYearId || !balancesData || !products) return;
+
+      const unzippedProducts = unzipProducts(products);
+
       const reqBody = {
-        FiscalYearId: generalData.Id,
+        FiscalYearId: fiscalYearId,
         PropertyMeintenanceProductName:
-          generalData.PropertyMeintenanceProductName,
+          balancesData.propertyMaintenanceProductName,
         PropertyMeintenanceSurplusDeficitPreviousFY:
-          generalData.PropertyMeintenanceSurplusDeficitPreviousFY,
+          balancesData.propertyMaintenanceSurplusDeficitPreviousFY,
         Show1: true,
         Show2: true,
         Show3: true,
         Show4: true,
         Show5: true,
-        SpecFinCalcProductName1: generalData.SpecFinCalcProductName1,
-        SpecFinCalcProductName2: generalData.SpecFinCalcProductName2,
-        SpecFinCalcProductName3: generalData.SpecFinCalcProductName3,
-        SpecFinCalcProductName4: generalData.SpecFinCalcProductName4,
-        SpecFinCalcProductName5: generalData.SpecFinCalcProductName5,
-        SpecFinCalcSurplusDeficitPreviousFY1:
-          generalData.SpecFinCalcSurplusDeficitPreviousFY1,
-        SpecFinCalcSurplusDeficitPreviousFY2:
-          generalData.SpecFinCalcSurplusDeficitPreviousFY2,
-        SpecFinCalcSurplusDeficitPreviousFY3:
-          generalData.SpecFinCalcSurplusDeficitPreviousFY3,
-        SpecFinCalcSurplusDeficitPreviousFY4:
-          generalData.SpecFinCalcSurplusDeficitPreviousFY4,
-        SpecFinCalcSurplusDeficitPreviousFY5:
-          generalData.SpecFinCalcSurplusDeficitPreviousFY5,
-        VATCalculationsProductName: generalData.VATCalculationsProductName,
+        SpecFinCalcProductName1: unzippedProducts[
+          'productName1'
+        ] as OptionalString,
+        SpecFinCalcProductName2: unzippedProducts[
+          'productName2'
+        ] as OptionalString,
+        SpecFinCalcProductName3: unzippedProducts[
+          'productName3'
+        ] as OptionalString,
+        SpecFinCalcProductName4: unzippedProducts[
+          'productName4'
+        ] as OptionalString,
+        SpecFinCalcProductName5: unzippedProducts[
+          'productName5'
+        ] as OptionalString,
+        SpecFinCalcSurplusDeficitPreviousFY1: unzippedProducts[
+          'surplusDeficitPreviousFY1'
+        ] as OptionalNumber,
+        SpecFinCalcSurplusDeficitPreviousFY2: unzippedProducts[
+          'surplusDeficitPreviousFY2'
+        ] as OptionalNumber,
+        SpecFinCalcSurplusDeficitPreviousFY3: unzippedProducts[
+          'surplusDeficitPreviousFY3'
+        ] as OptionalNumber,
+        SpecFinCalcSurplusDeficitPreviousFY4: unzippedProducts[
+          'surplusDeficitPreviousFY4'
+        ] as OptionalNumber,
+        SpecFinCalcSurplusDeficitPreviousFY5: unzippedProducts[
+          'surplusDeficitPreviousFY5'
+        ] as OptionalNumber,
+        VATCalculationsProductName: balancesData.vatCalculationsProductName,
         VATCalculationsSurplusDeficitPreviousFY:
-          generalData.VATCalculationsSurplusDeficitPreviousFY,
+          balancesData.vatCalculationsSurplusDeficitPreviousFY,
         ...options,
       };
 
@@ -87,14 +110,11 @@ const useBalancesData = () => {
             loading: false,
           }));
 
-          fetchGeneralData(generalData.Id);
-        } else {
-          setRequestState((prevState) => ({
-            ...prevState,
-            loading: false,
-            error: { messages: [String(res.Message)] },
-          }));
+          fetchGeneralData(fiscalYearId);
+          return;
         }
+
+        throw new Error(res.Message);
       } catch (err) {
         console.error(err);
 
@@ -105,7 +125,7 @@ const useBalancesData = () => {
         }));
       }
     },
-    [generalInformation.data]
+    [balancesData, fiscalYearId]
   );
 
   const handleInitError = () => {
@@ -116,42 +136,21 @@ const useBalancesData = () => {
   };
 
   const isDisabledAddNewProductBtn = useMemo(() => {
-    const generalData = generalInformation.data;
-    if (!generalData) return true;
+    if (!products) return true;
 
-    return (
-      !isProductEmpty(
-        generalData.SpecFinCalcProductName1,
-        generalData.SpecFinCalcSurplusDeficitPreviousFY1
-      ) &&
-      !isProductEmpty(
-        generalData.SpecFinCalcProductName2,
-        generalData.SpecFinCalcSurplusDeficitPreviousFY2
-      ) &&
-      !isProductEmpty(
-        generalData.SpecFinCalcProductName3,
-        generalData.SpecFinCalcSurplusDeficitPreviousFY3
-      ) &&
-      !isProductEmpty(
-        generalData.SpecFinCalcProductName4,
-        generalData.SpecFinCalcSurplusDeficitPreviousFY4
-      ) &&
-      !isProductEmpty(
-        generalData.SpecFinCalcProductName5,
-        generalData.SpecFinCalcSurplusDeficitPreviousFY5
-      )
-    );
-  }, [generalInformation.data]);
+    return !hasEmptyProduct(products);
+  }, [products]);
 
   return {
-    isClosed: !!generalInformation.data?.IsClosed,
+    isClosed: !!fiscalYear?.isClosed,
     isDisabledAddNewProductBtn,
     requestState,
+    products,
+    propertyMaintenanceData,
+    vatCalculationData,
     handleInitError,
-    generalData: generalInformation.data,
-    openAddProductDialog,
-    handleOpenProductDialog,
-    handleCloseProductDialog,
+    showDialog,
+    toggleShowDialog,
     handleSaveFields,
   };
 };

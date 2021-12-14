@@ -105,9 +105,9 @@ const Pagination: React.FC<PagiantionProps> = ({
           {t('#pagination.count.perpage')}:
         </span>
         <Select
+          className={classes.selectRoot}
           classes={{
             icon: classes.icon,
-            root: classes.selectRoot,
             select: classes.select,
           }}
           onChange={handleChangeRowsPerPage}

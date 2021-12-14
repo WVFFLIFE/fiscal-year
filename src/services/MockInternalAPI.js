@@ -4,6 +4,7 @@ import {
   baseCooperatives,
   enhancedCooperatives,
   fiscalYearsList,
+  fiscalYear,
 } from './mock';
 
 const DELAY = 500;
@@ -15,6 +16,10 @@ class MockService {
         resolve(data);
       }, DELAY);
     });
+  };
+
+  getFiscalYear = () => {
+    return this.execute(fiscalYear);
   };
 
   getCooperativesList = () => {

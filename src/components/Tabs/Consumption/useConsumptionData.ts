@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, ChangeEvent } from 'react';
 import useGeneralCtx from 'hooks/useGeneralCtx';
 import { ErrorModel } from 'models';
 import { sleep, readFile } from 'utils';
+import { getFiscalYearId, getConsumptionData } from 'utils/fiscalYear';
 import Services from 'services';
 
 interface StateModel {
@@ -17,11 +18,12 @@ interface StateModel {
 
 const useConsumptionData = () => {
   const {
-    state: { generalInformation },
+    state: { fiscalYear },
     fetchGeneralData,
   } = useGeneralCtx();
 
-  const fiscalYearId = generalInformation.data?.Id || null;
+  const fiscalYearId = getFiscalYearId(fiscalYear);
+  const consumptionData = getConsumptionData(fiscalYear);
 
   const [state, setState] = useState<StateModel>({
     progress: 0,
@@ -32,18 +34,18 @@ const useConsumptionData = () => {
     src: null,
     saving: false,
     addConsumptionReportToClosingTheBookReport:
-      !!generalInformation.data?.AddConsumptionReportToClosingTheBookReport,
+      !!consumptionData?.addConsumptionReportToClosingTheBookReport,
   });
 
   useEffect(() => {
-    if (generalInformation.data) {
+    if (consumptionData) {
       setState((prevState) => ({
         ...prevState,
         addConsumptionReportToClosingTheBookReport:
-          !!generalInformation.data?.AddConsumptionReportToClosingTheBookReport,
+          consumptionData.addConsumptionReportToClosingTheBookReport,
       }));
     }
-  }, [generalInformation.data]);
+  }, [consumptionData]);
 
   const handleProgress = async <ArgumentsType extends any[], ReturnType>(
     request: (...args: ArgumentsType) => Promise<ReturnType>,
@@ -122,7 +124,7 @@ const useConsumptionData = () => {
             ...prevState,
             progress: 0,
             uploading: false,
-            src: res.Attachment.Content,
+            src: res.Attachment?.Content || null,
           }));
         } else {
           setState((prevState) => ({
@@ -168,7 +170,7 @@ const useConsumptionData = () => {
           ...prevState,
           progress: 0,
           loading: false,
-          src: res.Attachment.Content,
+          src: res.Attachment?.Content || null,
         }));
       } else {
         setState((prevState) => ({
@@ -232,7 +234,7 @@ const useConsumptionData = () => {
 
   const handleSaveConsumptionMeter = useCallback(
     async (options: { [key: string]: number }) => {
-      if (!generalInformation.data || !fiscalYearId) return;
+      if (!consumptionData || !fiscalYearId) return;
       try {
         setState((prevState) => ({
           ...prevState,
@@ -241,9 +243,9 @@ const useConsumptionData = () => {
 
         const reqBody = {
           FiscalYearId: fiscalYearId,
-          HeatEnergyOfHotWater: generalInformation.data.HeatEnergyOfHotWater,
-          ConsumptionOfHotWater: generalInformation.data.ConsumptionOfHotWater,
-          Population: generalInformation.data.Population,
+          HeatEnergyOfHotWater: consumptionData.heatEnergyOfHotWater,
+          ConsumptionOfHotWater: consumptionData.consumptionOfHotWater,
+          Population: consumptionData.population,
           AddConsumptionReportToClosingTheBookReport:
             state.addConsumptionReportToClosingTheBookReport,
           ...options,
@@ -289,19 +291,11 @@ const useConsumptionData = () => {
     if (fiscalYearId) {
       handleFetchConsumptionImage(fiscalYearId);
     }
-  }, [generalInformation.data]);
-
-  const consumptionData = generalInformation.data
-    ? {
-        HeatEnergyOfHotWater: generalInformation.data.HeatEnergyOfHotWater,
-        ConsumptionOfHotWater: generalInformation.data.ConsumptionOfHotWater,
-        Population: generalInformation.data.Population,
-      }
-    : null;
+  }, [consumptionData]);
 
   return {
     ...state,
-    isClosed: !!generalInformation.data?.IsClosed,
+    isClosed: !!fiscalYear?.isClosed,
     handleInitError,
     consumptionData,
     handleChangeAddConsumptionReportToClosingTheBookReport,

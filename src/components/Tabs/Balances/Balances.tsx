@@ -1,12 +1,13 @@
 import { FC, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { GeneralFiscalYearModel } from 'models';
-import useBalancesData, { isProductEmpty } from './useBalancesData';
+import { Column } from './BalancesTable/models';
+import useBalancesData from './useBalancesData';
+import { BalanceProductModel, CommonProductDataModel } from 'utils/fiscalYear';
 import { toNumberFormat } from 'utils';
-import _get from 'lodash/get';
+import { savingInterceptor } from './utils';
 
 import AddForm from './AddForm';
-import PseudoTable, { PseudoTableColumn } from './PseudoTable';
+import BalancesTable from './BalancesTable';
 import Box from '@mui/material/Box';
 import ActionButton from 'components/ActionButton';
 import { SubTitle } from 'components/Styled';
@@ -18,31 +19,22 @@ import DialogError from 'components/DialogError';
 import clsx from 'clsx';
 import { useStyles } from './style';
 
-type PropertyMaintenanceDataModel = Pick<
-  GeneralFiscalYearModel,
-  | 'PropertyMeintenanceProductName'
-  | 'PropertyMeintenanceSurplusDeficitPreviousFY'
->;
-type VATCalculationDataModel = Pick<
-  GeneralFiscalYearModel,
-  'VATCalculationsProductName' | 'VATCalculationsSurplusDeficitPreviousFY'
->;
-
-function makeData<T extends { field: string }>(
-  columns: T[],
-  data: { [key: string]: any } | null
-) {
-  return columns.reduce((acc, next) => {
-    const { field } = next;
-
-    acc[field] = data ? data[field] : null;
-    return acc;
-  }, {} as { [key: string]: any });
-}
-
 const Balances: FC = () => {
   const { t } = useTranslation();
   const classes = useStyles();
+
+  const {
+    products,
+    propertyMaintenanceData,
+    vatCalculationData,
+    isClosed,
+    isDisabledAddNewProductBtn,
+    requestState,
+    showDialog,
+    toggleShowDialog,
+    handleSaveFields,
+    handleInitError,
+  } = useBalancesData();
 
   const btnCls = useMemo(
     () => ({
@@ -51,107 +43,139 @@ const Balances: FC = () => {
     [classes]
   );
 
-  const {
-    isClosed,
-    isDisabledAddNewProductBtn,
-    requestState,
-    generalData,
-    openAddProductDialog,
-    handleCloseProductDialog,
-    handleOpenProductDialog,
-    handleSaveFields,
-    handleInitError,
-  } = useBalancesData();
-
-  const propertyMaintenanceColumns: PseudoTableColumn<PropertyMaintenanceDataModel>[] =
-    useMemo(
-      () => [
-        {
-          label: '#tab.balances.propertymaintenance.productname',
-          field: 'PropertyMeintenanceProductName',
-          editable: true,
-        },
-        {
-          label: '#tab.balances.propertymaintenance.deficit',
-          field: 'PropertyMeintenanceSurplusDeficitPreviousFY',
-          editable: true,
-          type: 'number',
-          render: (data: PropertyMaintenanceDataModel) => (
-            <span className={classes.deficit}>
-              {toNumberFormat(data.PropertyMeintenanceSurplusDeficitPreviousFY)}
-            </span>
+  const propertyMaintenanceColumns: Column<CommonProductDataModel>[] = useMemo(
+    () => [
+      {
+        label: '#tab.balances.propertymaintenance.productname',
+        field: 'productName',
+        editable: true,
+        onSave: (output, ...rest) =>
+          savingInterceptor(
+            output,
+            {
+              type: 'property-maintenance',
+              property: 'productName',
+            },
+            handleSaveFields,
+            ...rest
           ),
-        },
-      ],
-      [classes]
-    );
+      },
+      {
+        label: '#tab.balances.propertymaintenance.deficit',
+        field: 'surplusDeficitPreviousFY',
+        editable: true,
+        type: 'float',
+        render: (data) => (
+          <span className={classes.deficit}>
+            {toNumberFormat(data.surplusDeficitPreviousFY)}
+          </span>
+        ),
+        onSave: (output, ...rest) =>
+          savingInterceptor(
+            output,
+            {
+              type: 'property-maintenance',
+              property: 'surplusDeficitPreviousFY',
+            },
+            handleSaveFields,
+            ...rest
+          ),
+      },
+    ],
+    [classes]
+  );
 
-  const vatCalculationColumns: PseudoTableColumn<VATCalculationDataModel>[] =
-    useMemo(
-      () => [
+  const vatCalculationColumns: Column<CommonProductDataModel>[] = useMemo(
+    () => [
+      {
+        label: '#tab.balances.vatcalculation.productname',
+        field: 'productName',
+        editable: true,
+        onSave: (output, ...rest) =>
+          savingInterceptor(
+            output,
+            {
+              type: 'vat-calculation',
+              property: 'productName',
+            },
+            handleSaveFields,
+            ...rest
+          ),
+      },
+      {
+        label: '#tab.balances.vatcalculation.deficit',
+        field: 'surplusDeficitPreviousFY',
+        editable: true,
+        type: 'float',
+        render: (data) => (
+          <span className={classes.deficit}>
+            {toNumberFormat(data.surplusDeficitPreviousFY)}
+          </span>
+        ),
+        onSave: (output, ...rest) =>
+          savingInterceptor(
+            output,
+            {
+              type: 'vat-calculation',
+              property: 'surplusDeficitPreviousFY',
+            },
+            handleSaveFields,
+            ...rest
+          ),
+      },
+    ],
+    [classes]
+  );
+
+  const productsList:
+    | [BalanceProductModel, Column<BalanceProductModel>[]][]
+    | null = useMemo(() => {
+    if (!products) return null;
+
+    return products.map((product) => [
+      product,
+      [
         {
-          label: '#tab.balances.vatcalculation.productname',
-          field: 'VATCalculationsProductName',
+          label: '#tab.balances.specialfinancialcalculation.productname',
+          field: 'productName',
           editable: true,
+          onSave: (output, ...rest) =>
+            savingInterceptor(
+              output,
+              {
+                type: 'product',
+                index: product.index,
+                property: 'productName',
+              },
+              handleSaveFields,
+              ...rest
+            ),
         },
         {
           label: '#tab.balances.vatcalculation.deficit',
-          field: 'VATCalculationsSurplusDeficitPreviousFY',
+          field: 'surplusDeficitPreviousFY',
           editable: true,
-          type: 'number',
-          render: (data: VATCalculationDataModel) => (
+          type: 'float',
+          render: (data) => (
             <span className={classes.deficit}>
-              {toNumberFormat(data.VATCalculationsSurplusDeficitPreviousFY)}
+              {toNumberFormat(data.surplusDeficitPreviousFY)}
             </span>
           ),
+          onSave: (output, ...rest) =>
+            savingInterceptor(
+              output,
+              {
+                type: 'product',
+                index: product.index,
+                property: 'surplusDeficitPreviousFY',
+              },
+              handleSaveFields,
+              ...rest
+            ),
         },
       ],
-      [classes]
-    );
-
-  const specFinCalcColumnsList: Array<PseudoTableColumn[]> = Array.from(
-    { length: 5 },
-    (_, i) => i + 1
-  ).map((n) => [
-    {
-      label: '#tab.balances.specialfinancialcalculation.productname',
-      field: `SpecFinCalcProductName${n}`,
-      editable: true,
-    },
-    {
-      label: '#tab.balances.specialfinancialcalculation.deficit',
-      field: `SpecFinCalcSurplusDeficitPreviousFY${n}`,
-      editable: true,
-      type: 'number',
-      render: (data) => (
-        <span className={classes.deficit}>
-          {toNumberFormat(
-            _get(data, `SpecFinCalcSurplusDeficitPreviousFY${n}`)
-          )}
-        </span>
-      ),
-    },
-  ]);
-
-  const propertyMaintenanceData = useMemo(
-    () => ({
-      PropertyMeintenanceProductName:
-        generalData?.PropertyMeintenanceProductName || null,
-      PropertyMeintenanceSurplusDeficitPreviousFY:
-        generalData?.PropertyMeintenanceSurplusDeficitPreviousFY || null,
-    }),
-    [generalData]
-  );
-
-  const vatCalculationData = useMemo(
-    () => ({
-      VATCalculationsProductName:
-        generalData?.VATCalculationsProductName || null,
-      VATCalculationsSurplusDeficitPreviousFY:
-        generalData?.VATCalculationsSurplusDeficitPreviousFY || null,
-    }),
-    [generalData]
-  );
+    ]);
+  }, [products]);
 
   return (
     <Box>
@@ -160,25 +184,27 @@ const Balances: FC = () => {
           <SubTitle className={classes.subTitle}>
             {t('#tab.balances.propertymaintenance.header')}
           </SubTitle>
-          <PseudoTable
-            columns={propertyMaintenanceColumns}
-            data={propertyMaintenanceData}
-            className={classes.propertyMaintenanceRow}
-            onSave={handleSaveFields}
-            disabled={isClosed}
-          />
+          {propertyMaintenanceData && (
+            <BalancesTable
+              columns={propertyMaintenanceColumns}
+              data={propertyMaintenanceData}
+              className={classes.propertyMaintenanceRow}
+              disabled={isClosed}
+            />
+          )}
         </Box>
         <Box flex={1}>
           <SubTitle className={classes.subTitle}>
             {t('#tab.balances.vatcalculation.header')}
           </SubTitle>
-          <PseudoTable
-            columns={vatCalculationColumns}
-            data={vatCalculationData}
-            className={classes.vatCalculationRow}
-            onSave={handleSaveFields}
-            disabled={isClosed}
-          />
+          {vatCalculationData && (
+            <BalancesTable
+              columns={vatCalculationColumns}
+              data={vatCalculationData}
+              className={classes.vatCalculationRow}
+              disabled={isClosed}
+            />
+          )}
         </Box>
       </Box>
       <Box display="flex" flexDirection="column">
@@ -194,7 +220,7 @@ const Balances: FC = () => {
               classes={btnCls}
               palette="darkBlue"
               startIcon={<PlusIcon />}
-              onClick={handleOpenProductDialog}
+              onClick={toggleShowDialog}
               disabled={isClosed || isDisabledAddNewProductBtn}
             >
               {t('#button.addnewproduct')}
@@ -202,43 +228,33 @@ const Balances: FC = () => {
           </Box>
         </Box>
         <Box display="flex" flexWrap="wrap">
-          {specFinCalcColumnsList.map((specFinCalcColumn, i) => {
-            const data = makeData(specFinCalcColumn, generalData);
-            const visible =
-              !isProductEmpty(
-                data[`SpecFinCalcProductName${i + 1}`],
-                data[`SpecFinCalcSurplusDeficitPreviousFY${i + 1}`]
-              ) &&
-              generalData &&
-              (generalData as { [key: string]: any })[`Show${i + 1}`];
-            return (
-              visible && (
-                <Box
-                  width="100%"
-                  maxWidth="calc(50% - 10px)"
-                  marginBottom={8}
-                  className={classes.oddBox}
-                  key={`SpecFinCalcProductName${i + 1}`}
-                >
-                  <PseudoTable
-                    columns={specFinCalcColumn}
-                    data={data}
-                    className={classes.specFinCalcRow}
-                    onSave={handleSaveFields}
-                    disabled={isClosed}
-                  />
-                </Box>
-              )
-            );
-          })}
+          {productsList &&
+            productsList.map((productList) => {
+              const [product, columns] = productList;
+
+              return (
+                product.visible && (
+                  <Box
+                    key={product.index}
+                    width="100%"
+                    maxWidth="calc(50% - 10px)"
+                    marginBottom={8}
+                    className={classes.oddBox}
+                  >
+                    <BalancesTable
+                      columns={columns}
+                      data={product}
+                      className={classes.specFinCalcRow}
+                      disabled={isClosed}
+                    />
+                  </Box>
+                )
+              );
+            })}
         </Box>
       </Box>
-      <Dialog
-        open={openAddProductDialog}
-        maxWidth="sm"
-        handleClose={handleCloseProductDialog}
-      >
-        <AddForm onClose={handleCloseProductDialog} />
+      <Dialog open={showDialog} maxWidth="sm" handleClose={toggleShowDialog}>
+        <AddForm onClose={toggleShowDialog} />
       </Dialog>
       <Backdrop loading={requestState.loading} />
       <DialogError error={requestState.error} initError={handleInitError} />

@@ -1,8 +1,6 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
-import { getLangString } from 'utils';
-
 // dictionaries
 import EN from 'locales/en.json';
 import FI from 'locales/fi.json';
@@ -20,7 +18,7 @@ i18n.use(initReactI18next).init({
       translation: FI,
     },
   },
-  lng: getLangString(),
+  lng: 'en',
   keySeparator: false,
   interpolation: {
     escapeValue: false,

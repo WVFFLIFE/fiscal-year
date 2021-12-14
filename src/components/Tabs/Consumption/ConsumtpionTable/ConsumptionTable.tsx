@@ -1,16 +1,11 @@
 import { useTranslation } from 'react-i18next';
+import { ConsumptionModel } from 'utils/fiscalYear';
 
 import Box from '@mui/material/Box';
 import ConsumptionTableRow from './ConsumtpionTableRow';
 
-interface Data {
-  HeatEnergyOfHotWater: number | null;
-  ConsumptionOfHotWater: number | null;
-  Population: number | null;
-}
-
 interface ConsumptionTableProps {
-  data: Data;
+  data: ConsumptionModel;
   onSaveConsumption(
     option: { [key: string]: number },
     cb?: () => void
@@ -28,21 +23,21 @@ const ConsumptionTable: React.FC<ConsumptionTableProps> = ({
   return (
     <Box>
       <ConsumptionTableRow
-        data={data.HeatEnergyOfHotWater}
+        data={data.heatEnergyOfHotWater}
         field="HeatEnergyOfHotWater"
         label={t('#tab.consumption.table.heatenergyofhotwater')}
         disabled={disabled}
         onSave={onSaveConsumption}
       />
       <ConsumptionTableRow
-        data={data.ConsumptionOfHotWater}
+        data={data.consumptionOfHotWater}
         field="ConsumptionOfHotWater"
         label={t('#tab.consumption.table.consumptionofhotwater')}
         disabled={disabled}
         onSave={onSaveConsumption}
       />
       <ConsumptionTableRow
-        data={data.Population}
+        data={data.population}
         field="Population"
         label={t('#tab.consumption.table.population')}
         disabled={disabled}
