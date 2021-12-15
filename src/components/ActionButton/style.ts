@@ -6,6 +6,7 @@ export const useStyles = makeStyles((theme) => ({
     padding: '10px 16px',
     height: 32,
     borderRadius: 20,
+    textTransform: 'none',
     '&:hover': {
       background: '#fff',
       color: theme.color.blue2,
@@ -34,6 +35,11 @@ export const useStyles = makeStyles((theme) => ({
     filter: 'drop-shadow(0px 2px 7px rgba(151, 151, 151, 0.4))',
     '&.Mui-disabled': {
       color: theme.color.greyBorder,
+    },
+  },
+  startIcon: {
+    '& .MuiSvgIcon-root': {
+      fontSize: 12,
     },
   },
 }));

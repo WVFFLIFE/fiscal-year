@@ -43,3 +43,4 @@ export { default as RoundWarningIcon } from './RoundWarningIcon';
 export { default as UnlockIcon } from './UnlockIcon';
 export { default as TriangleWarningIcon } from './TriangleWarningIcon';
 export { default as ListBulletsIcon } from './ListBulletsIcon';
+export { default as InfoIcon } from './InfoIcon';

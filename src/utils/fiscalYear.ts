@@ -1,5 +1,5 @@
 import { GeneralFiscalYearModel } from 'services';
-import { OptionalNumber, OptionalString } from 'models';
+import { OptionalNumber, OptionalString, DocumentTypeCode } from 'models';
 import _get from 'lodash/get';
 
 function get<T extends object, K extends keyof T>(
@@ -109,6 +109,15 @@ export interface ConsumptionModel {
   population: OptionalNumber;
 }
 
+export interface RunningNumberSettingsItem {
+  createdOn: OptionalString;
+  currentNumber: OptionalNumber;
+  documentTypeCode: DocumentTypeCode | null;
+  id: string;
+  ownerName: OptionalString;
+  startNumber: OptionalNumber;
+}
+
 export interface AppendexisModel {
   accountingBasis: OptionalString;
   accountingBasisFormatted: OptionalString;
@@ -129,6 +138,8 @@ export interface AppendexisModel {
   personnel: OptionalString;
   personnelFormatted: OptionalString;
   personnelHtml: OptionalString;
+
+  runningNumberSettings: RunningNumberSettingsItem[];
 }
 
 export interface FiscalYearModel {
@@ -165,6 +176,19 @@ function meetingsAdapter(
     plannedEndingDate: get(item, 'PlannedEndingDate'),
     plannedStartingDate: get(item, 'PlannedStartingDate'),
     type: get(item, 'Type'),
+  }));
+}
+
+function additionalSettingsAdapter(
+  additionalSettings: GeneralFiscalYearModel['AdditionalSettings']
+): RunningNumberSettingsItem[] {
+  return additionalSettings.map((item) => ({
+    createdOn: get(item, 'CreatedOn'),
+    currentNumber: get(item, 'CurrentNumber'),
+    documentTypeCode: get(item, 'DocumentTypeCode'),
+    id: get(item, 'Id'),
+    ownerName: get(item, 'OwnerName'),
+    startNumber: get(item, 'StartNumber'),
   }));
 }
 
@@ -265,6 +289,9 @@ export function makeFiscalYear(
       personnel: get(fiscalYearRes, 'Personnel'),
       personnelFormatted: get(fiscalYearRes, 'PersonnelFormatted'),
       personnelHtml: get(fiscalYearRes, 'PersonnelHtml'),
+      runningNumberSettings: additionalSettingsAdapter(
+        get(fiscalYearRes, 'AdditionalSettings', [])
+      ),
     },
     balances: {
       products: [
@@ -393,6 +420,11 @@ export function getAnnuaReportData(fiscalYear: FiscalYearModel | null) {
 
 export function appendexisSelector(fiscalYear: FiscalYearModel | null) {
   return fiscalYear && fiscalYear.appendexis;
+}
+export function runningNumberSettingsSelector(
+  fiscalYear: FiscalYearModel | null
+) {
+  return fiscalYear && fiscalYear.appendexis.runningNumberSettings;
 }
 
 export function getBalancesData(fiscalYear: FiscalYearModel | null) {

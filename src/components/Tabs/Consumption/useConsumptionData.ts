@@ -13,7 +13,6 @@ interface StateModel {
   error: ErrorModel | null;
   src: string | null;
   saving: boolean;
-  addConsumptionReportToClosingTheBookReport: boolean;
 }
 
 const useConsumptionData = () => {
@@ -33,19 +32,7 @@ const useConsumptionData = () => {
     error: null,
     src: null,
     saving: false,
-    addConsumptionReportToClosingTheBookReport:
-      !!consumptionData?.addConsumptionReportToClosingTheBookReport,
   });
-
-  useEffect(() => {
-    if (consumptionData) {
-      setState((prevState) => ({
-        ...prevState,
-        addConsumptionReportToClosingTheBookReport:
-          consumptionData.addConsumptionReportToClosingTheBookReport,
-      }));
-    }
-  }, [consumptionData]);
 
   const handleProgress = async <ArgumentsType extends any[], ReturnType>(
     request: (...args: ArgumentsType) => Promise<ReturnType>,
@@ -224,16 +211,19 @@ const useConsumptionData = () => {
 
   const handleChangeAddConsumptionReportToClosingTheBookReport = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
-      setState((prevState) => ({
-        ...prevState,
-        addConsumptionReportToClosingTheBookReport: e.target.checked,
-      }));
+      if (!state.saving) {
+        const { checked } = e.target;
+
+        handleSaveConsumptionMeter({
+          AddConsumptionReportToClosingTheBookReport: checked,
+        });
+      }
     },
-    []
+    [state.saving]
   );
 
   const handleSaveConsumptionMeter = useCallback(
-    async (options: { [key: string]: number }) => {
+    async (options: { [key: string]: number | boolean }) => {
       if (!consumptionData || !fiscalYearId) return;
       try {
         setState((prevState) => ({
@@ -247,7 +237,7 @@ const useConsumptionData = () => {
           ConsumptionOfHotWater: consumptionData.consumptionOfHotWater,
           Population: consumptionData.population,
           AddConsumptionReportToClosingTheBookReport:
-            state.addConsumptionReportToClosingTheBookReport,
+            consumptionData.addConsumptionReportToClosingTheBookReport,
           ...options,
         };
 

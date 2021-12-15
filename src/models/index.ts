@@ -66,19 +66,32 @@ export enum EntityResponseCode {
   Info = 4,
 }
 
+export enum DocumentTypeCode {
+  MemoVoucher = 100000006,
+  BankAccount = 100000005,
+  AccountStatement = 100000000,
+  PurchaseOrder = 100000001,
+  Payment = 100000002,
+  OutgoingPayment = 100000007,
+  SalesInvoice = 100000003,
+  IncomingInvoice = 100000004,
+  ManualEvent = 752560000,
+}
+
 export interface MockCooperative {
   Id: string;
   Name: string;
   ClosedPeriodEndDate: string;
 }
 
-export interface Column {
+export interface Column<T extends object = { [key: string]: any }> {
   label: string;
-  field: string;
+  field: keyof T;
   sortable?: boolean;
   align?: 'left' | 'center' | 'right';
   style?: CSSProperties;
-  type?: 'string' | 'date';
+  bodyCellClassName?: string;
+  type?: 'string' | 'date' | 'datetime' | 'documentcode' | 'numeric';
 }
 
 export interface AttributeHeaderModel {

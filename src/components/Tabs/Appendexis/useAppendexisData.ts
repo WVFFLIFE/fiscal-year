@@ -1,6 +1,10 @@
 import { useMemo, useCallback } from 'react';
 import useGeneralCtx from 'hooks/useGeneralCtx';
-import { appendexisSelector, getFiscalYearId } from 'utils/fiscalYear';
+import {
+  appendexisSelector,
+  runningNumberSettingsSelector,
+  getFiscalYearId,
+} from 'utils/fiscalYear';
 import { saveRequestAdapter } from './utils';
 
 import Services, { BaseResponseModel } from 'services';
@@ -28,6 +32,7 @@ const useAppendexisData = () => {
   } = useGeneralCtx();
   const appendexisData = appendexisSelector(fiscalYear);
   const fiscalYearId = getFiscalYearId(fiscalYear);
+  const runningNumberSettings = runningNumberSettingsSelector(fiscalYear);
 
   const handleSaveAppendexisData = useCallback(
     async (req: { [key: string]: string | null }) => {
@@ -144,7 +149,12 @@ const useAppendexisData = () => {
     [appendexisData]
   );
 
-  return { columns, isClosed: !!fiscalYear?.isClosed, handleUpdateFiscalYear };
+  return {
+    columns,
+    runningNumberSettings,
+    isClosed: !!fiscalYear?.isClosed,
+    handleUpdateFiscalYear,
+  };
 };
 
 export default useAppendexisData;

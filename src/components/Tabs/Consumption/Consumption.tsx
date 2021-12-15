@@ -28,7 +28,6 @@ const Consumption: FC = () => {
     uploading,
     handleInitError,
     consumptionData,
-    addConsumptionReportToClosingTheBookReport,
     handleChangeAddConsumptionReportToClosingTheBookReport,
     handleSaveConsumptionMeter,
     handleChangeCurrentFile,
@@ -81,7 +80,7 @@ const Consumption: FC = () => {
       <Box>
         <CheckboxControl
           disabled={isClosed}
-          checked={addConsumptionReportToClosingTheBookReport}
+          checked={consumptionData.addConsumptionReportToClosingTheBookReport}
           onChange={handleChangeAddConsumptionReportToClosingTheBookReport}
           label={t(
             '#control.checkbox.addconsumptionreporttoclosingthebookreport'

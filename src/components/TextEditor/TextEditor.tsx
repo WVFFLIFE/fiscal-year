@@ -1,13 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 
-import {
-  Editor,
-  EditorState,
-  RichUtils,
-  ContentState,
-  convertFromHTML,
-} from 'draft-js';
-import { calculateContentLength } from './utils';
+import { Editor, EditorState, RichUtils, Modifier } from 'draft-js';
 
 import ControlsPanel, { Control } from './ControlsPanel';
 import {
@@ -48,6 +41,11 @@ interface TextEditorProps {
   onChangeEditorState(editorState: EditorState): void;
 }
 
+function moveFocusToEnd(editorState: EditorState) {
+  editorState = EditorState.moveSelectionToEnd(editorState);
+  return EditorState.forceSelection(editorState, editorState.getSelection());
+}
+
 const TextEditor: React.FC<TextEditorProps> = ({
   classes: rootClasses,
   disabled,
@@ -61,9 +59,11 @@ const TextEditor: React.FC<TextEditorProps> = ({
   const [focused, setFocused] = useState(false);
 
   const focusEditor = () => {
-    if (editorRef.current) {
+    if (editorRef.current && !focused) {
       editorRef.current.focus();
       setFocused(true);
+
+      onChangeEditorState(moveFocusToEnd(editorState));
     }
   };
 
@@ -127,104 +127,71 @@ const TextEditor: React.FC<TextEditorProps> = ({
     return length;
   };
 
-  const _getSelectedText = () => {
-    const selectionState = editorState.getSelection();
-    const anchorKey = selectionState.getAnchorKey();
+  const _handleBeforeInput = () => {
     const currentContent = editorState.getCurrentContent();
-    const currentContentBlock = currentContent.getBlockForKey(anchorKey);
-    const start = selectionState.getStartOffset();
-    const end = selectionState.getEndOffset();
-    const selectedText = currentContentBlock.getText().slice(start, end);
+    const currentContentLength = currentContent.getPlainText('').length;
+    const selectedTextLength = _getLengthOfSelectedText();
 
-    return selectedText;
+    if (currentContentLength - selectedTextLength > maxCharactersLength - 1) {
+      return 'handled';
+    }
+    return 'not-handled';
   };
 
-  const _getSelectedPosition = () => {
-    const selectionState = editorState.getSelection();
-    const start = selectionState.getStartOffset();
-    const end = selectionState.getEndOffset();
-
-    return { start, end };
+  const _removeSelection = () => {
+    const selection = editorState.getSelection();
+    const startKey = selection.getStartKey();
+    const startOffset = selection.getStartOffset();
+    const endKey = selection.getEndKey();
+    const endOffset = selection.getEndOffset();
+    if (startKey !== endKey || startOffset !== endOffset) {
+      const newContent = Modifier.removeRange(
+        editorState.getCurrentContent(),
+        selection,
+        'forward'
+      );
+      const tempEditorState = EditorState.push(
+        editorState,
+        newContent,
+        'remove-range'
+      );
+      onChangeEditorState(tempEditorState);
+      return tempEditorState;
+    }
+    return editorState;
   };
 
-  const _handleBeforeInput = (text: string) => {
-    const currentText = editorState.getCurrentContent().getPlainText();
-    const currentTextLength = currentText.length;
-    const totalLength = currentTextLength + 1;
+  const _addPastedContent = (input: string, editorState: EditorState) => {
+    const inputLength = editorState.getCurrentContent().getPlainText().length;
+    let remainingLength = maxCharactersLength - inputLength;
 
-    if (totalLength > maxCharactersLength) {
-      const selectedText = _getSelectedText();
+    const newContent = Modifier.insertText(
+      editorState.getCurrentContent(),
+      editorState.getSelection(),
+      input.slice(0, remainingLength)
+    );
+    onChangeEditorState(
+      EditorState.push(editorState, newContent, 'insert-characters')
+    );
+  };
+  const _handlePastedText = (pastedText: string) => {
+    const currentContent = editorState.getCurrentContent();
+    const currentContentLength = currentContent.getPlainText('').length;
+    const selectedTextLength = _getLengthOfSelectedText();
 
-      if (selectedText) {
-        const selectedPosition = _getSelectedPosition();
-
-        const startText = currentText.substring(0, selectedPosition.start);
-        const endText = currentText.substring(selectedPosition.end + 1);
-
-        const newText = `${startText}${text}${endText}`;
-        const editorState = EditorState.createWithContent(
-          ContentState.createFromText(newText.slice(0, maxCharactersLength))
-        );
-
-        onChangeEditorState(editorState);
-      }
+    if (
+      currentContentLength + pastedText.length - selectedTextLength >
+      maxCharactersLength
+    ) {
+      const selection = editorState.getSelection();
+      const isCollapsed = selection.isCollapsed();
+      const tempEditorState = !isCollapsed ? _removeSelection() : editorState;
+      _addPastedContent(pastedText, tempEditorState);
 
       return 'handled';
-    } else {
-      return 'not-handled';
     }
+    return 'not-handled';
   };
-
-  // const _handleBeforeInput = (pastedText: string) => {
-  //   const currentContent = editorState.getCurrentContent();
-  //   const currentContentLength =
-  //     currentContent.getPlainText().length + pastedText.length;
-  //   const selectedText = _getSelectedText();
-
-  //   if (currentContentLength >= maxCharactersLength) {
-  //     if (selectedText) {
-  //       const { start, end } = _getSelectedPosition();
-  //       const startStr = currentContent.getPlainText().substring(0, start);
-  //       const endStr = currentContent.getPlainText().substring(end);
-  //       const newStr = `${startStr}${pastedText}${endStr}`;
-  //       const editorState = EditorState.createWithContent(
-  //         ContentState.createFromText(newStr.slice(0, maxCharactersLength - 1))
-  //       );
-  //       onChangeEditorState(editorState);
-  //     }
-
-  //     return 'handled';
-  //   } else {
-  //     return 'not-handled';
-  //   }
-  // };
-
-  // const _handlePastedText = (pastedText: string) => {
-  //   const currentContent = editorState.getCurrentContent();
-  //   const currentContentLength =
-  //     currentContent.getPlainText().length + pastedText.length;
-  //   const selectedText = _getSelectedText();
-  //   const selectedTextLength = selectedText.length;
-
-  //   if (
-  //     currentContentLength + pastedText.length - selectedTextLength >
-  //     maxCharactersLength
-  //   ) {
-  //     if (!selectedText) return 'not-handled';
-  //     const editorState = EditorState.createWithContent(
-  //       ContentState.createFromText(
-  //         currentContent
-  //           .getPlainText()
-  //           .replace(selectedText, pastedText)
-  //           .slice(0, maxCharactersLength - 1)
-  //       )
-  //     );
-  //     onChangeEditorState(EditorState.moveFocusToEnd(editorState));
-  //     return 'handled';
-  //   } else {
-  //     return 'not-handled';
-  //   }
-  // };
 
   useEffect(() => {
     if (!disabled) {
@@ -247,16 +214,17 @@ const TextEditor: React.FC<TextEditorProps> = ({
         className={clsx(classes.editorWrapper, {
           [classes.focused]: focused,
         })}
-        onClick={focusEditor}
+        onClick={disabled ? undefined : focusEditor}
       >
         <Editor
+          ref={editorRef}
           editorState={editorState}
           onChange={onChangeEditorState}
           readOnly={disabled}
           onFocus={focusEditor}
           onBlur={onBlur}
           handleBeforeInput={_handleBeforeInput}
-          // handlePastedText={_handlePastedText}
+          handlePastedText={_handlePastedText}
         />
       </div>
     </div>

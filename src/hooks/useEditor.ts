@@ -44,19 +44,9 @@ function checkEditorDataEquality(
 }
 
 const useEditor = (editorData: EditorData) => {
-  const [editorState, setEditorState] = useState<EditorState | null>(null);
-
-  const isEditorDataEquals = useMemo(() => {
-    const nextEditorState = convertDataToState(editorData);
-
-    return checkEditorDataEquality(editorState, nextEditorState);
-  }, [editorData, editorState]);
-
-  useEffect(() => {
-    if (!isEditorDataEquals) {
-      setEditorState(convertDataToState(editorData));
-    }
-  }, [editorData, isEditorDataEquals]);
+  const [editorState, setEditorState] = useState<EditorState | null>(() =>
+    convertDataToState(editorData)
+  );
 
   return [editorState, setEditorState] as const;
 };

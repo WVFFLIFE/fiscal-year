@@ -26,4 +26,15 @@ export const useStyles = makeStyles(() => ({
     fontSize: 16,
     color: '#000',
   },
+  title: {
+    margin: 0,
+    marginBottom: 35,
+    padding: 0,
+
+    fontSize: 24,
+    fontFamily: 'Proxima Nova',
+    fontWeight: 600,
+    textAlign: 'center',
+    color: '#000',
+  },
 }));

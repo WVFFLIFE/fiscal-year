@@ -6,6 +6,7 @@ import { useStyles } from './style';
 
 export interface DialogProps {
   open: MuiDialogProps['open'];
+  title?: string;
   maxWidth?: MuiDialogProps['maxWidth'];
   fullWidth?: MuiDialogProps['fullWidth'];
   handleClose(): void;
@@ -14,6 +15,7 @@ export interface DialogProps {
 
 const Dialog: React.FC<DialogProps> = ({
   open,
+  title,
   handleClose,
   maxWidth = 'md',
   fullWidth = true,
@@ -43,6 +45,7 @@ const Dialog: React.FC<DialogProps> = ({
             <CloseIcon className={classes.icon} />
           </Button>
         </div>
+        {title && <h3 className={classes.title}>{title}</h3>}
         {children}
       </div>
     </MuiDialog>

@@ -3,6 +3,7 @@ import {
   CopyFiscalYearCodes,
   LockFiscalYearCodes,
   UnlockFiscalYearCodes,
+  DocumentTypeCode,
 } from 'models';
 import { AnnualReportModel } from 'models/AnnualReportModel';
 import { BalancesModel } from 'models/BalancesModel';
@@ -177,11 +178,25 @@ export interface AppendexisRequestModel extends AppendexisInput {
   FiscalYearId: string;
 }
 
+export interface AdditionalSettingsItemModel {
+  CreatedOn: string | null;
+  CurrentNumber: number | null;
+  DocumentTypeCode: DocumentTypeCode;
+  Id: string;
+  OwnerName: string | null;
+  StartNumber: number | null;
+}
+
+interface AdditionalSettings {
+  AdditionalSettings: AdditionalSettingsItemModel[];
+}
+
 export type GeneralFiscalYearModel = GeneralModel &
   AnnualReportModel &
   BalancesModel &
   ConsumptionModel &
-  AppendexisResponseModel;
+  AppendexisResponseModel &
+  AdditionalSettings;
 
 interface GeneralFiscalYearModelRes extends BaseResponseModel {
   FiscalYear: GeneralFiscalYearModel;

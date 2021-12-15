@@ -14,21 +14,21 @@ export interface TableHeadClasses {
   cell?: string;
 }
 
-interface TableHeadProps {
+interface TableHeadProps<T extends object = {}> {
   className?: string;
   classes?: TableHeadClasses;
-  columns: Column[];
+  columns: Column<T>[];
   sort?: SortModel;
   onChangeSortParams?(orderBy: string): void;
 }
 
-const TableHead: React.FC<TableHeadProps> = ({
+const TableHead = <T extends object = {}>({
   className,
   classes,
   columns,
   sort,
   onChangeSortParams,
-}) => {
+}: TableHeadProps<T>) => {
   const { t } = useTranslation();
 
   return (
@@ -38,12 +38,12 @@ const TableHead: React.FC<TableHeadProps> = ({
           return sort && sortable ? (
             <SortedTableCell
               className={classes?.cell}
-              key={field}
+              key={field as string}
               component="th"
               order={sort.order}
               orderBy={sort.orderBy}
               onChangeSortParams={onChangeSortParams}
-              field={field}
+              field={field as string}
               align={align || 'left'}
               style={style}
             >
@@ -51,7 +51,7 @@ const TableHead: React.FC<TableHeadProps> = ({
             </SortedTableCell>
           ) : (
             <HeadTableCell
-              key={field}
+              key={field as string}
               className={classes?.cell}
               component="th"
               align={align || 'left'}

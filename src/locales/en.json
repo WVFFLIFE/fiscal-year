@@ -112,6 +112,8 @@
   "#tab.appendexis.subtitle.notestothebalancesheet": "Notes to the Balance Sheet",
   "#tab.appendexis.subtitle.loansmaturingoverfiveyears": "Loans Maturing over 5 years",
   "#tab.appendexis.subtitle.accountingbooks": "Accounting Books",
+  "#tab.appendexis.runningnumbersettings.dialog.title": "Running number settings",
+  "#tab.appendexis.runningnumbersettings.btn": "Additional settings",
   "#confirmation.lock.description": "Are you sure you want to lock fiscal year data? All current data will be unavailable to edit",
   "#confirmation.unlock.description": "Are you sure you want to unlock fiscal year data?",
   "#confirmation.copy.description": "Are you sure you want to copy previous fiscal year's data to current fiscal year? All current data will be replaced"

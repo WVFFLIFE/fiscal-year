@@ -112,6 +112,8 @@
   "#tab.appendexis.subtitle.notestothebalancesheet": "Taseen muut liitetiedot",
   "#tab.appendexis.subtitle.loansmaturingoverfiveyears": "Yli 5 vuoden kuluttua erääntyvät lainat",
   "#tab.appendexis.subtitle.accountingbooks": "Kirjanpitokirjat",
+  "#tab.appendexis.runningnumbersettings.dialog.title": "Tositenumeroiden asetukset",
+  "#tab.appendexis.runningnumbersettings.btn": "Additional settings",
   "#confirmation.lock.description": "Oletko varma, että haluat lukita tilikauden tiedot? Kaikki tilikauden tiedot lukitaan.",
   "#confirmation.unlock.description": "Oletko varma, että haluat avata tilikauden tiedot?",
   "#confirmation.copy.description": "Oletko varma, että haluat kopioida edellisen tilikauden tiedot toimintakertomukselle ja liitetietoihin? Kaikki jo syötetyt tiedot korvataan."
