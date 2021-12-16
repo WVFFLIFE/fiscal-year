@@ -33,6 +33,14 @@ export enum CopyFiscalYearCodes {
   AmbiguityFiscalYearNotFound,
 }
 
+export enum PartyRoleType {
+  BoardOfDirectors = 1,
+  Auditing = 2,
+  PropertyManagement = 3,
+  BuildingMaintenanceAndCleaning = 4,
+  OtherParties = 5,
+}
+
 export interface FolderModel extends ServiceFolderModel {}
 export interface DocumentModel extends ServiceDocumentModel {}
 export interface BaseEntityModel {
@@ -91,7 +99,7 @@ export interface Column<T extends object = { [key: string]: any }> {
   align?: 'left' | 'center' | 'right';
   style?: CSSProperties;
   bodyCellClassName?: string;
-  type?: 'string' | 'date' | 'datetime' | 'documentcode' | 'numeric';
+  type?: 'string' | 'date' | 'datetime' | 'documentcode' | 'int';
 }
 
 export interface AttributeHeaderModel {

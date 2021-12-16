@@ -1,6 +1,27 @@
-import { GeneralFiscalYearModel } from 'services';
-import { OptionalNumber, OptionalString, DocumentTypeCode } from 'models';
+import {
+  GeneralFiscalYearModel,
+  ResPartySectionModel,
+  ResPartyModel,
+} from 'services';
+import {
+  OptionalNumber,
+  OptionalString,
+  DocumentTypeCode,
+  PartyRoleType,
+} from 'models';
 import _get from 'lodash/get';
+
+const dict = {
+  [DocumentTypeCode.AccountStatement]: 'Account Statement',
+  [DocumentTypeCode.BankAccount]: 'Bank Account',
+  [DocumentTypeCode.IncomingInvoice]: 'Incoming Invoice',
+  [DocumentTypeCode.ManualEvent]: 'Manual Event',
+  [DocumentTypeCode.MemoVoucher]: 'Memo Voucher',
+  [DocumentTypeCode.OutgoingPayment]: 'Outgoing Payment',
+  [DocumentTypeCode.Payment]: 'Payment',
+  [DocumentTypeCode.PurchaseOrder]: 'Purchase Order',
+  [DocumentTypeCode.SalesInvoice]: 'Sales Invoice',
+};
 
 function get<T extends object, K extends keyof T>(
   object: T,
@@ -113,6 +134,7 @@ export interface RunningNumberSettingsItem {
   createdOn: OptionalString;
   currentNumber: OptionalNumber;
   documentTypeCode: DocumentTypeCode | null;
+  documentTypeLabel: OptionalString;
   id: string;
   ownerName: OptionalString;
   startNumber: OptionalNumber;
@@ -142,6 +164,18 @@ export interface AppendexisModel {
   runningNumberSettings: RunningNumberSettingsItem[];
 }
 
+export interface PartyModel {
+  endDate: OptionalString;
+  name: OptionalString;
+  role: OptionalString;
+  startDate: OptionalString;
+}
+
+export interface PartySectionModel {
+  list: PartyModel[];
+  type: PartyRoleType;
+}
+
 export interface FiscalYearModel {
   annualReport: AnnualReportModel;
   appendexis: AppendexisModel;
@@ -150,6 +184,24 @@ export interface FiscalYearModel {
   consumption: ConsumptionModel;
   id: string;
   isClosed: boolean;
+}
+
+function partyAdapter(parties: ResPartyModel[]): PartyModel[] {
+  return parties.map((party) => ({
+    endDate: get(party, 'EndDate'),
+    name: get(party, 'Name'),
+    role: get(party, 'Role'),
+    startDate: get(party, 'StartDate'),
+  }));
+}
+
+export function partiesSectionsAdapter(
+  sections: ResPartySectionModel[]
+): PartySectionModel[] {
+  return sections.map((section) => ({
+    type: get(section, 'Type'),
+    list: partyAdapter(section.Items),
+  }));
 }
 
 function auditingsAdapter(
@@ -182,14 +234,22 @@ function meetingsAdapter(
 function additionalSettingsAdapter(
   additionalSettings: GeneralFiscalYearModel['AdditionalSettings']
 ): RunningNumberSettingsItem[] {
-  return additionalSettings.map((item) => ({
-    createdOn: get(item, 'CreatedOn'),
-    currentNumber: get(item, 'CurrentNumber'),
-    documentTypeCode: get(item, 'DocumentTypeCode'),
-    id: get(item, 'Id'),
-    ownerName: get(item, 'OwnerName'),
-    startNumber: get(item, 'StartNumber'),
-  }));
+  return additionalSettings.map((item) => {
+    const documentTypeCode: DocumentTypeCode | null = get(
+      item,
+      'DocumentTypeCode'
+    );
+
+    return {
+      createdOn: get(item, 'CreatedOn'),
+      currentNumber: get(item, 'CurrentNumber'),
+      documentTypeCode: documentTypeCode,
+      documentTypeLabel: documentTypeCode && dict[documentTypeCode],
+      id: get(item, 'Id'),
+      ownerName: get(item, 'OwnerName'),
+      startNumber: get(item, 'StartNumber'),
+    };
+  });
 }
 
 export function makeFiscalYear(

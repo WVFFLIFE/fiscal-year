@@ -18,8 +18,21 @@ interface TableHeadProps<T extends object = {}> {
   className?: string;
   classes?: TableHeadClasses;
   columns: Column<T>[];
-  sort?: SortModel;
-  onChangeSortParams?(orderBy: string): void;
+  sort?: SortModel<T>;
+  onChangeSortParams?(orderBy: string, type?: 'alphanumeric' | 'date'): void;
+}
+
+function switchColumnTypeToSort(colType: Column['type']) {
+  switch (colType) {
+    case 'string':
+    case 'int':
+      return 'alphanumeric';
+    case 'date':
+    case 'datetime':
+      return 'date';
+    default:
+      return 'alphanumeric';
+  }
 }
 
 const TableHead = <T extends object = {}>({
@@ -34,33 +47,37 @@ const TableHead = <T extends object = {}>({
   return (
     <MuiTableHead>
       <MuiTableRow className={clsx(classes?.root, className)}>
-        {columns.map(({ sortable = true, style, field, align, label }) => {
-          return sort && sortable ? (
-            <SortedTableCell
-              className={classes?.cell}
-              key={field as string}
-              component="th"
-              order={sort.order}
-              orderBy={sort.orderBy}
-              onChangeSortParams={onChangeSortParams}
-              field={field as string}
-              align={align || 'left'}
-              style={style}
-            >
-              {t(label)}
-            </SortedTableCell>
-          ) : (
-            <HeadTableCell
-              key={field as string}
-              className={classes?.cell}
-              component="th"
-              align={align || 'left'}
-              style={style}
-            >
-              {t(label)}
-            </HeadTableCell>
-          );
-        })}
+        {columns.map(
+          ({ sortable = true, style, field, align, label, type }) => {
+            const sortType = switchColumnTypeToSort(type);
+            return sort && sortable ? (
+              <SortedTableCell
+                className={classes?.cell}
+                key={field as string}
+                type={sortType}
+                component="th"
+                order={sort.order}
+                orderBy={sort.orderBy as string}
+                onChangeSortParams={onChangeSortParams}
+                field={field as string}
+                align={align || 'left'}
+                style={style}
+              >
+                {t(label)}
+              </SortedTableCell>
+            ) : (
+              <HeadTableCell
+                key={field as string}
+                className={classes?.cell}
+                component="th"
+                align={align || 'left'}
+                style={style}
+              >
+                {t(label)}
+              </HeadTableCell>
+            );
+          }
+        )}
       </MuiTableRow>
     </MuiTableHead>
   );

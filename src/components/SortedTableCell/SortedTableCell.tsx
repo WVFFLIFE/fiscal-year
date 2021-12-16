@@ -8,9 +8,10 @@ import clsx from 'clsx';
 import { useStyles } from './style';
 
 interface SortedTableCellProps extends MuiTableCellProps {
-  onChangeSortParams?(orderBy: string): void;
+  onChangeSortParams?(orderBy: string, type?: 'alphanumeric' | 'date'): void;
   order?: 'asc' | 'desc';
   orderBy: string | null;
+  type?: 'alphanumeric' | 'date';
   field: string;
 }
 
@@ -18,6 +19,7 @@ const SortedTableCell: React.FC<SortedTableCellProps> = ({
   field,
   order,
   orderBy,
+  type,
   onChangeSortParams,
   children,
   ...rest
@@ -28,7 +30,7 @@ const SortedTableCell: React.FC<SortedTableCellProps> = ({
     <HeadTableCell {...rest}>
       <span
         role="button"
-        onClick={onChangeSortParams && (() => onChangeSortParams(field))}
+        onClick={onChangeSortParams && (() => onChangeSortParams(field, type))}
         className={classes.label}
       >
         {children}

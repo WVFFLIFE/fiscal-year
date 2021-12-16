@@ -77,7 +77,7 @@ const useAppendexisData = () => {
             {
               label: '#tab.appendexis.subtitle.accountingbasis',
               editorData: {
-                formatted: appendexisData.accountingBooksFormatted,
+                formatted: appendexisData.accountingBasisFormatted,
                 html: appendexisData.accountingBasisHtml,
                 text: appendexisData.accountingBasis,
               },

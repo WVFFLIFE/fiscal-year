@@ -32,6 +32,7 @@ const Dialog: React.FC<DialogProps> = ({
     <MuiDialog
       classes={{
         paper: classes.paper,
+        paperWidthMd: classes.paperWidthMd,
       }}
       open={open}
       onClose={onClose}

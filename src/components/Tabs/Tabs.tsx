@@ -11,6 +11,7 @@ import Balances from './Balances';
 import Consumption from './Consumption';
 import AnnualReport from './AnnualReport';
 import Appendexis from './Appendexis';
+import Parties from './Parties';
 
 import { useStyles } from './style';
 
@@ -21,14 +22,14 @@ interface TabItemModel {
 }
 
 const tabsList: TabItemModel[] = [
-  { label: 'General', value: 'general' },
+  { label: '#tab.general', value: 'general' },
   {
     label: 'Fiscal Year Balances',
     value: 'fiscalYearBalances',
   },
   { label: '#tab.consumption', value: 'consumptionData' },
   { label: '#tab.annualreport', value: 'annualReport' },
-  { label: 'Toimijat', value: 'toimijat', disabled: true },
+  { label: '#tab.parties', value: 'parties' },
   { label: '#tab.appendexis', value: 'appendexis' },
   { label: 'Liabilities', value: 'liabilities', disabled: true },
   { label: '#tab.documents', value: 'documents' },
@@ -77,6 +78,7 @@ const Tabs: FC = () => {
         {selectedTab === 'annualReport' && (
           <AnnualReport data={fiscalYear.annualReport} />
         )}
+        {selectedTab === 'parties' && <Parties />}
         {selectedTab === 'appendexis' && <Appendexis />}
         {selectedTab === 'documents' && <Documents />}
       </Box>

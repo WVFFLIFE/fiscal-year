@@ -4,6 +4,7 @@ import {
   LockFiscalYearCodes,
   UnlockFiscalYearCodes,
   DocumentTypeCode,
+  PartyRoleType,
 } from 'models';
 import { AnnualReportModel } from 'models/AnnualReportModel';
 import { BalancesModel } from 'models/BalancesModel';
@@ -191,6 +192,22 @@ interface AdditionalSettings {
   AdditionalSettings: AdditionalSettingsItemModel[];
 }
 
+export interface ResPartyModel {
+  EndDate: string | null;
+  Name: string | null;
+  Role: string | null;
+  StartDate: string | null;
+}
+
+export interface ResPartySectionModel {
+  Items: ResPartyModel[];
+  Type: PartyRoleType;
+}
+
+interface ResPartiesModel extends BaseResponseModel {
+  Sections: ResPartySectionModel[];
+}
+
 export type GeneralFiscalYearModel = GeneralModel &
   AnnualReportModel &
   BalancesModel &
@@ -268,6 +285,10 @@ interface SettingsResponse extends BaseResponseModel {
 
 declare class DefaultService {
   public getSettings(): Promise<SettingsResponse>;
+  public getCooperativeParties(
+    coopId: string,
+    fiscalYearId: string
+  ): Promise<ResPartiesModel>;
   public fiscalYearAnnualReportUpdate(req: {
     [key: string]: string | null;
   }): Promise<BaseResponseModel>;

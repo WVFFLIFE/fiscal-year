@@ -37,4 +37,7 @@ export const useStyles = makeStyles(() => ({
     textAlign: 'center',
     color: '#000',
   },
+  paperWidthMd: {
+    maxWidth: 940,
+  },
 }));

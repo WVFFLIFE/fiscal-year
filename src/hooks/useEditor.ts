@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import {
   EditorState,
   convertFromRaw,
@@ -33,20 +33,14 @@ export function convertStateToData(editorState: EditorState | null) {
   return editorData;
 }
 
-function checkEditorDataEquality(
-  prev: EditorState | null,
-  next: EditorState | null
-) {
-  const prevRaw = prev && convertToRaw(prev.getCurrentContent());
-  const nextRaw = next && convertToRaw(next.getCurrentContent());
-
-  return prevRaw === nextRaw;
-}
-
 const useEditor = (editorData: EditorData) => {
-  const [editorState, setEditorState] = useState<EditorState | null>(() =>
-    convertDataToState(editorData)
+  const [editorState, setEditorState] = useState<EditorState | null>(
+    () => null
   );
+
+  useEffect(() => {
+    setEditorState(convertDataToState(editorData));
+  }, [editorData]);
 
   return [editorState, setEditorState] as const;
 };

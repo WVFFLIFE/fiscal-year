@@ -111,6 +111,13 @@ export function readFile(file: File): Promise<string> {
   });
 }
 
+export function toIntFormat(num: number | null | undefined) {
+  if (!num) return null;
+  return String(num)
+    .replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
+    .replace(/\./g, ',');
+}
+
 export function toNumberFormat(num: number | null | undefined) {
   if (!num) return null;
   return num

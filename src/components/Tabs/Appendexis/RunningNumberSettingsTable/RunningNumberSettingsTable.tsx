@@ -1,6 +1,7 @@
 import { memo, FC, useMemo } from 'react';
-import { Column, SortModel } from 'models';
+import { Column } from 'models';
 import { RunningNumberSettingsItem } from 'utils/fiscalYear';
+import useSort from 'hooks/useSort';
 import { renderAs } from './utils';
 
 import Table from '@mui/material/Table';
@@ -21,41 +22,46 @@ const RunningNumberSettingsTable: FC<RunningNumberSettingsTableProps> = ({
 }) => {
   const classes = useStyles();
 
+  const { list, sortParams, onChangeSortParams } = useSort(data, {
+    order: 'asc',
+    orderBy: 'createdOn',
+    type: 'date',
+  });
+
   const columns: Column<RunningNumberSettingsItem>[] = useMemo(
     () => [
       {
-        label: 'documentTypeCode',
-        field: 'documentTypeCode',
+        label: '#tab.appendexis.runningnumbersettings.table.documenttype',
+        field: 'documentTypeLabel',
         sortable: true,
         align: 'left',
-        type: 'documentcode',
         bodyCellClassName: classes.semibold,
       },
       {
-        label: 'startNumber',
+        label: '#tab.appendexis.runningnumbersettings.table.startnumber',
         field: 'startNumber',
-        type: 'numeric',
+        type: 'int',
         sortable: true,
         align: 'right',
         bodyCellClassName: classes.light,
       },
       {
-        label: 'currentNumber',
+        label: '#tab.appendexis.runningnumbersettings.table.currentnumber',
         field: 'currentNumber',
-        type: 'numeric',
+        type: 'int',
         sortable: true,
         align: 'right',
         bodyCellClassName: classes.light,
       },
       {
-        label: 'ownerName',
+        label: '#tab.appendexis.runningnumbersettings.table.owner',
         field: 'ownerName',
         sortable: true,
         align: 'left',
         bodyCellClassName: classes.semibold,
       },
       {
-        label: 'createdOn',
+        label: '#tab.appendexis.runningnumbersettings.table.createdon',
         field: 'createdOn',
         sortable: true,
         align: 'right',
@@ -68,9 +74,13 @@ const RunningNumberSettingsTable: FC<RunningNumberSettingsTableProps> = ({
 
   return (
     <Table className={classes.table}>
-      <TableHead columns={columns} />
+      <TableHead
+        columns={columns}
+        sort={sortParams}
+        onChangeSortParams={onChangeSortParams}
+      />
       <TableBody>
-        {data.map((item) => {
+        {list.map((item) => {
           return (
             <TableRow key={item.id} className={classes.row}>
               {columns.map((column) => {

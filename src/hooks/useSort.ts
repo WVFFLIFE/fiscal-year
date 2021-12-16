@@ -61,7 +61,7 @@ const useSort = <T extends { [key: string]: any }>(
     return _orderBy(list, (item) => prepareData(item, orderBy, type), order);
   }, [list, sortParams]);
 
-  return { list: sortedList, sortParams, onChangeSortParams };
+  return { list: params ? sortedList : list, sortParams, onChangeSortParams };
 };
 
 export default useSort;

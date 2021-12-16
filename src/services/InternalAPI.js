@@ -19,8 +19,54 @@ class FiscalYearInternalAPI {
     return userLcid === 1035 ? 'Finnish' : 'Default';
   };
 
+  //https://dev.azure.com/uds-cloud-devops/Premis/_git/CSharpCode?path=/Modules/Accounting/Property.Accounting.FiscalYear/Property.Accounting.FiscalYear/Data/Requests/LiabilityCreateRequest.cs&version=GBm.mishko/FINN-14051&_a=contents
+  createLiability = async (cooperativeId, newLiability) => {
+    return await this.executeRequest('uds_FiscalYearLiabilityCreate', {
+      CooperativeId: cooperativeId,
+      NewLiability: newLiability,
+    });
+  };
+
+  //https://dev.azure.com/uds-cloud-devops/Premis/_git/CSharpCode?path=/Modules/Accounting/Property.Accounting.FiscalYear/Property.Accounting.FiscalYear/Data/Requests/LiabilityUpdateRequest.cs&version=GBm.mishko/FINN-14051&_a=contents
+  updateLiability = async (updatedLiability) => {
+    return await this.executeRequest('uds_FiscalYearLiabilityUpdate', {
+      UpdatedLiability: updatedLiability,
+    });
+  };
+
+  deleteLiabilities = async (liabilitiesIds) => {
+    return await this.executeRequest('uds_FiscalYearLiabilityDelete', {
+      LiabilitiesIds: liabilitiesIds,
+    });
+  };
+
+  getLiability = async (liabilityId) => {
+    return await this.executeRequest('uds_FiscalYearLiability', {
+      LiabilityId: liabilityId,
+    });
+  };
+
+  getLiabilityParties = async (searchKey) => {
+    return await this.executeRequest('uds_FiscalYearLiabilitiesPartiesList', {
+      SearchKey: searchKey,
+    });
+  };
+
+  getLiabilities = async (fiscalYearId) => {
+    return await this.executeRequest('uds_FiscalYearLiabilitiesList', {
+      FiscalYearId: fiscalYearId,
+    });
+  };
+
   getSettings = async () => {
     return await this.executeRequest('uds_FiscalYearSettings', {});
+  };
+
+  getCooperativeParties = async (cooperativeId, fiscalYearId) => {
+    return await this.executeRequest('uds_FiscalYearCooperativeParties', {
+      CooperativeId: cooperativeId,
+      FiscalYearId: fiscalYearId,
+    });
   };
 
   //FiscalYearCopyResponseCode
