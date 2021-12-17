@@ -5,9 +5,9 @@ export const useStyles = makeStyles(() => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    width: 13,
-    height: 13,
-    border: '1px solid #64798F',
+    width: 12,
+    height: 12,
+    border: '1px solid #979797',
   },
   checkedCheckboxIcon: {
     background: '#218D7A',

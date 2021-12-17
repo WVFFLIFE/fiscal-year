@@ -27,21 +27,15 @@ const Dropzone: React.FC<DropzoneProps> = ({
   const classes = useStyles();
   const { t } = useTranslation();
 
-  const { getRootProps, getInputProps, open, isDragActive, acceptedFiles } =
-    useDropzone({
-      disabled,
-      accept,
-      maxFiles,
-      multiple,
-      noClick: true,
-      noKeyboard: true,
-    });
-
-  useEffect(() => {
-    if (onChange) {
-      onChange(acceptedFiles);
-    }
-  }, [acceptedFiles, onChange]);
+  const { getRootProps, getInputProps, open, isDragActive } = useDropzone({
+    onDropAccepted: onChange,
+    disabled,
+    accept,
+    maxFiles,
+    multiple,
+    noClick: true,
+    noKeyboard: true,
+  });
 
   return (
     <div

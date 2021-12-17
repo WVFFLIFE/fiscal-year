@@ -115,7 +115,7 @@
   "#tab.appendexis.subtitle.loansmaturingoverfiveyears": "Yli 5 vuoden kuluttua erääntyvät lainat",
   "#tab.appendexis.subtitle.accountingbooks": "Kirjanpitokirjat",
   "#tab.appendexis.runningnumbersettings.dialog.title": "Tositenumeroiden asetukset",
-  "#tab.appendexis.runningnumbersettings.btn": "Additional settings",
+  "#tab.appendexis.runningnumbersettings.btn": "Tositenumerot",
   "#tab.appendexis.runningnumbersettings.table.documenttype": "TOSITETYYPPI",
   "#tab.appendexis.runningnumbersettings.table.startnumber": "ALOITUSARVO",
   "#tab.appendexis.runningnumbersettings.table.currentnumber": "VIIMEISIN TOSITENUMERO",

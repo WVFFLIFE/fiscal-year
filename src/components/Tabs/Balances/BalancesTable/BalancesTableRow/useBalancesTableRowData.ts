@@ -33,11 +33,7 @@ const useBalancesTableRowData = <T extends object>(
   const isNumericType = type === 'float' || type === 'int';
 
   const [editModeOn, toggleEditMode] = useToggleSwitch(false);
-  const [inputData, setInputData] = useState(() =>
-    data[column.field] && column.type === 'float'
-      ? toNumberFormat(Number(data[column.field])) || ''
-      : String(_get(data, column.field, ''))
-  );
+  const [inputData, setInputData] = useState('');
 
   const handleChangeInputData = (e: ChangeEvent<HTMLInputElement>) => {
     let val = converToTypeFormat(e.target.value, type);
@@ -48,6 +44,7 @@ const useBalancesTableRowData = <T extends object>(
   const handleSave = async () => {
     const value = isNumericType ? toNumber(inputData) : inputData;
     await onSave(value);
+    toggleEditMode();
   };
 
   useEffect(() => {
@@ -57,7 +54,7 @@ const useBalancesTableRowData = <T extends object>(
       setInputData(
         data[column.field] && column.type === 'float'
           ? toNumberFormat(Number(data[column.field])) || ''
-          : String(_get(data, column.field, ''))
+          : String(_get(data, column.field) || '')
       );
     }
   }, [editModeOn, data, column.type, column.field]);

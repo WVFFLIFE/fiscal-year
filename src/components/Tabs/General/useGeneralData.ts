@@ -133,7 +133,11 @@ const useGeneralData = (data: GeneralModel) => {
             uploading: false,
           }));
         } else {
-          throw new Error(String(updateRes.Message || getRes.Message));
+          throw new Error(
+            updateRes.ResponseCode === 1
+              ? 'The upload file is too large'
+              : String(updateRes.Message || getRes.Message)
+          );
         }
       } catch (err) {
         console.error(err);

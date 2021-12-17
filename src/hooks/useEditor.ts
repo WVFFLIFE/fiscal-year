@@ -15,11 +15,25 @@ export interface EditorData {
 
 export function convertDataToState(editorData: EditorData) {
   const { text, formatted } = editorData;
-  return formatted
-    ? EditorState.createWithContent(convertFromRaw(JSON.parse(formatted)))
-    : text
-    ? EditorState.createWithContent(ContentState.createFromText(text))
-    : EditorState.createEmpty();
+
+  try {
+    if (formatted) {
+      return EditorState.createWithContent(
+        convertFromRaw(JSON.parse(formatted))
+      );
+    }
+
+    if (text) {
+      return EditorState.createWithContent(ContentState.createFromText(text));
+    }
+
+    return EditorState.createEmpty();
+  } catch (err) {
+    if (text) {
+      return EditorState.createWithContent(ContentState.createFromText(text));
+    }
+    return EditorState.createEmpty();
+  }
 }
 
 export function convertStateToData(editorState: EditorState | null) {

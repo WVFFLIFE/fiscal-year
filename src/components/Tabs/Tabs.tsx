@@ -12,6 +12,7 @@ import Consumption from './Consumption';
 import AnnualReport from './AnnualReport';
 import Appendexis from './Appendexis';
 import Parties from './Parties';
+import Liabilities from './Liabilities';
 
 import { useStyles } from './style';
 
@@ -31,7 +32,7 @@ const tabsList: TabItemModel[] = [
   { label: '#tab.annualreport', value: 'annualReport' },
   { label: '#tab.parties', value: 'parties' },
   { label: '#tab.appendexis', value: 'appendexis' },
-  { label: 'Liabilities', value: 'liabilities', disabled: true },
+  { label: 'Liabilities', value: 'liabilities' },
   { label: '#tab.documents', value: 'documents' },
   { label: 'Comments', value: 'comments', disabled: true },
 ];
@@ -80,6 +81,7 @@ const Tabs: FC = () => {
         )}
         {selectedTab === 'parties' && <Parties />}
         {selectedTab === 'appendexis' && <Appendexis />}
+        {selectedTab === 'liabilities' && <Liabilities />}
         {selectedTab === 'documents' && <Documents />}
       </Box>
     </Box>

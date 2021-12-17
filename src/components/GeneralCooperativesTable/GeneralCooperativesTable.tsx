@@ -1,11 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import usePagination, { slice } from 'hooks/usePagination';
-import {
-  SortModel,
-  Column,
-  ExtendedCooperativeModel,
-  ErrorModel,
-} from 'models';
+import { ExtendedCooperativeModel, ErrorModel } from 'models';
+import { DeprecatedColumn, SortModel } from 'models/TableModel';
 import Services from 'services';
 import { orderBy, prepareData } from 'utils/sort';
 import { search } from 'utils/search';
@@ -21,7 +17,7 @@ import DialogError from 'components/DialogError';
 
 import { useStyles } from './style';
 
-const columns: Column[] = [
+const columns: DeprecatedColumn[] = [
   {
     field: 'Name',
     label: '#table.summary.cooperative',
@@ -246,7 +242,7 @@ const GeneralCooperativeTable: React.FC<GeneralCooperativeTableProps> = ({
           return d ? new Date(d).getTime() : null;
         }
 
-        return prepareData(coop, sortParams.orderBy, sortParams.type);
+        return prepareData(coop, sortParams.orderBy as string, sortParams.type);
       },
       sortParams.order
     );

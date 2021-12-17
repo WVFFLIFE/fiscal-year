@@ -17,7 +17,7 @@ export interface BaseResponseModel {
 }
 
 interface ResponseWithCode<T> extends BaseResponseModel {
-  ResponseCode: T;
+  ResponseCode: T | null;
 }
 
 interface AttributeHeaderModel {
@@ -285,6 +285,7 @@ interface SettingsResponse extends BaseResponseModel {
 
 declare class DefaultService {
   public getSettings(): Promise<SettingsResponse>;
+  public getLiabilities(fiscalYearId: string): Promise<BaseResponseModel>;
   public getCooperativeParties(
     coopId: string,
     fiscalYearId: string
@@ -302,7 +303,7 @@ declare class DefaultService {
   public updateConsumptionImage(req: {
     FiscalYearId: string;
     Content: string | null;
-  }): Promise<BaseResponseModel>;
+  }): Promise<ResponseWithCode>;
   public fiscalYearBalancesUpdate(
     req: BalanceUpdateRequest
   ): Promise<BaseResponseModel>;
@@ -334,7 +335,7 @@ declare class DefaultService {
   public updateCooperativeCover(request: {
     CooperativeId: string;
     Content: string | null;
-  }): Promise<BaseResponseModel>;
+  }): Promise<ResponseWithCode>;
   public getFiscalYear(
     fiscalYearId: string
   ): Promise<GeneralFiscalYearModelRes>;

@@ -81,21 +81,26 @@ const useConsumptionData = () => {
 
       const dataURL = await readFile(file);
 
-      const reqBody = {
-        FiscalYearId: fiscalYearId,
-        Content: dataURL,
-      };
-
-      const request = async (req: typeof reqBody) => {
-        const updateRes = await Services.updateConsumptionImage(req);
+      const request = async () => {
+        const reqBody = {
+          FiscalYearId: fiscalYearId,
+          Content: dataURL,
+        };
+        const updateRes = await Services.updateConsumptionImage(reqBody);
 
         if (updateRes.IsSuccess) {
-          return await Services.getConsumptionImage(req.FiscalYearId);
+          return await Services.getConsumptionImage(fiscalYearId);
+        } else {
+          throw new Error(
+            updateRes.ResponseCode === 1
+              ? 'The upload file is too large'
+              : String(updateRes.Message)
+          );
         }
       };
 
       try {
-        const res = await handleProgress(request, 'uploading', reqBody);
+        const res = await handleProgress(request, 'uploading');
 
         if (!res) {
           setState((prevState) => ({
@@ -277,11 +282,14 @@ const useConsumptionData = () => {
     }));
   };
 
+  // according to refresh button logic
+  // we'll update consumption image
+  // when fiscal year is new object
   useEffect(() => {
     if (fiscalYearId) {
       handleFetchConsumptionImage(fiscalYearId);
     }
-  }, [consumptionData]);
+  }, [fiscalYear]);
 
   return {
     ...state,
