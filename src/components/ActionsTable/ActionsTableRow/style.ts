@@ -8,5 +8,6 @@ export const useStyles = makeStyles(() => ({
     fontFamily: 'Lato',
     lineHeight: 1,
     color: '#333',
+    border: 0,
   },
 }));

@@ -5,6 +5,12 @@ import {
   ProductCode,
   UsageCode,
 } from 'enums/liabilities';
+import {
+  LockFiscalYearResponseCode,
+  UnlockFiscalYearResponseCode,
+  ValidateFiscalYearResponseCode,
+  CopyFiscalYearResponseCode,
+} from 'enums/responses';
 
 export namespace Services {
   export namespace Model {
@@ -18,36 +24,26 @@ export namespace Services {
 
     export namespace FiscalYear {
       export namespace Lock {
-        export enum ResponseCode {
-          OK = 0,
-          InsufficientPermission = 1,
-        }
-        export interface Response extends ResponseWithCode<ResponseCode> {}
+        export interface Response
+          extends ResponseWithCode<LockFiscalYearResponseCode> {}
       }
       export namespace Unlock {
-        export enum ResponseCode {
-          OK = 0,
-          InsufficientPermission = 1,
-        }
-        export interface Response extends ResponseWithCode<ResponseCode> {}
+        export interface Response
+          extends ResponseWithCode<UnlockFiscalYearResponseCode> {}
       }
       export namespace Copy {
-        export enum ResponseCode {}
+        export interface Response
+          extends ResponseWithCode<CopyFiscalYearResponseCode> {}
       }
       export namespace Validate {
-        export enum ResponseCode {
-          OK = 1,
-          BadDates = 2,
-          NotFullYear = 3,
-          YearIntersects = 4,
-        }
         export interface Request {
           CooperativeId: string;
           FiscalYearId: string;
           StartDate: string;
           EndDate: string;
         }
-        export interface Response extends ResponseWithCode<ResponseCode> {}
+        export interface Response
+          extends ResponseWithCode<ValidateFiscalYearResponseCode> {}
       }
       export namespace Save {
         export interface Request {
@@ -190,7 +186,7 @@ export namespace Services {
 
     copy = async (
       fiscalYearId: string
-    ): Promise<Model.FiscalYear.Copy.ResponseCode> => {
+    ): Promise<Model.FiscalYear.Copy.Response> => {
       return await this.executeRequest('uds_FiscalYearCopy', {
         FiscalYearId: fiscalYearId,
       });

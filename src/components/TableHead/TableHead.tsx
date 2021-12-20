@@ -7,9 +7,23 @@ import MuiTableHead from '@mui/material/TableHead';
 import MuiTableRow from '@mui/material/TableRow';
 import SortedTableCell from 'components/SortedTableCell';
 import { HeadTableCell } from 'components/Styled';
+import Checkbox from 'components/Checkbox';
 
 import clsx from 'clsx';
 import { CSSProperties } from 'react';
+
+export type CheckboxProps = {
+  HeadCellProps?: {
+    className?: string;
+    style?: CSSProperties;
+  };
+  BodyCellProps?: {
+    className?: string;
+    style?: CSSProperties;
+  };
+  selectedAll: boolean;
+  onToggleSelectAll(): void;
+};
 
 export interface TableHeadClasses {
   root?: string;
@@ -21,13 +35,16 @@ interface NestedColumn<T extends object = { [key: string]: any }>
   style?: CSSProperties;
 }
 
-interface TableHeadProps<T extends object = { [key: string]: any }> {
+type TableHeadProps<T extends object = { [key: string]: any }> = {
   className?: string;
   classes?: TableHeadClasses;
   columns: NestedColumn<T>[];
   sort?: SortModel<T>;
+  selectedAll?: boolean;
   onChangeSortParams?(orderBy: string, type?: 'alphanumeric' | 'date'): void;
-}
+  withCheckbox?: boolean;
+  CheckboxProps?: CheckboxProps;
+};
 
 function switchColumnTypeToSort(colType: Column['type']) {
   switch (colType) {
@@ -48,12 +65,26 @@ const TableHead = <T extends object = { [key: string]: any }>({
   columns,
   sort,
   onChangeSortParams,
+  withCheckbox = false,
+  CheckboxProps,
 }: TableHeadProps<T>) => {
   const { t } = useTranslation();
 
   return (
     <MuiTableHead>
       <MuiTableRow className={clsx(classes?.root, className)}>
+        {withCheckbox && (
+          <HeadTableCell
+            className={CheckboxProps?.HeadCellProps?.className}
+            style={CheckboxProps?.HeadCellProps?.style}
+          >
+            <Checkbox
+              checked={CheckboxProps?.selectedAll}
+              onChange={CheckboxProps?.onToggleSelectAll}
+            />
+          </HeadTableCell>
+        )}
+
         {columns.map(
           ({
             sortable = true,

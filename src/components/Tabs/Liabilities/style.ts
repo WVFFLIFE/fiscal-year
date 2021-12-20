@@ -26,6 +26,7 @@ export const useStyles = makeStyles((theme) => ({
   },
   row: {
     background: theme.color.greyLight2,
+    borderBottom: `1px solid ${theme.color.greyLight1}`,
     '& $fixed': {
       background: theme.color.greyLight2,
     },

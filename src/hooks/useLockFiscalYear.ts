@@ -1,14 +1,16 @@
 import { useState, useContext, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GeneralCtx } from 'contexts/GeneralContext';
-import {
-  UnlockFiscalYearCodes,
-  LockFiscalYearCodes,
-  CopyFiscalYearCodes,
-} from 'models';
 import { getFiscalYearId } from 'utils/fiscalYear';
 
-import Services from 'services';
+import { Services } from 'services/s';
+import {
+  LockFiscalYearResponseCode,
+  UnlockFiscalYearResponseCode,
+  CopyFiscalYearResponseCode,
+} from 'enums/responses';
+
+const FiscalYearService = new Services.FiscalYear();
 
 type EntityType = 'lock' | 'unlock' | 'copy' | null;
 
@@ -85,7 +87,7 @@ const useLockFiscalYear = () => {
           loading: true,
         }));
 
-        const res = await Services.lockFiscalYear(fiscalYearId);
+        const res = await FiscalYearService.lock(fiscalYearId);
 
         if (res.IsSuccess) {
           setLockFiscalYearState((prevState) => ({
@@ -102,7 +104,8 @@ const useLockFiscalYear = () => {
             error: {
               type: 'lock',
               message:
-                res.ResponseCode === LockFiscalYearCodes.InsufficientPermission
+                res.ResponseCode ===
+                LockFiscalYearResponseCode.InsufficientPermission
                   ? t('#error.fiscalyear.lock.insufficientpermission')
                   : res.Message,
             },
@@ -128,7 +131,7 @@ const useLockFiscalYear = () => {
           loading: true,
         }));
 
-        const res = await Services.unlockFiscalYear(fiscalYearId);
+        const res = await FiscalYearService.unlock(fiscalYearId);
 
         if (res.IsSuccess) {
           setLockFiscalYearState((prevState) => ({
@@ -146,7 +149,7 @@ const useLockFiscalYear = () => {
               type: 'unlock',
               message:
                 res.ResponseCode ===
-                UnlockFiscalYearCodes.InsufficientPermission
+                UnlockFiscalYearResponseCode.InsufficientPermission
                   ? t('#error.fiscalyear.lock.insufficientpermission')
                   : res.Message,
             },
@@ -171,7 +174,7 @@ const useLockFiscalYear = () => {
           loading: true,
         }));
 
-        const res = await Services.copyFiscalYear(fiscalYearId);
+        const res = await FiscalYearService.copy(fiscalYearId);
 
         if (res.IsSuccess) {
           setLockFiscalYearState((prevState) => ({
@@ -189,10 +192,10 @@ const useLockFiscalYear = () => {
               type: 'unlock',
               message:
                 res.ResponseCode ===
-                CopyFiscalYearCodes.AmbiguityFiscalYearNotFound
+                CopyFiscalYearResponseCode.AmbiguityFiscalYearNotFound
                   ? t('#error.fiscalyear.copy.ambiguityfiscalyearnotfound')
                   : res.ResponseCode ===
-                    CopyFiscalYearCodes.PreviousFiscalYearNotFound
+                    CopyFiscalYearResponseCode.PreviousFiscalYearNotFound
                   ? t('#error.fiscalyear.copy.previousfiscalyearnotfound')
                   : res.Message,
             },

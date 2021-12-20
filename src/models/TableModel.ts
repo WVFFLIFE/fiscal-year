@@ -1,4 +1,4 @@
-import { CSSProperties } from 'react';
+import { CSSProperties, MouseEvent } from 'react';
 
 export type DefaultTableData = { [key: string]: any };
 export type SortParamsType = 'alphanumeric' | 'date';
@@ -7,6 +7,7 @@ export type Order = 'asc' | 'desc';
 export interface InnerTableComponentProps {
   className?: string;
   style?: CSSProperties;
+  onClick?: (event: MouseEvent<HTMLTableRowElement>) => void;
 }
 
 export interface SortModel<T extends object = DefaultTableData> {
