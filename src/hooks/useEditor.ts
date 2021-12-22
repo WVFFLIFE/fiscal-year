@@ -8,12 +8,13 @@ import {
 import draftToHtml from 'draftjs-to-html';
 
 export interface EditorData {
-  text: string | null;
-  formatted: string | null;
-  html: string | null;
+  text?: string | null;
+  formatted?: string | null;
+  html?: string | null;
 }
 
-export function convertDataToState(editorData: EditorData) {
+export function convertDataToState(editorData?: EditorData) {
+  if (!editorData) return EditorState.createEmpty();
   const { text, formatted } = editorData;
 
   try {
@@ -36,6 +37,8 @@ export function convertDataToState(editorData: EditorData) {
   }
 }
 
+export function convertStateToData(editorState: null): null;
+export function convertStateToData(editrState: EditorState): EditorData;
 export function convertStateToData(editorState: EditorState | null) {
   if (!editorState) return null;
   const formatted = convertToRaw(editorState.getCurrentContent());
@@ -47,13 +50,14 @@ export function convertStateToData(editorState: EditorState | null) {
   return editorData;
 }
 
-const useEditor = (editorData: EditorData) => {
-  const [editorState, setEditorState] = useState<EditorState | null>(
-    () => null
+const useEditor = (editorData?: EditorData) => {
+  const [editorState, setEditorState] = useState<EditorState>(
+    EditorState.createEmpty()
   );
-
   useEffect(() => {
-    setEditorState(convertDataToState(editorData));
+    if (editorData) {
+      setEditorState(convertDataToState(editorData));
+    }
   }, [editorData]);
 
   return [editorState, setEditorState] as const;

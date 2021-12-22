@@ -13,6 +13,7 @@ import AnnualReport from './AnnualReport';
 import Appendexis from './Appendexis';
 import Parties from './Parties';
 import Liabilities from './Liabilities';
+import Comments from './Comments';
 
 import { useStyles } from './style';
 
@@ -26,15 +27,15 @@ const tabsList: TabItemModel[] = [
   { label: '#tab.general', value: 'general' },
   {
     label: 'Fiscal Year Balances',
-    value: 'fiscalYearBalances',
+    value: 'balances',
   },
-  { label: '#tab.consumption', value: 'consumptionData' },
+  { label: '#tab.consumption', value: 'consumption' },
   { label: '#tab.annualreport', value: 'annualReport' },
   { label: '#tab.parties', value: 'parties' },
   { label: '#tab.appendexis', value: 'appendexis' },
   { label: 'Liabilities', value: 'liabilities' },
   { label: '#tab.documents', value: 'documents' },
-  { label: 'Comments', value: 'comments', disabled: true },
+  { label: 'Comments', value: 'comments' },
 ];
 
 const Tabs: FC = () => {
@@ -74,14 +75,15 @@ const Tabs: FC = () => {
       </MuiTabs>
       <Box className={classes.box}>
         {selectedTab === 'general' && <General data={fiscalYear.general} />}
-        {selectedTab === 'fiscalYearBalances' && <Balances />}
-        {selectedTab === 'consumptionData' && <Consumption />}
+        {selectedTab === 'balances' && <Balances />}
+        {selectedTab === 'consumption' && <Consumption />}
         {selectedTab === 'annualReport' && (
           <AnnualReport data={fiscalYear.annualReport} />
         )}
         {selectedTab === 'parties' && <Parties />}
         {selectedTab === 'appendexis' && <Appendexis />}
         {selectedTab === 'liabilities' && <Liabilities />}
+        {selectedTab === 'comments' && <Comments />}
         {selectedTab === 'documents' && <Documents />}
       </Box>
     </Box>

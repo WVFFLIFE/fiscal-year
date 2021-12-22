@@ -5,6 +5,7 @@ import {
   enhancedCooperatives,
   fiscalYearsList,
   fiscalYear,
+  comments,
 } from './mock';
 
 const DELAY = 500;
@@ -56,6 +57,10 @@ class MockService {
 
   documentCreate = async (parentFolderId, file, values, overwrite) => {
     return this.execute({ IsSuccess: true, Message: '' });
+  };
+
+  get = async (fiscalYearId) => {
+    return this.execute(comments);
   };
 }
 

@@ -215,3 +215,23 @@ export const SubTitle = styled('h3')(({ theme }) => ({
   fontFamily: 'Proxima Nova',
   color: '#000',
 }));
+
+export const Scroll = styled('div')(({ theme }) => ({
+  position: 'relative',
+  overflow: 'auto',
+  '&::-webkit-scrollbar': {
+    height: 12,
+  },
+  '&::-webkit-scrollbar-track': {
+    background: theme.color.greyLight2,
+  },
+  '&::-webkit-scrollbar-thumb': {
+    background: 'rgba(100, 121, 143, 0.5)',
+    border: `3.5px solid ${theme.color.greyLight2}`,
+    borderRadius: 2.5,
+    transition: '.15s linear',
+    '&:hover': {
+      background: 'rgba(100, 121, 143, 0.35)',
+    },
+  },
+}));

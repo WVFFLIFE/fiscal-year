@@ -1,6 +1,9 @@
 import { makeStyles } from '@mui/styles';
 
 export const useStyles = makeStyles((theme) => ({
+  root: {
+    width: '100%',
+  },
   editorWrapper: {
     marginTop: 10,
     padding: '12px 19px',
@@ -19,5 +22,9 @@ export const useStyles = makeStyles((theme) => ({
   focused: {
     outline: 0,
     borderColor: theme.color.blue2,
+  },
+  disabled: {
+    outline: 0,
+    borderColor: '#E6EAEF',
   },
 }));

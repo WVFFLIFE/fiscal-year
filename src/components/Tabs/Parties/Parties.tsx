@@ -4,10 +4,7 @@ import { PartyRoleType } from 'models';
 import Box from '@mui/material/Box';
 import DialogError from 'components/DialogError';
 import PartySection from './PartySection';
-import { LoadingContainer } from 'components/Styled';
-import CircularProgress from '@mui/material/CircularProgress';
-
-import { useStyles } from './style';
+import Loader from 'components/Loader';
 
 const titlesDict = {
   [PartyRoleType.Auditing]: '#tab.parties.party.auditing',
@@ -19,16 +16,9 @@ const titlesDict = {
 };
 
 const Parties = () => {
-  const classes = useStyles();
   const { loading, error, sections, handleInitError } = usePartiesData();
 
-  if (loading) {
-    return (
-      <LoadingContainer>
-        <CircularProgress className={classes.loader} size={40} />
-      </LoadingContainer>
-    );
-  }
+  if (loading) return <Loader />;
 
   return (
     <Box>

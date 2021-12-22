@@ -6,6 +6,7 @@ export const useStyles = makeStyles((theme) => ({
     padding: '10px 16px',
     height: 32,
     borderRadius: 20,
+    fontFamily: 'Proxima Nova',
     textTransform: 'none',
     '&:hover': {
       background: '#fff',

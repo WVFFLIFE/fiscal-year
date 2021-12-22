@@ -10,6 +10,7 @@ import { AnnualReportModel } from 'models/AnnualReportModel';
 import { BalancesModel } from 'models/BalancesModel';
 import { ConsumptionModel } from 'models/ConsumptionModel';
 import { GeneralModel } from 'models/GeneralModel';
+import { Services as S } from './s';
 
 export interface BaseResponseModel {
   IsSuccess: boolean;
@@ -284,6 +285,7 @@ interface SettingsResponse extends BaseResponseModel {
 }
 
 declare class DefaultService {
+  public get(fiscalYearId: string): Promise<S.Model.Comments.Get.Response>;
   public getSettings(): Promise<SettingsResponse>;
   public getLiabilities(fiscalYearId: string): Promise<BaseResponseModel>;
   public getCooperativeParties(

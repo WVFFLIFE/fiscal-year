@@ -42,7 +42,11 @@ const useArticleEditorData = (
         throw new Error(`EditorState is empty`);
       }
 
-      const res = await onSave(req.text, req.formatted, req.html);
+      const res = await onSave(
+        req.text || null,
+        req.formatted || null,
+        req.html || null
+      );
 
       if (!res) {
         throw new Error('Application error. onSave return undefined');

@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 
 import { Editor, EditorState, RichUtils, Modifier } from 'draft-js';
+import 'draft-js/dist/Draft.css';
 
 import ControlsPanel, { Control } from './ControlsPanel';
 import {
@@ -31,6 +32,9 @@ const controls: Control[] = [
 export interface TextEditorClasses {
   /**  Styles applied to the control panel */
   controlPanel?: string;
+  /** Style applied to root element  */
+  root?: string;
+  disabled?: string;
 }
 
 interface TextEditorProps {
@@ -38,6 +42,7 @@ interface TextEditorProps {
   disabled?: boolean;
   editorState: EditorState;
   maxCharactersLength?: number;
+  placeholder?: string;
   onChangeEditorState(editorState: EditorState): void;
 }
 
@@ -48,9 +53,10 @@ function moveFocusToEnd(editorState: EditorState) {
 
 const TextEditor: React.FC<TextEditorProps> = ({
   classes: rootClasses,
-  disabled,
+  disabled = false,
   editorState,
   maxCharactersLength = 2000,
+  placeholder,
   onChangeEditorState,
 }) => {
   const classes = useStyles();
@@ -200,7 +206,7 @@ const TextEditor: React.FC<TextEditorProps> = ({
   }, [disabled]);
 
   return (
-    <div>
+    <div className={classes.root}>
       {!disabled && (
         <ControlsPanel
           className={rootClasses?.controlPanel}
@@ -211,8 +217,9 @@ const TextEditor: React.FC<TextEditorProps> = ({
         />
       )}
       <div
-        className={clsx(classes.editorWrapper, {
+        className={clsx(classes.editorWrapper, rootClasses?.root, {
           [classes.focused]: focused,
+          [clsx(classes.disabled, rootClasses?.disabled)]: disabled,
         })}
         onClick={disabled ? undefined : focusEditor}
       >
@@ -223,6 +230,7 @@ const TextEditor: React.FC<TextEditorProps> = ({
           readOnly={disabled}
           onFocus={focusEditor}
           onBlur={onBlur}
+          placeholder={placeholder}
           handleBeforeInput={_handleBeforeInput}
           handlePastedText={_handlePastedText}
         />

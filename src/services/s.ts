@@ -95,6 +95,50 @@ export namespace Services {
         }
       }
     }
+
+    export namespace Comments {
+      export interface Comment {
+        CanDelete: boolean | null;
+        CanEdit: boolean | null;
+        CreatedOn: string | null;
+        Description: string | null;
+        DescriptionFormatted: string | null;
+        Id: string;
+        IsRead: boolean;
+        ModifiedOn: string | null;
+        OwnerId: string | null;
+        OwnerImageUrl: string | null;
+        OwnerName: string | null;
+        ParentCommentId: string | null;
+        RelatedComments: Comment[];
+        State: number;
+      }
+
+      export namespace Get {
+        export interface Response extends Model.BaseResponse {
+          Comments: Comment[];
+        }
+      }
+
+      export namespace Create {
+        export interface Request {
+          ParentCommentId: string | null;
+          Description: string;
+          DescriptionFormatted: string;
+        }
+        export interface Response extends Model.BaseResponse {
+          Comment: Comment;
+        }
+      }
+
+      export namespace Edit {
+        export interface Request {
+          Id: string;
+          Description: string;
+          DescriptionFormatted: string;
+        }
+      }
+    }
   }
 
   class CRMConnector {
@@ -241,9 +285,59 @@ export namespace Services {
       });
     };
   }
+  export class Comments extends CRMConnector {
+    get = async (
+      fiscalYearId: string
+    ): Promise<Model.Comments.Get.Response> => {
+      return await this.executeRequest('uds_CommentGetList', {
+        EntityId: fiscalYearId,
+        EntityName: 'uds_fiscalyear',
+      });
+    };
+
+    create = async (
+      fiscalYearId: string,
+      request: Model.Comments.Create.Request
+    ): Promise<Model.Comments.Create.Response> => {
+      return await this.executeRequest('uds_CommentCreate', {
+        EntityId: fiscalYearId,
+        EntityName: 'uds_fiscalyear',
+        Comment: request,
+      });
+    };
+
+    update = async (
+      fiscalYearId: string,
+      comment: Model.Comments.Edit.Request
+    ): Promise<Model.BaseResponse> => {
+      return await this.executeRequest('uds_CommentEdit', {
+        EntityId: fiscalYearId,
+        EntityName: 'uds_fiscalyear',
+        Comment: comment,
+      });
+    };
+
+    delete = async (
+      fiscalYearId: string,
+      commentId: string
+    ): Promise<Model.BaseResponse> => {
+      return await this.executeRequest('uds_CommentDelete', {
+        EntityId: fiscalYearId,
+        EntityName: 'uds_fiscalyear',
+        CommentId: commentId,
+      });
+    };
+
+    markAsRead = async (commentId: string): Promise<Model.BaseResponse> => {
+      return await this.executeRequest('uds_CommentMarkRead', {
+        CommentId: commentId,
+      });
+    };
+  }
 }
 
 /* eslint-disable*/
 import Liability = Services.Model.Liabilities.Liability;
+import Comment = Services.Model.Comments.Comment;
 
-export type { Liability };
+export type { Liability, Comment };
