@@ -89,9 +89,23 @@ export namespace Services {
         CurrencyCode: string | null;
       }
 
+      export interface LiabilityDetails extends Liability {
+        CreatedByName: string | null;
+        CreatedOn: string | null;
+        Description: string | null;
+        ModifiedByName: string | null;
+        ModifiedOn: string | null;
+        OrganizationName: string | null;
+      }
+
       export namespace List {
         export interface Response extends BaseResponse {
           Liabilities: Liability[];
+        }
+      }
+      export namespace Item {
+        export interface Response extends BaseResponse {
+          Liability: LiabilityDetails | null;
         }
       }
     }
@@ -272,11 +286,37 @@ export namespace Services {
     };
   }
   export class Liabilities extends CRMConnector {
+    protected static _instance: Liabilities;
+
+    constructor() {
+      super();
+
+      if (Liabilities._instance) {
+        throw new Error(
+          'Instantiation failed: ' +
+            'use Liabilities.getInstance() instead of new.'
+        );
+      }
+
+      Liabilities._instance = this;
+    }
+
+    public static getInstance(): Liabilities {
+      return Liabilities._instance;
+    }
+
     getList = async (
       fiscalYearId: string
     ): Promise<Model.Liabilities.List.Response> => {
       return await this.executeRequest('uds_FiscalYearLiabilitiesList', {
         FiscalYearId: fiscalYearId,
+      });
+    };
+    getLiability = async (
+      liabilityId: string
+    ): Promise<Model.Liabilities.Item.Response> => {
+      return await this.executeRequest('uds_FiscalYearLiability', {
+        LiabilityId: liabilityId,
       });
     };
     getParties = async (searchKey: string) => {
@@ -338,6 +378,7 @@ export namespace Services {
 
 /* eslint-disable*/
 import Liability = Services.Model.Liabilities.Liability;
+import LiabilityDetails = Services.Model.Liabilities.LiabilityDetails;
 import Comment = Services.Model.Comments.Comment;
 
-export type { Liability, Comment };
+export type { Liability, Comment, LiabilityDetails };

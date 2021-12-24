@@ -120,6 +120,7 @@ export const HeadTableCell = styled(DefaultTableCell)(() => ({
   fontSize: 10,
   fontWeight: 700,
   color: 'rgba(51, 51, 51, 1)',
+  border: 0,
   textTransform: 'uppercase',
 }));
 

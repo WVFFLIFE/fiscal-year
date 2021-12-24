@@ -1,16 +1,17 @@
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ActionColumn,
   DefaultTableData,
   InnerTableComponentProps,
 } from 'models/TableModel';
-import { CheckboxPropsModel } from '../ActionsTable';
+import { CheckboxProps as CheckboxPropsModel } from '../ActionsTable';
 
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import Checkbox from 'components/Checkbox';
 
-import { renderAs } from '../utils';
+import renderAs from 'utils/renderAs';
 
 import clsx from 'clsx';
 import { useStyles } from './style';
@@ -19,34 +20,34 @@ interface ActionsTableRowProps<T extends object = DefaultTableData> {
   data: T;
   columns: ActionColumn<T>[];
   RowProps?: InnerTableComponentProps;
-  withCheckbox?: boolean;
-  checked?: boolean;
-  onToggleChecked?(): void;
-  CheckboxCellProps?: InnerTableComponentProps;
+  CheckboxProps?: CheckboxPropsModel<T>['BodyProps'];
 }
 
 const ActionsTableRow = <T extends object = DefaultTableData>(
   props: ActionsTableRowProps<T>
 ) => {
   const classes = useStyles();
-  const {
-    data,
-    columns,
-    withCheckbox,
-    checked,
-    onToggleChecked,
-    RowProps,
-    CheckboxCellProps,
-  } = props;
+  const { t } = useTranslation();
+
+  const { data, columns, RowProps, CheckboxProps } = props;
+
+  const checkboxProps = useMemo(
+    () => (CheckboxProps ? CheckboxProps.Row(data) : undefined),
+    [data, CheckboxProps]
+  );
 
   return (
-    <TableRow {...RowProps}>
-      {withCheckbox && (
+    <TableRow
+      className={clsx(RowProps?.className, checkboxProps?.className)}
+      style={{ ...RowProps?.style, ...checkboxProps?.style }}
+      onClick={checkboxProps?.onClick}
+    >
+      {CheckboxProps && (
         <TableCell
-          className={clsx(classes.cell, CheckboxCellProps?.className)}
-          style={CheckboxCellProps?.style}
+          className={clsx(classes.cell, CheckboxProps?.Cell?.className)}
+          style={CheckboxProps?.Cell?.style}
         >
-          <Checkbox checked={checked} onChange={onToggleChecked} />
+          <Checkbox checked={checkboxProps?.checked} />
         </TableCell>
       )}
       {columns.map((column) => {
@@ -59,8 +60,10 @@ const ActionsTableRow = <T extends object = DefaultTableData>(
             className={clsx(classes.cell, BodyCellProps?.className)}
             style={BodyCellProps?.style}
           >
-            {column.type === 'action'
-              ? column.actions(data)
+            {column.render
+              ? column.render(data)
+              : column.type === 'translate'
+              ? cellData && typeof cellData === 'string' && t(cellData)
               : renderAs(cellData, column.type)}
           </TableCell>
         );

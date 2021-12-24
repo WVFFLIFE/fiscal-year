@@ -3,8 +3,9 @@ import { makeStyles } from '@mui/styles';
 export const useStyles = makeStyles((theme) => ({
   root: {
     minWidth: 'auto',
-    padding: '10px 16px',
-    height: 32,
+    padding: '8px 16px',
+    fontSize: 14,
+    lineHeight: '16px',
     borderRadius: 20,
     fontFamily: 'Proxima Nova',
     textTransform: 'none',
@@ -14,7 +15,8 @@ export const useStyles = makeStyles((theme) => ({
     },
   },
   small: {
-    height: 24,
+    paddingTop: 4,
+    paddingBottom: 4,
   },
   darkBlue: {
     background: theme.color.darkBlue,
@@ -39,6 +41,7 @@ export const useStyles = makeStyles((theme) => ({
     },
   },
   startIcon: {
+    marginLeft: 0,
     '& .MuiSvgIcon-root': {
       fontSize: 12,
     },

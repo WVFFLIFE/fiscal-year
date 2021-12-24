@@ -132,5 +132,19 @@
   "#tab.parties.table.enddate": "PÄÄTTYMISPÄIVÄ",
   "#confirmation.lock.description": "Oletko varma, että haluat lukita tilikauden tiedot? Kaikki tilikauden tiedot lukitaan.",
   "#confirmation.unlock.description": "Oletko varma, että haluat avata tilikauden tiedot?",
-  "#confirmation.copy.description": "Oletko varma, että haluat kopioida edellisen tilikauden tiedot toimintakertomukselle ja liitetietoihin? Kaikki jo syötetyt tiedot korvataan."
+  "#confirmation.copy.description": "Oletko varma, että haluat kopioida edellisen tilikauden tiedot toimintakertomukselle ja liitetietoihin? Kaikki jo syötetyt tiedot korvataan.",
+  "#liability.liabilitytype.encumberance": "Rasite",
+  "#liability.liabilitytype.guarantee": "Vakuus",
+  "#liability.type.financialobligationkelaotherplayer": "Rahavakuus - Kela/Ulkopuolinen maksaja",
+  "#liability.type.financialobligation": "Rahavakuus",
+  "#liability.type.bankdeposit": "Pankkitalletus",
+  "#liability.type.financialsecurity": "Maksusitoumus",
+  "#liability.product.pledge": "Panttikirja",
+  "#liability.product.pledgeelectronic": "Panttikirja - sähköinen",
+  "#liability.product.encumberance": "Rasite",
+  "#liability.product.guarantee": "Vakuus",
+  "#liability.product.leasehold": "Vuokraoikeus",
+  "#liability.product.securitydeposit": "Vuokravakuus",
+  "#liability.usage.assecurity": "Vakuutena",
+  "#liability.usage.notinuse": "Vapaa"
 }

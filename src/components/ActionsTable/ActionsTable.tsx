@@ -1,3 +1,4 @@
+import { CSSProperties, MouseEvent, ChangeEvent } from 'react';
 import {
   ActionColumn,
   DefaultTableData,
@@ -7,25 +8,42 @@ import {
 import useSort from 'hooks/useSort';
 
 import Table from '@mui/material/Table';
-import TableHead, { CheckboxProps } from 'components/TableHead';
+import TableHead from 'components/TableHead';
 import TableBody from '@mui/material/TableBody';
 import ActionsTableRow from './ActionsTableRow';
 
-type WithCheckboxType =
-  | {
-      withCheckbox?: false;
-      CheckboxProps?: undefined;
-    }
-  | { withCheckbox: true; CheckboxProps: CheckboxProps };
+export type CheckboxProps<T extends object = DefaultTableData> = {
+  HeadProps: {
+    selectedAll: boolean;
+    onToggleSelectAll(event: ChangeEvent<HTMLInputElement>): void;
+    Cell?: {
+      className?: string;
+      style?: CSSProperties;
+    };
+  };
+  BodyProps: {
+    Cell?: {
+      className?: string;
+      style?: CSSProperties;
+    };
+    Row: (data: T) => {
+      className?: string;
+      style?: CSSProperties;
+      checked: boolean;
+      onClick(e: MouseEvent<HTMLTableRowElement>): void;
+    };
+  };
+};
 
 type ActionsTableProps<T extends object = DefaultTableData> = {
   className?: string;
   columns: ActionColumn<T>[];
   data: T[];
   sortParams?: SortModel<T>;
-  HeadRowProps?: InnerTableComponentProps;
+  HeadRowProps?: Omit<InnerTableComponentProps, 'onClick'>;
   BodyRowProps?: InnerTableComponentProps;
-} & WithCheckboxType;
+  CheckboxProps?: CheckboxProps<T>;
+};
 
 const ActionsTable = <T extends object = DefaultTableData>(
   props: ActionsTableProps<T>
@@ -36,7 +54,6 @@ const ActionsTable = <T extends object = DefaultTableData>(
     data,
     sortParams: defaultSortParams,
     BodyRowProps,
-    withCheckbox = false,
     CheckboxProps,
   } = props;
   const { list, sortParams, onChangeSortParams } = useSort(
@@ -47,11 +64,10 @@ const ActionsTable = <T extends object = DefaultTableData>(
   return (
     <Table className={className}>
       <TableHead
-        withCheckbox={withCheckbox}
         columns={columns}
         sort={sortParams}
         onChangeSortParams={onChangeSortParams}
-        CheckboxProps={CheckboxProps}
+        CheckboxHeadProps={CheckboxProps?.HeadProps}
       />
       <TableBody>
         {list.map((item) => (
@@ -60,15 +76,12 @@ const ActionsTable = <T extends object = DefaultTableData>(
             data={item}
             columns={columns}
             RowProps={BodyRowProps}
-            CheckboxCellProps={CheckboxProps?.BodyCellProps}
-            withCheckbox={withCheckbox}
+            CheckboxProps={CheckboxProps?.BodyProps}
           />
         ))}
       </TableBody>
     </Table>
   );
 };
-
-export type CheckboxPropsModel = CheckboxProps;
 
 export default ActionsTable;

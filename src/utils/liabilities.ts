@@ -6,15 +6,16 @@ import {
   TypeCode,
 } from 'enums/liabilities';
 import {
-  liabilityProductCodeDict,
-  liabilityTypeCodeDict,
-  liabilityUsageCodeDict,
+  getLiabilityProductLabel,
+  getLiabilityTypeLabel,
+  getLiabilityUsageLabel,
 } from 'configs/dictionaries';
 
 export interface EnhancedLiability {
   id: string;
   name: string | null;
   partyId: string | null;
+  partyName: string | null;
   startDate: string | null;
   endDate: string | null;
   documentNumber: string | null;
@@ -41,14 +42,15 @@ export function liabilitiesAdapter(
     liabilityGeneralTypeCode: liability.GeneralType,
     liabilityProductCode: liability.Product,
     liabilityProductLabel:
-      liability.Product && liabilityProductCodeDict[liability.Product],
+      liability.Product && getLiabilityProductLabel(liability.Product),
     liabilityTypeCode: liability.Type,
-    liabilityTypeLabel: liability.Type && liabilityTypeCodeDict[liability.Type],
+    liabilityTypeLabel: liability.Type && getLiabilityTypeLabel(liability.Type),
     liabilityUsageCode: liability.Usage,
     liabilityUsageLabel:
-      liability.Usage && liabilityUsageCodeDict[liability.Usage],
+      liability.Usage && getLiabilityUsageLabel(liability.Usage),
     name: liability.Name,
     partyId: liability.PartyId,
+    partyName: liability.PartyName,
     priceItemRate: liability.PriceItemRate,
     quantity: liability.Quantity,
     startDate: liability.StartDate,

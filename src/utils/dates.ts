@@ -1,8 +1,7 @@
 import format from 'date-fns/format';
-export { default as isValid } from 'date-fns/isValid';
+import isValid from 'date-fns/isValid';
 export { default as isBefore } from 'date-fns/isBefore';
 export { default as isSameDay } from 'date-fns/isSameDay';
-export { format };
 
 export const DEFAULT_FORMAT_PATTERN = 'd.M.yyyy';
 export const REQUEST_DATE_FORMAT_PATTERN = "yyyy-MM-dd'T'00:00:00";
@@ -22,7 +21,7 @@ export function serverFormat(date: Date) {
 
 export function defaultFormat(date: null): null;
 export function defaultFormat(date: Date): string;
-export function defaultFormat(date: Date | null) {
+export function defaultFormat(date: null | Date) {
   if (!date) return null;
 
   return format(date, DEFAULT_FORMAT_PATTERN);
@@ -33,3 +32,5 @@ export function toDate(input: string | null) {
 
   return new Date(input);
 }
+
+export { format, isValid };

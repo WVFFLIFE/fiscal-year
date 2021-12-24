@@ -144,5 +144,19 @@
   "#tab.liabilities.table.action": "Action",
   "#confirmation.lock.description": "Are you sure you want to lock fiscal year data? All current data will be unavailable to edit",
   "#confirmation.unlock.description": "Are you sure you want to unlock fiscal year data?",
-  "#confirmation.copy.description": "Are you sure you want to copy previous fiscal year's data to current fiscal year? All current data will be replaced"
+  "#confirmation.copy.description": "Are you sure you want to copy previous fiscal year's data to current fiscal year? All current data will be replaced",
+  "#liability.generaltype.encumberance": "Encumberance",
+  "#liability.generaltype.guarantee": "Guarantee",
+  "#liability.type.financialobligationkelaotherplayer": "Financial obligation - Kela/Other payer",
+  "#liability.type.financialobligation": "Financial obligation",
+  "#liability.type.bankdeposit": "Bank deposit",
+  "#liability.type.financialsecurity": "Financial security",
+  "#liability.product.pledge": "Pledge",
+  "#liability.product.pledgeelectronic": "Pledge - electronic",
+  "#liability.product.encumberance": "Encumberance",
+  "#liability.product.guarantee": "Guarantee",
+  "#liability.product.leasehold": "Leasehold",
+  "#liability.product.securitydeposit": "Security deposit",
+  "#liability.usage.assecurity": "As Security",
+  "#liability.usage.notinuse": "Not in use"
 }

@@ -1,5 +1,7 @@
+import { CSSProperties, ChangeEvent } from 'react';
 import { SortModel } from 'models';
 import { Column } from 'models/TableModel';
+import { CheckboxProps } from 'components/ActionsTable';
 
 import { useTranslation } from 'react-i18next';
 
@@ -10,26 +12,12 @@ import { HeadTableCell } from 'components/Styled';
 import Checkbox from 'components/Checkbox';
 
 import clsx from 'clsx';
-import { CSSProperties } from 'react';
-
-export type CheckboxProps = {
-  HeadCellProps?: {
-    className?: string;
-    style?: CSSProperties;
-  };
-  BodyCellProps?: {
-    className?: string;
-    style?: CSSProperties;
-  };
-  selectedAll: boolean;
-  onToggleSelectAll(): void;
-};
 
 export interface TableHeadClasses {
   root?: string;
   cell?: string;
 }
-//TODO: remove style;
+//TODO: remove style prop;
 interface NestedColumn<T extends object = { [key: string]: any }>
   extends Column<T> {
   style?: CSSProperties;
@@ -40,10 +28,8 @@ type TableHeadProps<T extends object = { [key: string]: any }> = {
   classes?: TableHeadClasses;
   columns: NestedColumn<T>[];
   sort?: SortModel<T>;
-  selectedAll?: boolean;
   onChangeSortParams?(orderBy: string, type?: 'alphanumeric' | 'date'): void;
-  withCheckbox?: boolean;
-  CheckboxProps?: CheckboxProps;
+  CheckboxHeadProps?: CheckboxProps['HeadProps'];
 };
 
 function switchColumnTypeToSort(colType: Column['type']) {
@@ -65,22 +51,21 @@ const TableHead = <T extends object = { [key: string]: any }>({
   columns,
   sort,
   onChangeSortParams,
-  withCheckbox = false,
-  CheckboxProps,
+  CheckboxHeadProps,
 }: TableHeadProps<T>) => {
   const { t } = useTranslation();
 
   return (
     <MuiTableHead>
       <MuiTableRow className={clsx(classes?.root, className)}>
-        {withCheckbox && (
+        {CheckboxHeadProps && (
           <HeadTableCell
-            className={CheckboxProps?.HeadCellProps?.className}
-            style={CheckboxProps?.HeadCellProps?.style}
+            className={clsx(classes?.cell, CheckboxHeadProps.Cell?.className)}
+            style={CheckboxHeadProps.Cell?.style}
           >
             <Checkbox
-              checked={CheckboxProps?.selectedAll}
-              onChange={CheckboxProps?.onToggleSelectAll}
+              checked={CheckboxHeadProps.selectedAll}
+              onChange={CheckboxHeadProps.onToggleSelectAll}
             />
           </HeadTableCell>
         )}

@@ -11,7 +11,7 @@ const Backdrop: React.FC<BackdropProps> = ({ loading }) => {
   const classes = useStyles();
 
   return (
-    <MuiBackdrop open={loading}>
+    <MuiBackdrop open={loading} sx={{ zIndex: 999 }}>
       <CircularProgress className={classes.loader} />
     </MuiBackdrop>
   );

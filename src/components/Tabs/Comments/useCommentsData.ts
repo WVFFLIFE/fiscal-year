@@ -194,6 +194,12 @@ const useCommentsData = () => {
         } catch (err) {
           console.error(err);
 
+          setRequestState((prevState) => ({
+            ...prevState,
+            loading: false,
+            error: { messages: [String(err)] },
+          }));
+
           delay = delay * 2;
           timeout = setTimeout(update, delay);
         }

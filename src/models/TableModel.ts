@@ -16,13 +16,16 @@ export interface SortModel<T extends object = DefaultTableData> {
   type: SortParamsType;
 }
 
-export type ColumnDataType =
+export type RenderDataType =
   | 'string'
   | 'date'
   | 'datetime'
   | 'documentcode'
   | 'int'
-  | 'float';
+  | 'float'
+  | 'float6'
+  | 'money'
+  | 'translate';
 
 export type DefaultColumn = {
   label: string;
@@ -34,7 +37,7 @@ export type DefaultColumn = {
 
 export type Column<T extends object = DefaultTableData> = {
   field: keyof T | null;
-  type?: ColumnDataType | 'action';
+  type?: RenderDataType | 'action';
 } & DefaultColumn;
 
 export type DeprecatedColumn<T extends object = DefaultTableData> = {
@@ -45,11 +48,12 @@ export type ActionColumn<T extends object = DefaultTableData> = DefaultColumn &
   (
     | {
         field: keyof T;
-        type?: ColumnDataType;
+        type?: RenderDataType;
+        render?: (data: T) => JSX.Element | null;
       }
     | {
         field: null;
-        type: 'action';
-        actions: (data: T) => JSX.Element | null;
+        type?: undefined;
+        render: (data: T) => JSX.Element | null;
       }
   );

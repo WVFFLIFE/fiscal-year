@@ -7,7 +7,7 @@ import Fade from '@mui/material/Fade';
 import Input from './Input';
 import Body from './Body';
 
-interface DatePickerProps {
+export interface DatePickerProps {
   open?: boolean;
   date: Date | null;
   locale?: Locale;

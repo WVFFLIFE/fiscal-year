@@ -10,7 +10,7 @@ export interface Option {
   label: string;
 }
 
-export interface SelectProps<T> {
+export interface SelectProps<T extends any = any> {
   className?: string;
   options: T[];
   value: string | number;

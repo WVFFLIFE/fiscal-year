@@ -1,23 +1,62 @@
-import { TypeCode, ProductCode, UsageCode } from 'enums/liabilities';
+import {
+  TypeCode,
+  ProductCode,
+  UsageCode,
+  GeneralTypeCode,
+} from 'enums/liabilities';
 
-export const liabilityProductCodeDict = {
-  [ProductCode.Encumberance]: 'Encumberance',
-  [ProductCode.Guarantee]: 'Guarantee',
-  [ProductCode.Leasehold]: 'Leasehold',
-  [ProductCode.Pledge]: 'Pledge',
-  [ProductCode.PledgeElectronic]: 'Pledge Electronic',
-  [ProductCode.SecurityDeposit]: 'Security Deposit',
-};
+export function getLiabilityGeneralTypeLabel(code: GeneralTypeCode | null) {
+  switch (code) {
+    case GeneralTypeCode.Encumberance:
+      return '#liability.generaltype.encumberance';
+    case GeneralTypeCode.Guarantee:
+      return '#liability.generaltype.guarantee';
+    default:
+      return null;
+  }
+}
 
-export const liabilityTypeCodeDict = {
-  [TypeCode.BankDeposit]: 'Bank Deposit',
-  [TypeCode.FinancialObligation]: 'Financial Obligation',
-  [TypeCode.FinancialObligationKelaOtherPayer]:
-    'Financial Obligation Kela Other Payer',
-  [TypeCode.FinancialSecurity]: 'Financial Security',
-};
+export function getLiabilityProductLabel(code: ProductCode | null) {
+  switch (code) {
+    case ProductCode.Pledge:
+      return '#liability.product.pledge';
+    case ProductCode.PledgeElectronic:
+      return '#liability.product.pledgeelectronic';
+    case ProductCode.Encumberance:
+      return '#liability.product.encumberance';
+    case ProductCode.Guarantee:
+      return '#liability.product.guarantee';
+    case ProductCode.Leasehold:
+      return '#liability.product.leasehold';
+    case ProductCode.SecurityDeposit:
+      return '#liability.product.securitydeposit';
+    default:
+      return null;
+  }
+}
 
-export const liabilityUsageCodeDict = {
-  [UsageCode.AsSecurity]: 'As Security',
-  [UsageCode.NotInUse]: 'Not In Use',
-};
+export function getLiabilityTypeLabel(code: TypeCode | null) {
+  switch (code) {
+    case TypeCode.BankDeposit:
+      return '#liability.type.bankdeposit';
+    case TypeCode.FinancialObligation:
+      return '#liability.type.financialobligation';
+    case TypeCode.FinancialObligationKelaOtherPayer:
+      return '#liability.type.financialobligationkelaotherplayer';
+    case TypeCode.FinancialSecurity:
+      return '#liability.type.financialsecurity';
+    default:
+      return null;
+  }
+}
+
+export function getLiabilityUsageLabel(code: UsageCode | null) {
+  switch (code) {
+    case UsageCode.AsSecurity:
+      return '#liability.usage.assecurity';
+    case UsageCode.NotInUse:
+      return '#liability.usage.notinuse';
+    default:
+      return null;
+  }
+}

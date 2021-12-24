@@ -86,7 +86,7 @@ const Input: React.FC<InputProps> = ({
 
   const handleBlur = () => {
     setFocused(false);
-    onChange(parsedDate);
+    onChange(isValid(parsedDate) ? parsedDate : null);
   };
 
   return (

@@ -8,10 +8,9 @@ interface InputClasses {
   input?: string;
 }
 
-const Input = forwardRef<
-  HTMLDivElement,
-  TextFieldProps & { inputClasses?: InputClasses }
->(
+export type InputProps = TextFieldProps & { inputClasses?: InputClasses };
+
+const Input = forwardRef<HTMLDivElement, InputProps>(
   (
     { className, classes: propsClasses, inputClasses, children, ...rest },
     ref
