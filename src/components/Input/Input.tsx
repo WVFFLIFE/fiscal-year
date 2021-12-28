@@ -8,11 +8,21 @@ interface InputClasses {
   input?: string;
 }
 
-export type InputProps = TextFieldProps & { inputClasses?: InputClasses };
+export type InputProps = TextFieldProps & {
+  inputClasses?: InputClasses;
+  readonly?: boolean;
+};
 
 const Input = forwardRef<HTMLDivElement, InputProps>(
   (
-    { className, classes: propsClasses, inputClasses, children, ...rest },
+    {
+      className,
+      classes: propsClasses,
+      inputClasses,
+      children,
+      readonly = false,
+      ...rest
+    },
     ref
   ) => {
     const classes = useStyles();
@@ -24,9 +34,12 @@ const Input = forwardRef<HTMLDivElement, InputProps>(
         className={clsx(classes.fullWidth, className)}
         InputProps={{
           className: clsx(classes.root, propsClasses?.root),
+          readOnly: readonly,
           classes: {
             input: clsx(classes.input, inputClasses?.input),
-            focused: classes.focus,
+            focused: clsx({
+              [classes.focus]: !readonly,
+            }),
           },
           disableUnderline: true,
         }}

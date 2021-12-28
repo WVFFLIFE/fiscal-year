@@ -31,6 +31,7 @@ const Dialog: React.FC<DialogProps> = ({
   return (
     <MuiDialog
       classes={{
+        // root: classes.dialog,
         paper: classes.paper,
         paperWidthMd: classes.paperWidthMd,
       }}

@@ -16,6 +16,7 @@ export interface DatePickerProps {
   disabled?: boolean;
   onChange(date: Date | null): void;
   className?: string;
+  placeholder?: string;
 }
 
 const DatePicker: React.FC<DatePickerProps> = ({
@@ -27,6 +28,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
   disabled,
   onChange,
   className,
+  placeholder = 'dd.mm.yyyy',
 }) => {
   const anchorEl = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
@@ -47,7 +49,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
     <>
       <div ref={anchorEl} className={className}>
         <Input
-          placeholder="dd.mm.yyyy"
+          placeholder={placeholder}
           date={date}
           onChange={onChange}
           onClick={handleOpen}

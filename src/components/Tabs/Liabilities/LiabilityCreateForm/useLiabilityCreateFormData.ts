@@ -1,5 +1,6 @@
-import { useState, ChangeEvent } from 'react';
+import { ChangeEvent } from 'react';
 import { useFormik } from 'formik';
+import useCooperative, { CooperativeModel } from 'hooks/useCooperative';
 
 interface InitialValues {
   liabilityName: string;
@@ -7,6 +8,7 @@ interface InitialValues {
   description: string;
   generalType: number | null;
   liabilityParty: number | null;
+  cooperative: CooperativeModel | null;
   startDate: Date | null;
   endDate: Date | null;
   documentNumber: string | null;
@@ -23,10 +25,12 @@ interface OptionsModel {
 }
 
 const useLiabilityCreateFormData = (options: OptionsModel) => {
+  const cooperative = useCooperative();
   const { initialValues, onSubmit } = options;
 
   const formik = useFormik({
     initialValues: initialValues || {
+      cooperative,
       description: '',
       documentNumber: '',
       endDate: null,

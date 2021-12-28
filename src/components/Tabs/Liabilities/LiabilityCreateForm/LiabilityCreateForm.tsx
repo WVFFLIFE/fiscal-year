@@ -77,18 +77,17 @@ const LiabilityCreateForm: React.FC<LiabilityCreateFormProps> = ({
             }}
           />
         </li>
-        {/* <li className={classes.listItem}>
+        <li className={classes.listItem}>
           <Field
             type="input"
             required
-            label="Liability Name"
+            label="Organization"
             ControlProps={{
-              value: formik.values.liabilityName,
-              onChange: handleChangeInput,
-              name: 'liabilityName',
+              value: formik.values.cooperative?.name || '',
+              readonly: true,
             }}
           />
-        </li> */}
+        </li>
         <li className={classes.listItem}>
           <Field
             type="input"
@@ -98,7 +97,10 @@ const LiabilityCreateForm: React.FC<LiabilityCreateFormProps> = ({
               onChange: handleChangeInput,
               name: 'description',
               multiline: true,
+              rows: 5,
+              maxRows: 5,
               placeholder: 'Type description here',
+              inputClasses: { input: classes.textarea },
             }}
           />
         </li>
@@ -117,18 +119,17 @@ const LiabilityCreateForm: React.FC<LiabilityCreateFormProps> = ({
             }}
           />
         </li>
-        {/* <li className={classes.listItem}>
+        <li className={classes.listItem}>
           <Field
-            type="input"
+            type="partylookup"
             required
-            label="Liability Name"
+            label="Liability Party"
             ControlProps={{
-              value: formik.values.liabilityName,
-              onChange: handleChangeInput,
-              name: 'liabilityName',
+              value: '',
+              onChange: () => {},
             }}
           />
-        </li> */}
+        </li>
       </ul>
       <ul className={classes.list}>
         <li className={classes.listItem}>
@@ -138,6 +139,7 @@ const LiabilityCreateForm: React.FC<LiabilityCreateFormProps> = ({
             ControlProps={{
               date: formik.values.startDate,
               onChange: handleChangeStartDate,
+              placeholder: 'Select date',
             }}
           />
         </li>
@@ -148,6 +150,7 @@ const LiabilityCreateForm: React.FC<LiabilityCreateFormProps> = ({
             ControlProps={{
               date: formik.values.endDate,
               onChange: handleChangeEndDate,
+              placeholder: 'Select date',
             }}
           />
         </li>

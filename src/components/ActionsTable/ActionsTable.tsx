@@ -4,11 +4,11 @@ import {
   DefaultTableData,
   InnerTableComponentProps,
   SortModel,
-} from 'models/TableModel';
-import useSort from 'hooks/useSort';
+} from './models';
+import useSort from './useSort';
 
 import Table from '@mui/material/Table';
-import TableHead from 'components/TableHead';
+import TableHead from './TableHead';
 import TableBody from '@mui/material/TableBody';
 import ActionsTableRow from './ActionsTableRow';
 

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import Select, { SelectProps } from 'components/controls/Select';
 import Input, { InputProps } from 'components/Input';
 import DatePicker, { DatePickerProps } from 'components/DatePicker';
+import PartyLookup, { PartyLookUpProps } from '../../PartyLookUp';
 
 import clsx from 'clsx';
 import { useStyles } from './style';
@@ -10,7 +11,8 @@ import { useStyles } from './style';
 type ComponentProps =
   | { type: 'input'; ControlProps: InputProps }
   | { type: 'select'; ControlProps: SelectProps }
-  | { type: 'datepicker'; ControlProps: DatePickerProps };
+  | { type: 'datepicker'; ControlProps: DatePickerProps }
+  | { type: 'partylookup'; ControlProps: PartyLookUpProps };
 
 type FieldProps = {
   label: string;
@@ -40,6 +42,8 @@ const Field: React.FC<FieldProps> = ({
         return <Select {...(ControlProps as SelectProps)} />;
       case 'datepicker':
         return <DatePicker {...(ControlProps as DatePickerProps)} />;
+      case 'partylookup':
+        return <PartyLookup {...(ControlProps as PartyLookUpProps)} />;
       default:
         return null;
     }

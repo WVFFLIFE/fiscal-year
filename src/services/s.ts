@@ -108,6 +108,17 @@ export namespace Services {
           Liability: LiabilityDetails | null;
         }
       }
+      export namespace Parties {
+        export interface Organization {
+          Id: string;
+          Name: string | null;
+          Location: string | null;
+        }
+
+        export interface Response extends BaseResponse {
+          Organizations: Organization[];
+        }
+      }
     }
 
     export namespace Comments {
@@ -319,7 +330,9 @@ export namespace Services {
         LiabilityId: liabilityId,
       });
     };
-    getParties = async (searchKey: string) => {
+    getParties = async (
+      searchKey: string | null
+    ): Promise<Model.Liabilities.Parties.Response> => {
       return await this.executeRequest('uds_FiscalYearLiabilitiesPartiesList', {
         SearchKey: searchKey,
       });
@@ -380,5 +393,6 @@ export namespace Services {
 import Liability = Services.Model.Liabilities.Liability;
 import LiabilityDetails = Services.Model.Liabilities.LiabilityDetails;
 import Comment = Services.Model.Comments.Comment;
+import Organization = Services.Model.Liabilities.Parties.Organization;
 
-export type { Liability, Comment, LiabilityDetails };
+export type { Liability, Comment, LiabilityDetails, Organization };

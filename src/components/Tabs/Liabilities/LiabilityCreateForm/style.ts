@@ -18,4 +18,7 @@ export const useStyles = makeStyles(() => ({
       marginBottom: 0,
     },
   },
+  textarea: {
+    padding: '6px 20px 6px 19px',
+  },
 }));
