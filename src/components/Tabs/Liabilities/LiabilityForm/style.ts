@@ -1,7 +1,7 @@
 import { makeStyles } from '@mui/styles';
 
 export const useStyles = makeStyles(() => ({
-  root: {
+  wrapper: {
     display: 'flex',
     gap: 20,
   },
@@ -20,5 +20,17 @@ export const useStyles = makeStyles(() => ({
   },
   textarea: {
     padding: '6px 20px 6px 19px',
+  },
+  btnsWrapper: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    marginTop: 30,
+  },
+  btnOffset: {
+    marginRight: 20,
+  },
+  loader: {
+    color: '#333',
   },
 }));

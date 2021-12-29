@@ -32,7 +32,7 @@ interface PartySectionProps {
 
 const defaultSortParams: SortModel<PartyModel> = {
   order: 'asc',
-  orderBy: 'name',
+  orderBy: null,
   type: 'alphanumeric',
 };
 

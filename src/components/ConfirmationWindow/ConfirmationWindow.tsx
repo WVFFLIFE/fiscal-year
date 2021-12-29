@@ -30,6 +30,7 @@ const ConfirmationWindow: React.FC<ConfirmationWindowProps> = ({
   handleClose,
   CancelBtnProps,
   ApplyBtnProps,
+  TransitionProps,
 }) => {
   const classes = useStyles();
 
@@ -39,6 +40,7 @@ const ConfirmationWindow: React.FC<ConfirmationWindowProps> = ({
       maxWidth={maxWidth}
       fullWidth={fullWidth}
       handleClose={handleClose}
+      TransitionProps={TransitionProps}
     >
       <div className={classes.wrapper}>
         {title && <h2 className={classes.title}>{title}</h2>}

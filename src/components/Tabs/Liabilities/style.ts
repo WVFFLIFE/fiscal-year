@@ -52,4 +52,11 @@ export const useStyles = makeStyles((theme) => ({
   semibold: {
     fontWeight: 600,
   },
+  questionIcon: {
+    fontSize: 48,
+    color: theme.color.red,
+  },
+  pagination: {
+    marginTop: 20,
+  },
 }));

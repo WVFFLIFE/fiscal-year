@@ -58,6 +58,8 @@ const useSort = <T extends { [key: string]: any }>(
   const sortedList = useMemo(() => {
     const { order, orderBy, type } = sortParams;
 
+    if (!orderBy) return list;
+
     return _orderBy(list, (item) => prepareData(item, orderBy, type), order);
   }, [list, sortParams]);
 

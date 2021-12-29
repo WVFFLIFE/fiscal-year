@@ -63,13 +63,14 @@ const TableHead = <T extends object = { [key: string]: any }>({
             className={clsx(classes?.cell, CheckboxHeadProps.Cell?.className)}
             style={CheckboxHeadProps.Cell?.style}
           >
-            <Checkbox
-              checked={CheckboxHeadProps.selectedAll}
-              onChange={CheckboxHeadProps.onToggleSelectAll}
-            />
+            {CheckboxHeadProps.show === false ? null : (
+              <Checkbox
+                checked={CheckboxHeadProps.selectedAll}
+                onChange={CheckboxHeadProps.onToggleSelectAll}
+              />
+            )}
           </HeadTableCell>
         )}
-
         {columns.map(
           ({
             sortable = true,

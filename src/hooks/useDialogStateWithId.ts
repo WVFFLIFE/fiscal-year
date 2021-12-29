@@ -2,18 +2,18 @@ import { useState } from 'react';
 
 interface DialogStateModel {
   isOpen: boolean;
-  id: string | null;
+  ids: string[];
 }
 
-const useDialogStateWithId = () => {
+const useDialogStateWithIds = () => {
   const [dialogState, setDialogState] = useState<DialogStateModel>({
     isOpen: false,
-    id: null,
+    ids: [],
   });
 
-  const open = (id: string) => {
+  const open = (ids: string[]) => {
     setDialogState({
-      id,
+      ids,
       isOpen: true,
     });
   };
@@ -27,7 +27,7 @@ const useDialogStateWithId = () => {
 
   const reset = () => {
     setDialogState({
-      id: null,
+      ids: [],
       isOpen: false,
     });
   };
@@ -35,4 +35,4 @@ const useDialogStateWithId = () => {
   return { ...dialogState, open, close, reset };
 };
 
-export default useDialogStateWithId;
+export default useDialogStateWithIds;

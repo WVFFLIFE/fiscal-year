@@ -1,4 +1,5 @@
 import useToggleSwitch from 'hooks/useToggleSwitch';
+import { Organization } from 'services/s';
 
 import Input from 'components/Input';
 import ActionButton from 'components/ActionButton';
@@ -8,19 +9,28 @@ import LookUpRecords from './LookUpRecords';
 
 import { useStyles } from './style';
 
-export interface PartyLookUpProps {
-  value?: string | null;
-  onChange?(code: number): void;
+interface ClassNames {
+  border?: string;
 }
 
-const PartyLookUp: React.FC<PartyLookUpProps> = ({ value, onChange }) => {
+export interface PartyLookUpProps {
+  value: string | null;
+  onChange(organization: Organization): void;
+  classes?: ClassNames;
+}
+
+const PartyLookUp: React.FC<PartyLookUpProps> = ({
+  value,
+  onChange,
+  classes: propsClasses,
+}) => {
   const classes = useStyles();
 
   const [showLookup, toggleLookup] = useToggleSwitch();
 
   return (
     <div className={classes.root}>
-      <Input value={value} readonly />
+      <Input value={value} readonly classes={{ root: propsClasses?.border }} />
       <ActionButton
         palette="darkBlue"
         className={classes.btn}
@@ -34,7 +44,7 @@ const PartyLookUp: React.FC<PartyLookUpProps> = ({ value, onChange }) => {
         handleClose={toggleLookup}
         title="Look up record"
       >
-        <LookUpRecords />
+        <LookUpRecords onChange={onChange} onClose={toggleLookup} />
       </Dialog>
     </div>
   );

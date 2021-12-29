@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import usePagination from 'hooks/usePagination';
+import usePagination, { slice } from 'hooks/usePagination';
 import useLookupRecordsData from './useLookUpRecordsData';
 import { ActionColumn, SortModel } from 'models/TableModel';
 import { Organization } from 'services/s';
@@ -10,6 +10,7 @@ import ActionsTable, {
   CheckboxProps as CheckboxPropsModel,
 } from 'components/ActionsTable';
 import Pagination from 'components/Pagination';
+import ActionButton from 'components/ActionButton';
 
 import { useStyles } from './style';
 
@@ -21,7 +22,12 @@ const defaulSort: SortModel<Organization> = {
 
 const rowsPerPageOptions = [5, 10, 15];
 
-const LookUpRecords = () => {
+interface LookUpRecordsProps {
+  onChange(organization: Organization): void;
+  onClose(): void;
+}
+
+const LookUpRecords: React.FC<LookUpRecordsProps> = ({ onChange, onClose }) => {
   const classes = useStyles();
 
   const {
@@ -40,16 +46,29 @@ const LookUpRecords = () => {
     handleChangeCurrentPage,
   } = usePagination({ currentPage: 0, rowsPerPage: 5 });
 
+  const handleAddRecord = () => {
+    if (selectedOrganizations.length) {
+      const [organization] = selectedOrganizations;
+
+      onChange(organization);
+      onClose();
+    }
+  };
+
   const CheckboxProps: CheckboxPropsModel<Organization> = useMemo(
     () => ({
       HeadProps: {
+        show: false,
         selectedAll:
           requestState.organizations.length === selectedOrganizations.length,
         onToggleSelectAll: handleToggleSelectAll,
+        Cell: { style: { width: 40 } },
       },
       BodyProps: {
         Row: (organization) => {
-          const checked = selectedOrganizations.includes(organization.Id);
+          const checked = selectedOrganizations.some(
+            (prevOrganization) => prevOrganization.Id === organization.Id
+          );
 
           return {
             checked,
@@ -84,36 +103,55 @@ const LookUpRecords = () => {
     []
   );
 
+  const slicedOrganizations = useMemo(
+    () => slice(requestState.organizations, currentPage, rowsPerPage),
+    [requestState.organizations, currentPage, rowsPerPage]
+  );
+
   return (
-    <SuspenceFacade
-      loading={requestState.loading}
-      error={requestState.error}
-      onInitError={handleInitError}
-    >
+    <>
       <p className={classes.description}>Enter your search criteria</p>
       <Search
         className={classes.searchField}
         value={searchTerm}
         onChange={handleChangeSearchTerm}
       />
-      <ActionsTable
-        className={classes.table}
-        columns={cols}
-        data={requestState.organizations}
-        sortParams={defaulSort}
-        BodyRowProps={BodyRowProps}
-        CheckboxProps={CheckboxProps}
-      />
-      <Pagination
-        className={classes.pagination}
-        currentPage={currentPage}
-        rowsPerPage={rowsPerPage}
-        rowsPerPageOptions={rowsPerPageOptions}
-        totalItems={requestState.organizations.length}
-        onChangeCurrentPage={handleChangeCurrentPage}
-        onChangeRowsPerPage={handleChaneRowsPerPage}
-      />
-    </SuspenceFacade>
+      <SuspenceFacade
+        loading={requestState.loading}
+        error={requestState.error}
+        onInitError={handleInitError}
+      >
+        <ActionsTable
+          className={classes.table}
+          columns={cols}
+          data={slicedOrganizations}
+          sortParams={defaulSort}
+          BodyRowProps={BodyRowProps}
+          CheckboxProps={CheckboxProps}
+        />
+        <Pagination
+          className={classes.pagination}
+          currentPage={currentPage}
+          rowsPerPage={rowsPerPage}
+          rowsPerPageOptions={rowsPerPageOptions}
+          totalItems={requestState.organizations.length}
+          onChangeCurrentPage={handleChangeCurrentPage}
+          onChangeRowsPerPage={handleChaneRowsPerPage}
+        />
+        <div className={classes.btnsWrapper}>
+          <ActionButton className={classes.btnOffset} onClick={onClose}>
+            Cancel
+          </ActionButton>
+          <ActionButton
+            palette="darkBlue"
+            disabled={!selectedOrganizations.length}
+            onClick={handleAddRecord}
+          >
+            Add
+          </ActionButton>
+        </div>
+      </SuspenceFacade>
+    </>
   );
 };
 

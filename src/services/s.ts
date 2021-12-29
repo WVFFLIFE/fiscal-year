@@ -119,6 +119,28 @@ export namespace Services {
           Organizations: Organization[];
         }
       }
+      export namespace Create {
+        export interface Request {
+          Name: string;
+          Description: string | null;
+          GeneralType: number;
+          PartyId: string;
+          StartDate: string | null;
+          EndDate: string | null;
+          DocumentNumber: string | null;
+          Usage: number;
+          Product: number;
+          Type: number | null;
+          Quantity: number;
+          PriceItemRate: number;
+        }
+      }
+
+      export namespace Update {
+        export interface Request extends Create.Request {
+          Id: string;
+        }
+      }
     }
 
     export namespace Comments {
@@ -337,6 +359,27 @@ export namespace Services {
         SearchKey: searchKey,
       });
     };
+    create = async (
+      coopId: string,
+      newLiability: Model.Liabilities.Create.Request
+    ): Promise<Model.BaseResponse> => {
+      return await this.executeRequest('uds_FiscalYearLiabilityCreate', {
+        CooperativeId: coopId,
+        NewLiability: newLiability,
+      });
+    };
+    update = async (
+      updatedLiability: Model.Liabilities.Update.Request
+    ): Promise<Model.BaseResponse> => {
+      return await this.executeRequest('uds_FiscalYearLiabilityUpdate', {
+        UpdatedLiability: updatedLiability,
+      });
+    };
+    delete = async (liabilitiesIds: string[]): Promise<Model.BaseResponse> => {
+      return await this.executeRequest('uds_FiscalYearLiabilityDelete', {
+        LiabilitiesIds: liabilitiesIds,
+      });
+    };
   }
   export class Comments extends CRMConnector {
     get = async (
@@ -390,9 +433,18 @@ export namespace Services {
 }
 
 /* eslint-disable*/
+import BaseResponse = Services.Model.BaseResponse;
 import Liability = Services.Model.Liabilities.Liability;
 import LiabilityDetails = Services.Model.Liabilities.LiabilityDetails;
 import Comment = Services.Model.Comments.Comment;
 import Organization = Services.Model.Liabilities.Parties.Organization;
+import LiabilityFormBody = Services.Model.Liabilities.Create.Request;
 
-export type { Liability, Comment, LiabilityDetails, Organization };
+export type { 
+  Liability, 
+  Comment, 
+  LiabilityDetails, 
+  Organization, 
+  LiabilityFormBody, 
+  BaseResponse 
+};

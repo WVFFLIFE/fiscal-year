@@ -61,10 +61,12 @@ const TableHead = <T extends DefaultTableData>({
             className={clsx(classes?.cell, CheckboxHeadProps.Cell?.className)}
             style={CheckboxHeadProps.Cell?.style}
           >
-            <Checkbox
-              checked={CheckboxHeadProps.selectedAll}
-              onChange={CheckboxHeadProps.onToggleSelectAll}
-            />
+            {CheckboxHeadProps.show === false ? null : (
+              <Checkbox
+                checked={CheckboxHeadProps.selectedAll}
+                onChange={CheckboxHeadProps.onToggleSelectAll}
+              />
+            )}
           </HeadTableCell>
         )}
 

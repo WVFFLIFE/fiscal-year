@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, MouseEvent } from 'react';
 import { EnhancedLiability } from 'utils/liabilities';
 
 import ActionButton from 'components/ActionButton';
@@ -8,9 +8,9 @@ import { useStyles } from './style';
 
 interface LiabilityRowActionProps {
   liability: EnhancedLiability;
-  onOpen?(id: string): void;
-  onDelete?(id: string): void;
-  onEdit?(id: string): void;
+  onOpen?(ids: string[]): void;
+  onDelete?(ids: string[]): void;
+  onEdit?(ids: string[]): void;
 }
 
 const LiabilityRowAction: React.FC<LiabilityRowActionProps> = ({
@@ -21,12 +21,16 @@ const LiabilityRowAction: React.FC<LiabilityRowActionProps> = ({
 }) => {
   const classes = useStyles();
 
-  const handleOpen = () => onOpen && onOpen(liability.id);
-  const handleDelete = () => onDelete && onDelete(liability.id);
-  const handleEdit = () => onEdit && onEdit(liability.id);
+  const stopPropagation = (event: MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
+  };
+
+  const handleOpen = () => onOpen && onOpen([liability.id]);
+  const handleDelete = () => onDelete && onDelete([liability.id]);
+  const handleEdit = () => onEdit && onEdit([liability.id]);
 
   return (
-    <div className={classes.root}>
+    <div className={classes.root} onClick={stopPropagation}>
       <ActionButton onClick={handleDelete}>
         <DeleteIcon className={classes.icon} />
       </ActionButton>

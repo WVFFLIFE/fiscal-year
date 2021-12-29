@@ -15,6 +15,9 @@ export const useStyles = makeStyles((theme) => ({
   required: {
     color: theme.color.red,
   },
+  borderRed: {
+    borderColor: theme.color.red,
+  },
   error: {
     display: 'block',
     marginTop: 5,

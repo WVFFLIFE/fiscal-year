@@ -1,4 +1,3 @@
-import { useTranslation } from 'react-i18next';
 import useLiabilityViewFormData from './useLiabilityViewFormData';
 
 import {
@@ -8,8 +7,6 @@ import {
   getLiabilityUsageLabel,
 } from 'configs/dictionaries';
 import _get from 'lodash/get';
-import { toNumberFormat } from 'utils';
-import { defaultFormat } from 'utils/dates';
 
 import SuspenceFacade from 'components/SuspenceFacade';
 import ModifiedInfo from './ModifiedInfo';
@@ -21,9 +18,10 @@ import { useStyles } from './style';
 
 interface LiabilityViewFormProps {
   id: string;
+  onEdit(): void;
 }
 
-const LiablityViewForm: React.FC<LiabilityViewFormProps> = ({ id }) => {
+const LiablityViewForm: React.FC<LiabilityViewFormProps> = ({ id, onEdit }) => {
   const classes = useStyles();
 
   const { requestState, handleInitError } = useLiabilityViewFormData(id);
@@ -46,7 +44,11 @@ const LiablityViewForm: React.FC<LiabilityViewFormProps> = ({ id }) => {
               modifiedBy={liability.ModifiedByName}
               modifiedOn={liability.ModifiedOn}
             />
-            <ActionButton palette="darkBlue" startIcon={<EditIcon />}>
+            <ActionButton
+              palette="darkBlue"
+              startIcon={<EditIcon />}
+              onClick={onEdit}
+            >
               Edit Liability
             </ActionButton>
           </div>

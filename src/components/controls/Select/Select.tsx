@@ -14,6 +14,7 @@ export interface SelectProps<T extends string | number | object = any> {
   name?: string;
   disabled?: boolean;
   placeholder?: string;
+  error?: boolean;
   getOptionLabel?: AutocompleteProps<T, false, false, false>['getOptionLabel'];
   renderOption?: AutocompleteProps<T, false, false, false>['renderOption'];
 }
@@ -24,6 +25,7 @@ const Select = <T extends string | number | object>({
   onChange,
   placeholder,
   name,
+  error,
   disabled,
   getOptionLabel,
   renderOption,
@@ -64,7 +66,7 @@ const Select = <T extends string | number | object>({
           InputProps={{
             ...params.InputProps,
             disableUnderline: true,
-            classes: { root: classes.root },
+            classes: { root: clsx(classes.root, { [classes.error]: error }) },
           }}
         />
       )}

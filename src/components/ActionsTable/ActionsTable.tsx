@@ -14,6 +14,7 @@ import ActionsTableRow from './ActionsTableRow';
 
 export type CheckboxProps<T extends object = DefaultTableData> = {
   HeadProps: {
+    show?: boolean;
     selectedAll: boolean;
     onToggleSelectAll(event: ChangeEvent<HTMLInputElement>): void;
     Cell?: {

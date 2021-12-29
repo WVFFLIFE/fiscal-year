@@ -10,7 +10,7 @@ import {
   unzipProducts,
 } from 'utils/fiscalYear';
 
-import Services, { GeneralFiscalYearModel } from 'services';
+import Services from 'services';
 
 interface FormStateModel {
   productName: string;

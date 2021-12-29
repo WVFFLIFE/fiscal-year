@@ -15,13 +15,13 @@ interface RequestStateModel {
 const useLookupRecordsData = () => {
   const [requestState, setRequestState] = useState<RequestStateModel>({
     organizations: [],
-    loading: true,
+    loading: false,
     error: null,
   });
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedOrganizations, setSelectedOrganization] = useState<string[]>(
-    []
-  );
+  const [selectedOrganizations, setSelectedOrganization] = useState<
+    Organization[]
+  >([]);
 
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
@@ -37,6 +37,7 @@ const useLookupRecordsData = () => {
       if (res.IsSuccess) {
         setRequestState((prevState) => ({
           ...prevState,
+          organizations: res.Organizations,
           loading: false,
         }));
       } else {
@@ -70,25 +71,25 @@ const useLookupRecordsData = () => {
   const handleToggleSelectAll = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       const { checked } = event.target;
-      setSelectedOrganization(
-        checked
-          ? requestState.organizations.map((organization) => organization.Id)
-          : []
-      );
+      setSelectedOrganization(checked ? [...requestState.organizations] : []);
     },
     [requestState.organizations]
   );
 
   const handleToggleSelectRow = useCallback((organization: Organization) => {
     setSelectedOrganization((prevState) =>
-      prevState.includes(organization.Id)
-        ? prevState.filter((el) => el !== organization.Id)
-        : prevState.concat(organization.Id)
+      prevState.some(
+        (prevOrganization) => prevOrganization.Id === organization.Id
+      )
+        ? []
+        : [organization]
     );
   }, []);
 
   useEffect(() => {
-    fetchParties(debouncedSearchTerm);
+    if (debouncedSearchTerm.length > 2) {
+      fetchParties(debouncedSearchTerm);
+    }
   }, [debouncedSearchTerm]);
 
   return {

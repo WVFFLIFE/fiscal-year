@@ -118,12 +118,15 @@ export function toIntFormat(num: number | null | undefined) {
     .replace(/\./g, ',');
 }
 
-export function toNumberFormat(num: number | null | undefined) {
-  if (!num) return null;
-  return num
-    .toFixed(2)
-    .replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
-    .replace(/\./g, ',');
+export function toNumberFormat(
+  input: number | null | undefined,
+  decimalLength = 2
+) {
+  if (!input) return null;
+
+  let [num, decimal] = input.toFixed(decimalLength).split('.');
+
+  return `${num.replace(/\B(?=(\d{3})+(?!\d))/g, ' ')},${decimal}`;
 }
 
 export function isNull(input: any) {
@@ -136,21 +139,28 @@ export function isObject(input: any) {
   return typeof input === 'object' && !isArray(input) && !isNull(input);
 }
 
-export function toFloatStr(input: string) {
+export function toFloatStr(input: string, decimalLength = 2) {
   let value = input.replace(/[^0-9,]/g, '').replace(/[,](?=.*[,])/g, '');
 
-  const [num, decimal] = value.split(',');
+  let [num, decimal] = value.split(',');
 
-  if (decimal?.length > 2) {
-    value = `${num.replace(/\B(?=(\d{3})+(?!\d))/g, ' ')},${decimal.substring(
-      0,
-      2
-    )}`;
+  if (decimal?.length > decimalLength) {
+    decimal = `${decimal.substring(0, decimalLength)}`;
   }
 
-  return value;
+  if (value.includes(',')) {
+    return `${num.replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}${
+      decimal ? `,${decimal}` : ','
+    }`;
+  }
+
+  return `${num.replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}`;
 }
 
 export function toIntStr(input: string) {
   return input.replace(/[^0-9]/g, '');
+}
+
+export function floatStrToNumber(input: string) {
+  return Number(input.replace(/,/g, '.').replace(/ /g, ''));
 }

@@ -1,7 +1,9 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import useLiabilitiesData from './useLiabilitiesData';
 import useDialogStateWithId from 'hooks/useDialogStateWithId';
 import useToggleSwitch from 'hooks/useToggleSwitch';
+import usePagination, { slice } from 'hooks/usePagination';
 import { ActionColumn, InnerTableComponentProps } from 'models/TableModel';
 import { EnhancedLiability } from 'utils/liabilities';
 
@@ -13,26 +15,50 @@ import SuspenceFacade from 'components/SuspenceFacade';
 import Actions from './Actions';
 import Dialog from 'components/Dialog';
 import LiablityViewForm from './LiabilityViewForm';
-import LiabilityCreateForm from './LiabilityCreateForm';
+import LiabilityForm from './LiabilityForm';
+import LiabilityEditForm from './LiabilityEditForm';
+import ConfirmationWindow from 'components/ConfirmationWindow';
+import Pagination from 'components/Pagination';
+import { RoundQuestionIcon } from 'components/Icons';
 import { Scroll } from 'components/Styled';
 
 import clsx from 'clsx';
 import { useStyles } from './style';
 
 const CHECKBOX_COLUMN_WIDTH = 40;
+const rowsPerPageOptions = [10, 20, 30];
 
 const Liabilities = () => {
   const classes = useStyles();
+  const { t } = useTranslation();
 
   const {
     requestState,
-    selectedRows,
+    handleUpdateList,
     handleInitError,
+    handleDelete,
     handleToggleSelectAll,
     handleToggleSelectRow,
   } = useLiabilitiesData();
+
+  const {
+    rowsPerPage,
+    currentPage,
+    handleChaneRowsPerPage,
+    handleChangeCurrentPage,
+  } = usePagination({ currentPage: 0, rowsPerPage: 10 });
+
+  const [openCreateForm, toggleCreateFormVisibility] = useToggleSwitch();
   const viewFormDialogState = useDialogStateWithId();
-  const [openCreateForm, toggleOpenCreateForm] = useToggleSwitch();
+  const editFormDialogState = useDialogStateWithId();
+  const confirmationDeleteDialogState = useDialogStateWithId();
+
+  const handleEdit = () => {
+    if (viewFormDialogState.ids.length === 1) {
+      viewFormDialogState.close();
+      editFormDialogState.open(viewFormDialogState.ids);
+    }
+  };
 
   const columns: ActionColumn<EnhancedLiability>[] = [
     {
@@ -168,6 +194,8 @@ const Liabilities = () => {
         <LiabilityRowAction
           liability={data}
           onOpen={viewFormDialogState.open}
+          onEdit={editFormDialogState.open}
+          onDelete={confirmationDeleteDialogState.open}
         />
       ),
       HeadCellProps: {
@@ -189,7 +217,8 @@ const Liabilities = () => {
   const CheckboxProps: CheckboxPropsModel<EnhancedLiability> = useMemo(
     () => ({
       HeadProps: {
-        selectedAll: requestState.liabilities.length === selectedRows.length,
+        selectedAll:
+          requestState.liabilities.length === requestState.selectedRows.length,
         onToggleSelectAll: handleToggleSelectAll,
         Cell: {
           className: classes.fixed,
@@ -202,7 +231,7 @@ const Liabilities = () => {
           style: { left: 0 },
         },
         Row: (liability) => {
-          const checked = selectedRows.includes(liability.id);
+          const checked = requestState.selectedRows.includes(liability.id);
 
           return {
             checked,
@@ -214,10 +243,15 @@ const Liabilities = () => {
     [
       classes,
       requestState.liabilities,
-      selectedRows,
+      requestState.selectedRows,
       handleToggleSelectAll,
       handleToggleSelectRow,
     ]
+  );
+
+  const slicedData = useMemo(
+    () => slice(requestState.liabilities, currentPage, rowsPerPage),
+    [requestState.liabilities, currentPage, rowsPerPage]
   );
 
   return (
@@ -226,16 +260,31 @@ const Liabilities = () => {
       error={requestState.error}
       onInitError={handleInitError}
     >
-      <Actions selected={selectedRows} onCreate={toggleOpenCreateForm} />
+      <Actions
+        selected={requestState.selectedRows}
+        onCreate={toggleCreateFormVisibility}
+        onView={viewFormDialogState.open}
+        onEdit={editFormDialogState.open}
+        onDelete={confirmationDeleteDialogState.open}
+      />
       <Scroll className={classes.root}>
         <ActionsTable
           className={classes.table}
-          data={requestState.liabilities}
+          data={slicedData}
           columns={columns}
           CheckboxProps={CheckboxProps}
           BodyRowProps={ActionsTableRowProps}
         />
       </Scroll>
+      <Pagination
+        className={classes.pagination}
+        currentPage={currentPage}
+        rowsPerPage={rowsPerPage}
+        rowsPerPageOptions={rowsPerPageOptions}
+        onChangeCurrentPage={handleChangeCurrentPage}
+        onChangeRowsPerPage={handleChaneRowsPerPage}
+        totalItems={requestState.liabilities.length}
+      />
       <Dialog
         open={viewFormDialogState.isOpen}
         title={'Liability information'}
@@ -244,17 +293,65 @@ const Liabilities = () => {
           onExited: viewFormDialogState.reset,
         }}
       >
-        {viewFormDialogState.id && (
-          <LiablityViewForm id={viewFormDialogState.id} />
+        {viewFormDialogState.ids.length && (
+          <LiablityViewForm
+            id={viewFormDialogState.ids[0]}
+            onEdit={handleEdit}
+          />
         )}
       </Dialog>
       <Dialog
         open={openCreateForm}
         title={'Add Liability'}
-        handleClose={toggleOpenCreateForm}
+        handleClose={toggleCreateFormVisibility}
       >
-        <LiabilityCreateForm />
+        <LiabilityForm
+          action="create"
+          onClose={toggleCreateFormVisibility}
+          onUpdate={handleUpdateList}
+        />
       </Dialog>
+      <Dialog
+        open={editFormDialogState.isOpen}
+        title={'Edit Liability Information'}
+        handleClose={editFormDialogState.close}
+        TransitionProps={{
+          onExited: editFormDialogState.reset,
+        }}
+      >
+        {editFormDialogState.ids.length && (
+          <LiabilityEditForm
+            ids={editFormDialogState.ids}
+            onClose={editFormDialogState.close}
+            onUpdate={handleUpdateList}
+          />
+        )}
+      </Dialog>
+      <ConfirmationWindow
+        maxWidth="sm"
+        open={confirmationDeleteDialogState.isOpen}
+        handleClose={confirmationDeleteDialogState.close}
+        title="Delete liability(ies)"
+        description="Are you sure you want to delete this liability(ies)?"
+        Icon={<RoundQuestionIcon className={classes.questionIcon} />}
+        TransitionProps={{
+          onExited: confirmationDeleteDialogState.reset,
+        }}
+        CancelBtnProps={{
+          label: t('#button.cancel'),
+          onClick: confirmationDeleteDialogState.close,
+        }}
+        ApplyBtnProps={{
+          label: t('#button.delete'),
+          loading: requestState.deleting,
+          disabled: requestState.deleting,
+          onClick: () =>
+            handleDelete(
+              confirmationDeleteDialogState.ids,
+              confirmationDeleteDialogState.close
+            ),
+        }}
+      />
     </SuspenceFacade>
   );
 };

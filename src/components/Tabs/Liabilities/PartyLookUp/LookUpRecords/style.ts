@@ -20,9 +20,26 @@ export const useStyles = makeStyles((theme) => ({
     borderTop: '1px solid rgba(240, 240, 240, 1)',
   },
   row: {
+    background: 'rgba(240, 243, 247, 1)',
     borderBottom: `1px solid ${theme.color.greyLight1}`,
+    '&:hover': {
+      background: theme.color.transparentBlue,
+      cursor: 'pointer',
+    },
     '&:first-child': {
       borderTop: `1px solid ${theme.color.greyLight1}`,
     },
+    '&:nth-child(2n)': {
+      background: '#fff',
+    },
+  },
+  btnsWrapper: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    marginTop: 40,
+  },
+  btnOffset: {
+    marginRight: 10,
   },
 }));
