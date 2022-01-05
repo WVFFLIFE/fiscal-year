@@ -8,9 +8,10 @@ import 'configs/i18n';
 import 'assets/fonts/fonts.css';
 import './index.css';
 
-import { GeneralProvider } from 'contexts/GeneralContext';
+import { Provider } from 'react-redux';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import theme from 'configs/theme';
+import store from 'store';
 
 declare module 'react' {
   // augment React types
@@ -43,9 +44,9 @@ async function launch() {
   ReactDOM.render(
     <ThemeProvider theme={theme}>
       <StyledEngineProvider injectFirst>
-        <GeneralProvider>
+        <Provider store={store}>
           <App />
-        </GeneralProvider>
+        </Provider>
       </StyledEngineProvider>
     </ThemeProvider>,
     document.getElementById('root')

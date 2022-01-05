@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import useGeneralCtx from 'hooks/useGeneralCtx';
 import Services from 'services';
 import { getLangString } from 'utils';
 
@@ -8,7 +7,6 @@ import FiscalYear from 'tabs/FiscalYear';
 import { RootContainer } from 'components/Styled';
 
 const App = () => {
-  const { update } = useGeneralCtx();
   const { i18n } = useTranslation();
 
   useEffect(() => {

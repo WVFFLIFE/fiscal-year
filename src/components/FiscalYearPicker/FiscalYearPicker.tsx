@@ -144,6 +144,7 @@ const FiscalYearPicker: React.FC<FiscalYearProps> = ({
       placeholder={`- ${t('#control.fiscalyearpicker.placeholder')} -`}
       renderValue={renderValue}
       renderBody={renderBody}
+      disablePortal={true}
     />
   );
 };

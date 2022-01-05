@@ -1,8 +1,14 @@
 import { useState, useEffect, useCallback, ChangeEvent } from 'react';
-import useGeneralCtx from 'hooks/useGeneralCtx';
 import { ErrorModel } from 'models';
+
+import useAppDispatch from 'hooks/useAppDispatch';
+import useStateSelector from 'hooks/useStateSelector';
+import useSelectFiscalYear from 'hooks/useSelectFiscalYear';
+
+import { fetchGeneralFiscalYear } from 'features/generalPageSlice';
+import { selectConsumptionData } from 'selectors/generalPageSelectors';
+
 import { sleep, readFile } from 'utils';
-import { getFiscalYearId, getConsumptionData } from 'utils/fiscalYear';
 import Services from 'services';
 
 interface StateModel {
@@ -16,13 +22,9 @@ interface StateModel {
 }
 
 const useConsumptionData = () => {
-  const {
-    state: { fiscalYear },
-    fetchGeneralData,
-  } = useGeneralCtx();
-
-  const fiscalYearId = getFiscalYearId(fiscalYear);
-  const consumptionData = getConsumptionData(fiscalYear);
+  const dispatch = useAppDispatch();
+  const fiscalYear = useSelectFiscalYear();
+  const consumptionData = useStateSelector(selectConsumptionData);
 
   const [state, setState] = useState<StateModel>({
     progress: 0,
@@ -76,20 +78,20 @@ const useConsumptionData = () => {
 
   const handleChangeCurrentFile = useCallback(
     async (files: File[]) => {
-      if (!files.length || !fiscalYearId) return;
+      if (!files.length || !fiscalYear?.id) return;
       const [file] = files;
 
       const dataURL = await readFile(file);
 
       const request = async () => {
         const reqBody = {
-          FiscalYearId: fiscalYearId,
+          FiscalYearId: fiscalYear.id,
           Content: dataURL,
         };
         const updateRes = await Services.updateConsumptionImage(reqBody);
 
         if (updateRes.IsSuccess) {
-          return await Services.getConsumptionImage(fiscalYearId);
+          return await Services.getConsumptionImage(fiscalYear.id);
         } else {
           throw new Error(
             updateRes.ResponseCode === 1
@@ -137,7 +139,7 @@ const useConsumptionData = () => {
         }));
       }
     },
-    [fiscalYearId]
+    [fiscalYear?.id]
   );
 
   const handleFetchConsumptionImage = async (fiscalYearId: string) => {
@@ -178,11 +180,11 @@ const useConsumptionData = () => {
   };
 
   const handleDeleteConsumptionImage = async () => {
-    if (!fiscalYearId) return;
+    if (!fiscalYear?.id) return;
 
     try {
       const reqBody = {
-        FiscalYearId: fiscalYearId,
+        FiscalYearId: fiscalYear.id,
         Content: null,
       };
 
@@ -229,7 +231,7 @@ const useConsumptionData = () => {
 
   const handleSaveConsumptionMeter = useCallback(
     async (options: { [key: string]: number | boolean }) => {
-      if (!consumptionData || !fiscalYearId) return;
+      if (!consumptionData || !fiscalYear?.id) return;
       try {
         setState((prevState) => ({
           ...prevState,
@@ -237,7 +239,7 @@ const useConsumptionData = () => {
         }));
 
         const reqBody = {
-          FiscalYearId: fiscalYearId,
+          FiscalYearId: fiscalYear.id,
           HeatEnergyOfHotWater: consumptionData.heatEnergyOfHotWater,
           ConsumptionOfHotWater: consumptionData.consumptionOfHotWater,
           Population: consumptionData.population,
@@ -254,7 +256,7 @@ const useConsumptionData = () => {
             saving: false,
           }));
 
-          await fetchGeneralData(fiscalYearId);
+          dispatch(fetchGeneralFiscalYear(fiscalYear.id));
         } else {
           setState((prevState) => ({
             ...prevState,
@@ -272,7 +274,7 @@ const useConsumptionData = () => {
         }));
       }
     },
-    [state, fiscalYearId]
+    [state, fiscalYear?.id]
   );
 
   const handleInitError = () => {
@@ -286,8 +288,8 @@ const useConsumptionData = () => {
   // we'll update consumption image
   // when fiscal year is new object
   useEffect(() => {
-    if (fiscalYearId) {
-      handleFetchConsumptionImage(fiscalYearId);
+    if (fiscalYear?.id) {
+      handleFetchConsumptionImage(fiscalYear.id);
     }
   }, [fiscalYear]);
 

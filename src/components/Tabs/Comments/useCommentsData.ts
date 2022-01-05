@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import useGeneralCtx from 'hooks/useGeneralCtx';
+
+import useSelectFiscalYear from 'hooks/useSelectFiscalYear';
+
 import { ErrorModel } from 'models';
 import { Services, Comment } from 'services/s';
 
@@ -14,7 +16,7 @@ interface RequestStateModel {
 
 const useCommentsData = () => {
   const firstMount = useRef(true);
-  const { fiscalYear } = useGeneralCtx().state;
+  const fiscalYear = useSelectFiscalYear();
   const [requestState, setRequestState] = useState<RequestStateModel>({
     comments: [],
     loading: false,

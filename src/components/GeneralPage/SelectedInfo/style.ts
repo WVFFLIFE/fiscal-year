@@ -4,12 +4,21 @@ export const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
     alignItems: 'center',
+    justifyContent: 'space-between',
     marginBottom: 20,
+  },
+  leftSide: {
+    display: 'flex',
+    alignItems: 'center',
 
     fontSize: 20,
     fontFamily: 'Proxima Nova',
     fontWeight: 600,
     color: '#000',
+  },
+  rightSide: {
+    display: 'flex',
+    alignItems: 'center',
   },
   divider: {
     width: 1.5,

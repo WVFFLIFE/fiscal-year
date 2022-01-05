@@ -7,10 +7,10 @@ export type {
   BaseCooperativeModel,
   CommonCooperativeModel,
   ExtendedCooperativeModel,
-  FiscalYearModel,
   MettadataAttributeModel,
   GeneralFiscalYearModel,
 } from 'services';
+export type { FiscalYear as FiscalYearModel } from 'services/s';
 export type { SortModel, SortParamsType } from 'hooks/useSort';
 export type { CalendarYearOption } from 'components/SelectCalendarYear';
 export type { AuditingModel } from './AuditingModel';

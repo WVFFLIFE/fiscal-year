@@ -1,6 +1,10 @@
 import { useMemo, useCallback } from 'react';
-import { AnnualReportModel, getFiscalYearId } from 'utils/fiscalYear';
-import useGeneralCtx from 'hooks/useGeneralCtx';
+import { AnnualReportModel } from 'utils/fiscalYear';
+
+import useAppDispatch from 'hooks/useAppDispatch';
+import useSelectFiscalYear from 'hooks/useSelectFiscalYear';
+import { fetchGeneralFiscalYear } from 'features/generalPageSlice';
+
 import { saveRequestAdapter } from './utils';
 import Services, { BaseResponseModel } from 'services';
 
@@ -21,10 +25,8 @@ interface Column {
 }
 
 const useAnnualReportData = (data: AnnualReportModel) => {
-  const {
-    state: { fiscalYear },
-    fetchGeneralData,
-  } = useGeneralCtx();
+  const dispatch = useAppDispatch();
+  const fiscalYear = useSelectFiscalYear();
 
   const saveFields = async (req: { [key: string]: string | null }) => {
     const reqBody = {
@@ -75,9 +77,7 @@ const useAnnualReportData = (data: AnnualReportModel) => {
   };
 
   const updateFiscalYear = useCallback(async () => {
-    const fiscalYearId = getFiscalYearId(fiscalYear);
-
-    if (fiscalYearId) fetchGeneralData(fiscalYearId);
+    if (fiscalYear?.id) dispatch(fetchGeneralFiscalYear(fiscalYear.id));
   }, [fiscalYear]);
 
   const columns: Column[] = useMemo(

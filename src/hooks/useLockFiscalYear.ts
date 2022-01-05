@@ -1,7 +1,9 @@
-import { useState, useContext, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { GeneralCtx } from 'contexts/GeneralContext';
-import { getFiscalYearId } from 'utils/fiscalYear';
+import useStateSelector from './useStateSelector';
+import useAppDispatch from './useAppDispatch';
+import { selectFiscalYear } from 'selectors/generalPageSelectors';
+import { fetchGeneralFiscalYear } from 'features/generalPageSlice';
 
 import { Services } from 'services/s';
 import {
@@ -26,12 +28,10 @@ interface ConfirmationWindowModel {
 
 const useLockFiscalYear = () => {
   const { t } = useTranslation();
-  const {
-    state: { fiscalYear },
-    fetchGeneralData,
-  } = useContext(GeneralCtx);
-
-  const fiscalYearId = getFiscalYearId(fiscalYear);
+  const dispatch = useAppDispatch();
+  const { fiscalYear } = useStateSelector((state) => ({
+    fiscalYear: selectFiscalYear(state),
+  }));
 
   const [lockFiscalYearState, setLockFiscalYearState] =
     useState<LockFiscalYearStateModel>({
@@ -80,14 +80,14 @@ const useLockFiscalYear = () => {
   };
 
   const lockFiscalYear = useCallback(async () => {
-    if (fiscalYearId) {
+    if (fiscalYear?.id) {
       try {
         setLockFiscalYearState((prevState) => ({
           ...prevState,
           loading: true,
         }));
 
-        const res = await FiscalYearService.lock(fiscalYearId);
+        const res = await FiscalYearService.lock(fiscalYear.id);
 
         if (res.IsSuccess) {
           setLockFiscalYearState((prevState) => ({
@@ -95,21 +95,16 @@ const useLockFiscalYear = () => {
             loading: false,
           }));
           handleCloseConfirmationWindow();
-          await fetchGeneralData(fiscalYearId);
+          dispatch(fetchGeneralFiscalYear(fiscalYear.id));
         } else {
           handleCloseConfirmationWindow();
-          setLockFiscalYearState((prevState) => ({
-            ...prevState,
-            loading: false,
-            error: {
-              type: 'lock',
-              message:
-                res.ResponseCode ===
-                LockFiscalYearResponseCode.InsufficientPermission
-                  ? t('#error.fiscalyear.lock.insufficientpermission')
-                  : res.Message,
-            },
-          }));
+
+          throw new Error(
+            res.ResponseCode ===
+            LockFiscalYearResponseCode.InsufficientPermission
+              ? t('#error.fiscalyear.lock.insufficientpermission')
+              : res.Message
+          );
         }
       } catch (err) {
         console.error(err);
@@ -121,17 +116,17 @@ const useLockFiscalYear = () => {
         }));
       }
     }
-  }, [fiscalYearId]);
+  }, [fiscalYear?.id]);
 
   const unlockFiscalYear = useCallback(async () => {
-    if (fiscalYearId) {
+    if (fiscalYear?.id) {
       try {
         setLockFiscalYearState((prevState) => ({
           ...prevState,
           loading: true,
         }));
 
-        const res = await FiscalYearService.unlock(fiscalYearId);
+        const res = await FiscalYearService.unlock(fiscalYear?.id);
 
         if (res.IsSuccess) {
           setLockFiscalYearState((prevState) => ({
@@ -139,21 +134,17 @@ const useLockFiscalYear = () => {
             loading: false,
           }));
           handleCloseConfirmationWindow();
-          await fetchGeneralData(fiscalYearId);
+
+          dispatch(fetchGeneralFiscalYear(fiscalYear.id));
         } else {
           handleCloseConfirmationWindow();
-          setLockFiscalYearState((prevState) => ({
-            ...prevState,
-            loading: false,
-            error: {
-              type: 'unlock',
-              message:
-                res.ResponseCode ===
-                UnlockFiscalYearResponseCode.InsufficientPermission
-                  ? t('#error.fiscalyear.lock.insufficientpermission')
-                  : res.Message,
-            },
-          }));
+
+          throw new Error(
+            res.ResponseCode ===
+            UnlockFiscalYearResponseCode.InsufficientPermission
+              ? t('#error.fiscalyear.lock.insufficientpermission')
+              : res.Message
+          );
         }
       } catch (err) {
         console.error(err);
@@ -164,17 +155,17 @@ const useLockFiscalYear = () => {
         }));
       }
     }
-  }, [fiscalYearId]);
+  }, [fiscalYear?.id]);
 
   const copyFiscalYear = useCallback(async () => {
-    if (fiscalYearId) {
+    if (fiscalYear?.id) {
       try {
         setLockFiscalYearState((prevState) => ({
           ...prevState,
           loading: true,
         }));
 
-        const res = await FiscalYearService.copy(fiscalYearId);
+        const res = await FiscalYearService.copy(fiscalYear.id);
 
         if (res.IsSuccess) {
           setLockFiscalYearState((prevState) => ({
@@ -182,24 +173,20 @@ const useLockFiscalYear = () => {
             loading: false,
           }));
           handleCloseConfirmationWindow();
-          await fetchGeneralData(fiscalYearId);
+
+          dispatch(fetchGeneralFiscalYear(fiscalYear.id));
         } else {
           handleCloseConfirmationWindow();
-          setLockFiscalYearState((prevState) => ({
-            ...prevState,
-            loading: false,
-            error: {
-              type: 'unlock',
-              message:
-                res.ResponseCode ===
-                CopyFiscalYearResponseCode.AmbiguityFiscalYearNotFound
-                  ? t('#error.fiscalyear.copy.ambiguityfiscalyearnotfound')
-                  : res.ResponseCode ===
-                    CopyFiscalYearResponseCode.PreviousFiscalYearNotFound
-                  ? t('#error.fiscalyear.copy.previousfiscalyearnotfound')
-                  : res.Message,
-            },
-          }));
+
+          throw new Error(
+            res.ResponseCode ===
+            CopyFiscalYearResponseCode.AmbiguityFiscalYearNotFound
+              ? t('#error.fiscalyear.copy.ambiguityfiscalyearnotfound')
+              : res.ResponseCode ===
+                CopyFiscalYearResponseCode.PreviousFiscalYearNotFound
+              ? t('#error.fiscalyear.copy.previousfiscalyearnotfound')
+              : res.Message
+          );
         }
       } catch (err) {
         console.error(err);
@@ -210,7 +197,7 @@ const useLockFiscalYear = () => {
         }));
       }
     }
-  }, [fiscalYearId]);
+  }, [fiscalYear?.id]);
 
   const handleInitError = () => {
     setLockFiscalYearState((prevState) => ({

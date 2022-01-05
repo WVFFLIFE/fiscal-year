@@ -1,9 +1,13 @@
+import { memo } from 'react';
 import { FiscalYearModel, CommonCooperativeModel } from 'models';
 import { useTranslation } from 'react-i18next';
 import { defaultFormat } from 'utils/dates';
 
+import Box from '@mui/material/Box';
 import { IconButton } from 'components/Styled';
 import { ListBulletsIcon } from 'components/Icons';
+import AnnualReport from './AnnualReport';
+import CreateEvent from './CreateEvent';
 
 import { useStyles } from './style';
 
@@ -26,14 +30,22 @@ const SelectedInfo: React.FC<SelectedInfoProps> = ({
 
   return (
     <div className={classes.root}>
-      <IconButton className={classes.iconBtn} onClick={backwardToSummaryPage}>
-        <ListBulletsIcon className={classes.icon} />
-      </IconButton>
-      {selectedCooperative.Name}
-      <span className={classes.divider}></span>
-      {t('#common.fiscalyear')} {start} - {end}
+      <div className={classes.leftSide}>
+        <IconButton className={classes.iconBtn} onClick={backwardToSummaryPage}>
+          <ListBulletsIcon className={classes.icon} />
+        </IconButton>
+        {selectedCooperative.Name}
+        <span className={classes.divider}></span>
+        {t('#common.fiscalyear')} {start} - {end}
+      </div>
+      <div className={classes.rightSide}>
+        <Box marginRight="20px">
+          <CreateEvent />
+        </Box>
+        <AnnualReport />
+      </div>
     </div>
   );
 };
 
-export default SelectedInfo;
+export default memo(SelectedInfo);

@@ -55,7 +55,7 @@ interface EditableDataModel {
 interface GeneralInformationTableProps {
   disabled?: boolean;
   list: GeneralInformationDataModel[];
-  onSaveFiscalYear(startDate: Date, endDate: Date): Promise<true | undefined>;
+  onSaveFiscalYear(startDate: Date, endDate: Date): Promise<unknown>;
 }
 
 const GeneralInformationTable: React.FC<GeneralInformationTableProps> = ({
@@ -102,12 +102,7 @@ const GeneralInformationTable: React.FC<GeneralInformationTableProps> = ({
 
   const handleSave = async () => {
     if (editableData.endDate && editableData.startDate) {
-      const isSaved = await onSaveFiscalYear(
-        editableData.startDate,
-        editableData.endDate
-      );
-
-      if (isSaved) handleResetEditableData();
+      await onSaveFiscalYear(editableData.startDate, editableData.endDate);
     }
   };
 

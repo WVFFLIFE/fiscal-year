@@ -46,4 +46,10 @@ export const useStyles = makeStyles((theme) => ({
       fontSize: 12,
     },
   },
+  endIcon: {
+    marginRight: 0,
+    '& .MuiSvgIcon-root': {
+      fontSize: 12,
+    },
+  },
 }));

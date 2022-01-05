@@ -1,11 +1,20 @@
 import { ChangeEvent, FormEvent, useCallback, useState } from 'react';
 import { ErrorModel, OptionalNumber, OptionalString } from 'models';
-import useGeneralCtx from 'hooks/useGeneralCtx';
+
+import useAppDispatch from 'hooks/useAppDispatch';
+import useSelectFiscalYear from 'hooks/useSelectFiscalYear';
+import useStateSelector from 'hooks/useStateSelector';
+
+import { fetchGeneralFiscalYear } from 'features/generalPageSlice';
+
+import {
+  selectBalancesData,
+  selectBalancesProducts,
+} from 'selectors/generalPageSelectors';
+
 import {
   isProductEmpty,
   isProductVisible,
-  getBalancesData,
-  getBalancesProducts,
   BalanceProductModel,
   unzipProducts,
 } from 'utils/fiscalYear';
@@ -35,10 +44,14 @@ function getFieldIdx(products: BalanceProductModel[]) {
 }
 
 const useAddFormData = (onClose: () => void) => {
-  const {
-    fetchGeneralData,
-    state: { fiscalYear },
-  } = useGeneralCtx();
+  const dispatch = useAppDispatch();
+  const fiscalYear = useSelectFiscalYear();
+
+  const { balancesData, balancesProducts } = useStateSelector((state) => ({
+    balancesData: selectBalancesData(state),
+    balancesProducts: selectBalancesProducts(state),
+  }));
+
   const [formState, setFormState] = useState<FormStateModel>({
     deficit: '',
     productName: '',
@@ -108,19 +121,24 @@ const useAddFormData = (onClose: () => void) => {
     e.preventDefault();
     try {
       const isValid = validate();
-      const balancesData = getBalancesData(fiscalYear);
 
-      if (!isValid || !fiscalYear || !fiscalYear.id || !balancesData) return;
+      if (
+        !isValid ||
+        !fiscalYear ||
+        !fiscalYear.id ||
+        !balancesData ||
+        !balancesProducts
+      )
+        return;
 
-      const products = getBalancesProducts(balancesData);
-      const unzippedProducts = unzipProducts(products);
+      const unzippedProducts = unzipProducts(balancesProducts);
 
       setFormState((prevState) => ({
         ...prevState,
         uploading: true,
       }));
 
-      const fieldIdx = getFieldIdx(products);
+      const fieldIdx = getFieldIdx(balancesProducts);
 
       const options = fieldIdx
         ? {
@@ -186,7 +204,7 @@ const useAddFormData = (onClose: () => void) => {
           uploading: false,
         }));
         onClose();
-        fetchGeneralData(fiscalYear.id);
+        dispatch(fetchGeneralFiscalYear(fiscalYear.id));
       } else {
         setFormState((prevState) => ({
           ...prevState,

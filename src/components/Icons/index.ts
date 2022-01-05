@@ -45,3 +45,5 @@ export { default as TriangleWarningIcon } from './TriangleWarningIcon';
 export { default as ListBulletsIcon } from './ListBulletsIcon';
 export { default as InfoIcon } from './InfoIcon';
 export { default as UserIcon } from './UserIcon';
+export { default as ReportIcon } from './ReportIcon';
+export { default as CaretRightIcon } from './CaretRightIcon';

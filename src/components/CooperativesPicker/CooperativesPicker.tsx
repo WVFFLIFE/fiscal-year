@@ -30,6 +30,7 @@ function sortCooperatives<T extends CommonCooperativeModel>(coops: T[]) {
 }
 
 interface CooperativesPickerProps<T extends CommonCooperativeModel> {
+  disabled?: boolean;
   multiple?: boolean;
   cooperatives: T[];
   selectedCooperatives: T[];
@@ -42,6 +43,7 @@ interface BodyProps<T extends CommonCooperativeModel>
 }
 
 const Body = <T extends CommonCooperativeModel>({
+  disabled = false,
   multiple = false,
   cooperatives,
   onSelectCooperatives,
@@ -259,6 +261,7 @@ function isAllMyOwn(
 }
 
 const CooperativesPicker = <T extends CommonCooperativeModel>({
+  disabled = false,
   multiple = false,
   cooperatives,
   onSelectCooperatives,
@@ -297,6 +300,7 @@ const CooperativesPicker = <T extends CommonCooperativeModel>({
   return (
     <Picker
       className={classes.picker}
+      disabled={disabled}
       placeholder={`- ${t('#control.cooperativepicker.placeholder')} -`}
       renderValue={renderValue}
       renderBody={renderBody}

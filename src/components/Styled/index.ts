@@ -2,6 +2,7 @@ import Button from '@mui/material/Button';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import MuiIconButton from '@mui/material/IconButton';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import { styled } from '@mui/styles';
 import { alpha } from '@mui/material/styles';
@@ -235,4 +236,8 @@ export const Scroll = styled('div')(({ theme }) => ({
       background: 'rgba(100, 121, 143, 0.35)',
     },
   },
+}));
+
+export const BtnLoader = styled(CircularProgress)(() => ({
+  color: 'inherit',
 }));

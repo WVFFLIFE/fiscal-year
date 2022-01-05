@@ -8,14 +8,15 @@ import {
   SortModel,
   SortParamsType,
 } from 'models';
-import useGeneralCtx from 'hooks/useGeneralCtx';
+
+import useSelectFiscalYear from 'hooks/useSelectFiscalYear';
+
 import Services from 'services';
 
 import { saveAs } from 'file-saver';
 import _first from 'lodash/first';
 import _last from 'lodash/last';
 import { isPublished, isFolder, extractDocs, getErrorsList } from 'utils';
-import { getFiscalYearId } from 'utils/fiscalYear';
 import {
   prepareData,
   countEntitiesAmount,
@@ -66,10 +67,7 @@ interface State {
 }
 
 const useDocumentsData = () => {
-  const {
-    state: { fiscalYear },
-  } = useGeneralCtx();
-  const fiscalYearId = getFiscalYearId(fiscalYear);
+  const fiscalYear = useSelectFiscalYear();
   const [state, setState] = useState<State>({
     breadcrumbsList: [],
     loading: false,
@@ -159,10 +157,9 @@ const useDocumentsData = () => {
   }, [selectedItems]);
 
   const fetchFolders = async () => {
-    if (fiscalYearId) {
+    if (fiscalYear?.id) {
       try {
-        // test '53820CFC-8E4A-E711-8106-005056AC126A'
-        const res = await Services.getDocumentsList(fiscalYearId);
+        const res = await Services.getDocumentsList(fiscalYear.id);
 
         if (res.IsSuccess) {
           setState((prevState) => ({
@@ -205,14 +202,14 @@ const useDocumentsData = () => {
   };
 
   const refreshData = async () => {
-    if (!fiscalYearId) return;
+    if (!fiscalYear?.id) return;
     try {
       setState((prevState) => ({
         ...prevState,
         loading: true,
       }));
 
-      const res = await Services.getDocumentsList(fiscalYearId);
+      const res = await Services.getDocumentsList(fiscalYear.id);
 
       if (res.IsSuccess) {
         setState((prevState) => ({
@@ -645,7 +642,7 @@ const useDocumentsData = () => {
   };
 
   useEffect(() => {
-    if (fiscalYearId) {
+    if (fiscalYear?.id) {
       refreshData();
     }
   }, [fiscalYear]);

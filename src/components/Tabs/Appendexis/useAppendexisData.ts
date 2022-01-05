@@ -1,10 +1,15 @@
 import { useMemo, useCallback } from 'react';
-import useGeneralCtx from 'hooks/useGeneralCtx';
+import useAppDispatch from 'hooks/useAppDispatch';
+import useStateSelector from 'hooks/useStateSelector';
+import useSelectFiscalYear from 'hooks/useSelectFiscalYear';
+
+import { fetchGeneralFiscalYear } from 'features/generalPageSlice';
+
 import {
-  appendexisSelector,
-  runningNumberSettingsSelector,
-  getFiscalYearId,
-} from 'utils/fiscalYear';
+  selectAppendexisData,
+  selectRunningNumberSettings,
+} from 'selectors/generalPageSelectors';
+
 import { saveRequestAdapter } from './utils';
 
 import Services, { BaseResponseModel } from 'services';
@@ -26,19 +31,21 @@ interface Column {
 }
 
 const useAppendexisData = () => {
-  const {
-    fetchGeneralData,
-    state: { fiscalYear },
-  } = useGeneralCtx();
-  const appendexisData = appendexisSelector(fiscalYear);
-  const fiscalYearId = getFiscalYearId(fiscalYear);
-  const runningNumberSettings = runningNumberSettingsSelector(fiscalYear);
+  const dispatch = useAppDispatch();
+  const fiscalYear = useSelectFiscalYear();
+
+  const { appendexisData, runningNumberSettings } = useStateSelector(
+    (state) => ({
+      appendexisData: selectAppendexisData(state),
+      runningNumberSettings: selectRunningNumberSettings(state),
+    })
+  );
 
   const handleSaveAppendexisData = useCallback(
     async (req: { [key: string]: string | null }) => {
-      if (!appendexisData || !fiscalYearId) return;
+      if (!appendexisData || !fiscalYear?.id) return;
       const request = {
-        FiscalYearId: fiscalYearId,
+        FiscalYearId: fiscalYear.id,
         AccountingBasis: appendexisData.accountingBasis,
         AccountingBasisFormatted: appendexisData.accountingBasisFormatted,
         AccountingBasisHtml: appendexisData.accountingBasisHtml,
@@ -61,13 +68,11 @@ const useAppendexisData = () => {
 
       return Services.fiscalYearAppendexisUpdate(request);
     },
-    [appendexisData, fiscalYearId]
+    [appendexisData, fiscalYear?.id]
   );
 
   const handleUpdateFiscalYear = useCallback(async () => {
-    const fiscalYearId = getFiscalYearId(fiscalYear);
-
-    if (fiscalYearId) fetchGeneralData(fiscalYearId);
+    if (fiscalYear?.id) dispatch(fetchGeneralFiscalYear(fiscalYear.id));
   }, [fiscalYear]);
 
   const columns: Column[] = useMemo(

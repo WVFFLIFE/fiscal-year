@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
-import useGeneralCtx from 'hooks/useGeneralCtx';
+
+import useSelectFiscalYear from 'hooks/useSelectFiscalYear';
+
 import { partiesSectionsAdapter, PartySectionModel } from 'utils/fiscalYear';
 import { ErrorModel } from 'models';
 
@@ -12,8 +14,7 @@ interface StateModel {
 }
 
 const usePartiesData = () => {
-  const { fiscalYear } = useGeneralCtx().state;
-
+  const fiscalYear = useSelectFiscalYear();
   const [state, setState] = useState<StateModel>({
     sections: [],
     loading: false,

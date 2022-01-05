@@ -2,6 +2,9 @@ import format from 'date-fns/format';
 import isValid from 'date-fns/isValid';
 export { default as isBefore } from 'date-fns/isBefore';
 export { default as isSameDay } from 'date-fns/isSameDay';
+export { default as startOfYear } from 'date-fns/startOfYear';
+export { default as endOfYear } from 'date-fns/endOfYear';
+export { default as subYears } from 'date-fns/subYears';
 
 export const DEFAULT_FORMAT_PATTERN = 'd.M.yyyy';
 export const REQUEST_DATE_FORMAT_PATTERN = "yyyy-MM-dd'T'00:00:00";

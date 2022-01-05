@@ -6,6 +6,9 @@ export interface GeneralModel {
   CooperativeId: string;
   CooperativeName: string;
   CooperativeLink: string | null;
+  CreateAuditingLink: string | null;
+  CreateBoardMeetingLink: string | null;
+  CreateGeneralMeetingLink: string | null;
   EndDate: string | null;
   Id: string;
   IsClosed: boolean | null;

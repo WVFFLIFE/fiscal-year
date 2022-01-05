@@ -1,4 +1,4 @@
-import useGeneralCtx from './useGeneralCtx';
+import useSelectFiscalYear from './useSelectFiscalYear';
 
 export interface CooperativeModel {
   name: string;
@@ -6,9 +6,7 @@ export interface CooperativeModel {
 }
 
 const useCooperative = (): CooperativeModel | null => {
-  const {
-    state: { fiscalYear },
-  } = useGeneralCtx();
+  const fiscalYear = useSelectFiscalYear();
 
   if (
     !fiscalYear ||

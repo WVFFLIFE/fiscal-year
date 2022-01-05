@@ -1,16 +1,21 @@
 import { useState, useCallback, useMemo } from 'react';
 import { ErrorModel, OptionalNumber, OptionalString } from 'models';
-import {
-  getFiscalYearId,
-  getBalancesData,
-  getBalancesProducts,
-  unzipProducts,
-  hasEmptyProduct,
-  getPropertyMaintenanceData,
-  getVATCalculationData,
-} from 'utils/fiscalYear';
-import useGeneralCtx from 'hooks/useGeneralCtx';
+
+import useAppDispatch from 'hooks/useAppDispatch';
+import useStateSelector from 'hooks/useStateSelector';
+import useSelectFiscalYear from 'hooks/useSelectFiscalYear';
 import useToggleSwitch from 'hooks/useToggleSwitch';
+
+import { fetchGeneralFiscalYear } from 'features/generalPageSlice';
+
+import {
+  selectBalancesData,
+  selectBalancesProducts,
+  selectPropertyMaintenanceData,
+  selectVATCalculationData,
+} from 'selectors/generalPageSelectors';
+
+import { unzipProducts, hasEmptyProduct } from 'utils/fiscalYear';
 
 import Services from 'services';
 
@@ -20,18 +25,20 @@ interface RequestStateModel {
 }
 
 const useBalancesData = () => {
-  const {
-    fetchGeneralData,
-    state: { fiscalYear },
-  } = useGeneralCtx();
+  const dispatch = useAppDispatch();
+  const fiscalYear = useSelectFiscalYear();
 
-  const fiscalYearId = fiscalYear && getFiscalYearId(fiscalYear);
-  const balancesData = fiscalYear && getBalancesData(fiscalYear);
-  const products = balancesData && getBalancesProducts(balancesData);
-  const propertyMaintenanceData =
-    balancesData && getPropertyMaintenanceData(balancesData);
-  const vatCalculationData =
-    balancesData && getVATCalculationData(balancesData);
+  const {
+    balancesData,
+    products,
+    propertyMaintenanceData,
+    vatCalculationData,
+  } = useStateSelector((state) => ({
+    balancesData: selectBalancesData(state),
+    products: selectBalancesProducts(state),
+    propertyMaintenanceData: selectPropertyMaintenanceData(state),
+    vatCalculationData: selectVATCalculationData(state),
+  }));
 
   const [showDialog, toggleShowDialog] = useToggleSwitch(false);
   const [requestState, setRequestState] = useState<RequestStateModel>({
@@ -44,12 +51,12 @@ const useBalancesData = () => {
       options: { [key: string]: OptionalNumber | OptionalString },
       cb?: () => void
     ) => {
-      if (!fiscalYearId || !balancesData || !products) return;
+      if (!fiscalYear?.id || !balancesData || !products) return;
 
       const unzippedProducts = unzipProducts(products);
 
       const reqBody = {
-        FiscalYearId: fiscalYearId,
+        FiscalYearId: fiscalYear.id,
         PropertyMeintenanceProductName:
           balancesData.propertyMaintenanceProductName,
         PropertyMeintenanceSurplusDeficitPreviousFY:
@@ -110,7 +117,7 @@ const useBalancesData = () => {
             loading: false,
           }));
 
-          fetchGeneralData(fiscalYearId);
+          dispatch(fetchGeneralFiscalYear(fiscalYear.id));
           return;
         }
 
@@ -125,7 +132,7 @@ const useBalancesData = () => {
         }));
       }
     },
-    [balancesData, fiscalYearId]
+    [balancesData, fiscalYear?.id]
   );
 
   const handleInitError = () => {

@@ -1,6 +1,6 @@
 import { useState, SyntheticEvent, FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import useGeneralCtx from 'hooks/useGeneralCtx';
+import useSelectFiscalYear from 'hooks/useSelectFiscalYear';
 
 import Box from '@mui/material/Box';
 import MuiTabs from '@mui/material/Tabs';
@@ -41,7 +41,7 @@ const tabsList: TabItemModel[] = [
 const Tabs: FC = () => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const { fiscalYear } = useGeneralCtx().state;
+  const fiscalYear = useSelectFiscalYear();
 
   const [selectedTab, setSelectedTab] = useState<string>('general');
 

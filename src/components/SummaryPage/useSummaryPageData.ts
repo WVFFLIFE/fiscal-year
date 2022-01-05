@@ -1,5 +1,9 @@
 import { useState, useCallback, useMemo } from 'react';
-import useGeneralCtx from 'hooks/useGeneralCtx';
+import { batch, useDispatch } from 'react-redux';
+import {
+  setDefaultCooperativeId,
+  setDefaultFiscalYearId,
+} from 'features/appSlice';
 import {
   CommonCooperativeModel,
   ExtendedCooperativeModel,
@@ -29,6 +33,7 @@ interface StateModel {
 }
 
 const useSummaryPageData = () => {
+  const dispatch = useDispatch();
   const [state, setState] = useState<StateModel>({
     extendedCooperatives: [],
     loading: false,
@@ -44,7 +49,6 @@ const useSummaryPageData = () => {
       cooperatives: [],
     },
   });
-  const { update } = useGeneralCtx();
 
   const fetchExtendedCooperativesList = async (
     selectedCooperatives: CommonCooperativeModel[],
@@ -65,8 +69,6 @@ const useSummaryPageData = () => {
         startDate,
         endDate
       );
-
-      console.log(selectedCooperatives, selectedCalendarYear);
 
       if (res.IsSuccess) {
         setState((prevState) => ({
@@ -115,13 +117,12 @@ const useSummaryPageData = () => {
 
   const handleSelectCooperative = useCallback(
     (coop: ExtendedCooperativeModel) => {
-      update((prevState) => ({
-        ...prevState,
-        defaultCooperativeId: coop.Id,
-        defaultFiscalYearId: coop.FiscalYearId,
-      }));
+      batch(() => {
+        dispatch(setDefaultFiscalYearId(coop.FiscalYearId));
+        dispatch(setDefaultCooperativeId(coop.Id));
+      });
     },
-    []
+    [dispatch]
   );
 
   const handleChangeCalendarYear = useCallback((newVal: CalendarYearOption) => {

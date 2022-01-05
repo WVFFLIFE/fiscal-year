@@ -9,6 +9,9 @@ export const useStyles = makeStyles(() => ({
   paper: {
     borderRadius: 0,
   },
+  paperWidthXs: {
+    maxWidth: 480,
+  },
   root: {
     position: 'relative',
     padding: 40,

@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback, ChangeEvent } from 'react';
-import useGeneralCtx from 'hooks/useGeneralCtx';
+
+import useSelectFiscalYear from 'hooks/useSelectFiscalYear';
+
 import { ErrorModel } from 'models';
 import { Services } from 'services/s';
 import { liabilitiesAdapter, EnhancedLiability } from 'utils/liabilities';
@@ -15,9 +17,7 @@ interface RequestState {
 }
 
 const useLiabilitiesData = () => {
-  const {
-    state: { fiscalYear },
-  } = useGeneralCtx();
+  const fiscalYear = useSelectFiscalYear();
   const [requestState, setRequestState] = useState<RequestState>({
     liabilities: [],
     selectedRows: [],

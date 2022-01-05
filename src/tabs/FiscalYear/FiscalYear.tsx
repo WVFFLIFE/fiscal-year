@@ -1,5 +1,5 @@
 import useFiscalYearData from './useFiscalYearData';
-import useGeneralCtx from 'hooks/useGeneralCtx';
+import useStateSelector from 'hooks/useStateSelector';
 
 import TopBar from 'components/TopBar';
 import Backdrop from 'components/Backdrop';
@@ -8,36 +8,25 @@ import SummaryPage from 'components/SummaryPage';
 import GeneralPage from 'components/GeneralPage';
 
 const FiscalYear = () => {
-  const {
-    state: {
-      defaultFiscalYearId,
-      defaultCooperativeId,
-      loading: fiscalYearLoading,
-      error: fiscalYearError,
-    },
-    handleInitGeneralInformationError,
-  } = useGeneralCtx();
+  const { defaultCooperativeId, defaultFiscalYearId } = useStateSelector(
+    (state) => state.app
+  );
   const { state, handleInitError } = useFiscalYearData();
 
-  const showLoader = state.loading || fiscalYearLoading;
-  const errors = state.error || fiscalYearError;
-  const initError = state.error
-    ? handleInitError
-    : handleInitGeneralInformationError;
+  const showGeneralPage = defaultFiscalYearId && defaultCooperativeId;
+  const showLoader = state.loading;
+  const errors = state.error;
 
   return (
     <>
       <TopBar />
-      {defaultCooperativeId && defaultFiscalYearId ? (
-        <GeneralPage
-          defaultCooperativeId={defaultCooperativeId}
-          defaultFiscalYearId={defaultFiscalYearId}
-        />
+      {showGeneralPage ? (
+        <GeneralPage />
       ) : (
         <SummaryPage commonCooperatives={state.commonCooperatives} />
       )}
       <Backdrop loading={showLoader} />
-      <DialogError error={errors} initError={initError} />
+      <DialogError error={errors} initError={handleInitError} />
     </>
   );
 };

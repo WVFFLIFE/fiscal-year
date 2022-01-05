@@ -1,5 +1,6 @@
 import useGeneralPageData from './useGeneralPageData';
 import { useTranslation } from 'react-i18next';
+import useSelectFiscalYear from 'hooks/useSelectFiscalYear';
 
 import Box from '@mui/material/Box';
 import {
@@ -20,52 +21,45 @@ import SelectedInfo from './SelectedInfo';
 
 import { useStyles } from './style';
 
-interface GeneralPageProps {
-  defaultCooperativeId: string;
-  defaultFiscalYearId: string;
-}
-
-const GeneralPage: React.FC<GeneralPageProps> = ({
-  defaultCooperativeId,
-  defaultFiscalYearId,
-}) => {
+const GeneralPage: React.FC = () => {
   const classes = useStyles();
   const { t } = useTranslation();
+  const fiscalYear = useSelectFiscalYear();
   const {
-    state,
-    generalData,
+    generalPageData,
     backwardToSummaryPage,
-    isDisabledApplyButton,
     handleRefreshData,
-    handleApplyClick,
     handleInitError,
     handleChangeFiscalYear,
     handleChangeSearchTerm,
     handleChangeSelectedCooperatives,
-  } = useGeneralPageData(defaultCooperativeId, defaultFiscalYearId);
+    handleApplyClick,
+  } = useGeneralPageData();
+
+  const { filters, loading, error } = generalPageData;
 
   return (
     <>
       <FiltersWrapper>
         <Box padding={4} paddingX={2}>
           <CooperativesPicker
-            cooperatives={state.cooperatives}
+            cooperatives={filters.cooperatives.list}
             selectedCooperatives={
-              state.selected.cooperative ? [state.selected.cooperative] : []
+              filters.cooperatives.next ? [filters.cooperatives.next] : []
             }
             onSelectCooperatives={handleChangeSelectedCooperatives}
           />
         </Box>
         <Box padding={4} paddingX={2}>
           <FiscalYearPicker
-            value={state.selected.fiscalYear}
-            options={state.fiscalYears}
+            value={filters.fiscalYears.next}
+            options={filters.fiscalYears.list}
             onSelectFiscalYear={handleChangeFiscalYear}
           />
         </Box>
         <Box padding={4} paddingX={2}>
           <ApplyButton
-            disabled={isDisabledApplyButton}
+            disabled={!!!filters.fiscalYears.next}
             onClick={handleApplyClick}
           >
             {t('#button.apply')}
@@ -82,26 +76,26 @@ const GeneralPage: React.FC<GeneralPageProps> = ({
           </Box>
           <Box padding={4} paddingRight={2} paddingLeft={1}>
             <PageSearch
-              searchTerm={state.searchTerm}
+              searchTerm={filters.searchTerm}
               onChange={handleChangeSearchTerm}
             />
           </Box>
         </Box>
       </FiltersWrapper>
-      {state.prev.cooperative && state.prev.fiscalYear ? (
+      {filters.cooperatives.current && filters.fiscalYears.current ? (
         <Container className={classes.offsetTop}>
           <SelectedInfo
-            selectedCooperative={state.prev.cooperative}
-            fiscalYear={state.prev.fiscalYear}
+            selectedCooperative={filters.cooperatives.current}
+            fiscalYear={filters.fiscalYears.current}
             backwardToSummaryPage={backwardToSummaryPage}
           />
-          {generalData && <Tabs />}
+          {fiscalYear && <Tabs />}
         </Container>
       ) : (
         <InfoBox>{t('#info.selectanotherfiscalyear')}</InfoBox>
       )}
-      <Backdrop loading={state.loading} />
-      <DialogError error={state.error} initError={handleInitError} />
+      <Backdrop loading={loading} />
+      <DialogError error={error} initError={handleInitError} />
     </>
   );
 };

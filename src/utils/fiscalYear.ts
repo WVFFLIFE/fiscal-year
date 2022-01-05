@@ -171,6 +171,12 @@ export interface PartyModel {
   startDate: OptionalString;
 }
 
+export interface EventsModel {
+  createAuditingLink: string | null;
+  createBoardMeetingLink: string | null;
+  createGeneralMeetingLink: string | null;
+}
+
 export interface PartySectionModel {
   list: PartyModel[];
   type: PartyRoleType;
@@ -182,6 +188,7 @@ export interface FiscalYearModel {
   balances: BalancesModel;
   general: GeneralModel;
   consumption: ConsumptionModel;
+  events: EventsModel;
   id: string;
   isClosed: boolean;
 }
@@ -469,6 +476,11 @@ export function makeFiscalYear(
       isClosed: get(fiscalYearRes, 'IsClosed', false),
       id: fiscalYearRes.Id,
     },
+    events: {
+      createAuditingLink: fiscalYearRes.CreateAuditingLink,
+      createBoardMeetingLink: fiscalYearRes.CreateBoardMeetingLink,
+      createGeneralMeetingLink: fiscalYearRes.CreateGeneralMeetingLink,
+    },
     id: fiscalYearRes.Id,
     isClosed: get(fiscalYearRes, 'IsClosed', false),
   };
@@ -487,44 +499,8 @@ export function runningNumberSettingsSelector(
   return fiscalYear && fiscalYear.appendexis.runningNumberSettings;
 }
 
-export function getBalancesData(fiscalYear: FiscalYearModel | null) {
-  return fiscalYear && fiscalYear.balances;
-}
-
-export function getConsumptionData(fiscalYear: FiscalYearModel | null) {
-  return fiscalYear && fiscalYear.consumption;
-}
-
 export function getGeneralData(fiscalYear: FiscalYearModel) {
   return fiscalYear && fiscalYear.general;
-}
-
-export function getFiscalYearId(fiscalYear: FiscalYearModel | null) {
-  return fiscalYear && fiscalYear.id;
-}
-
-export function getBalancesProducts(balanceData: BalancesModel) {
-  return balanceData ? balanceData.products : [];
-}
-
-export function getPropertyMaintenanceData(
-  balancesData: BalancesModel
-): CommonProductDataModel {
-  return {
-    productName: balancesData.propertyMaintenanceProductName,
-    surplusDeficitPreviousFY:
-      balancesData.propertyMaintenanceSurplusDeficitPreviousFY,
-  };
-}
-
-export function getVATCalculationData(
-  balancesData: BalancesModel
-): CommonProductDataModel {
-  return {
-    productName: balancesData.vatCalculationsProductName,
-    surplusDeficitPreviousFY:
-      balancesData.vatCalculationsSurplusDeficitPreviousFY,
-  };
 }
 
 export function unzipProducts(products: BalanceProductModel[]) {

@@ -1,7 +1,11 @@
 import { ErrorModel } from 'models';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import useGeneralCtx from 'hooks/useGeneralCtx';
+
+import useAppDispatch from 'hooks/useAppDispatch';
+
+import { fetchGeneralFiscalYear } from 'features/generalPageSlice';
+
 import { sleep, readFile } from 'utils';
 import { serverFormat } from 'utils/dates';
 import { GeneralModel } from 'utils/fiscalYear';
@@ -20,8 +24,8 @@ interface StateModel {
 }
 
 const useGeneralData = (data: GeneralModel) => {
+  const dispatch = useAppDispatch();
   const { t } = useTranslation();
-  const { fetchGeneralData } = useGeneralCtx();
   const [state, setState] = useState<StateModel>({
     file: null,
     progress: 0,
@@ -270,7 +274,7 @@ const useGeneralData = (data: GeneralModel) => {
               saving: false,
             }));
 
-            return await fetchGeneralData(fiscalYearId);
+            dispatch(fetchGeneralFiscalYear(fiscalYearId));
           } else {
             throw new Error(res.Message);
           }

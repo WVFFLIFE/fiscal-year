@@ -34,6 +34,7 @@ const Dialog: React.FC<DialogProps> = ({
         // root: classes.dialog,
         paper: classes.paper,
         paperWidthMd: classes.paperWidthMd,
+        paperWidthXs: classes.paperWidthXs,
       }}
       open={open}
       onClose={onClose}

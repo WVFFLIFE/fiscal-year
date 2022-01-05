@@ -22,6 +22,20 @@ export namespace Services {
       ResponseCode: T | null;
     }
 
+    export namespace General {
+      export interface FiscalYear {
+        Id: string;
+        Name: string;
+        IsClosed: boolean | null;
+        StartDate: string;
+        EndDate: string;
+      }
+
+      export interface FiscalYearsListResponse extends BaseResponse {
+        FiscalYears: FiscalYear[];
+      }
+    }
+
     export namespace FiscalYear {
       export namespace Lock {
         export interface Response
@@ -250,6 +264,16 @@ export namespace Services {
       );
     };
   }
+  export class General extends CRMConnector {
+    getCooperativeFiscalYearsList = async (
+      cooperativeId: string
+    ): Promise<Model.General.FiscalYearsListResponse> => {
+      return await this.executeRequest(
+        'uds_FiscalYearCooperativeFiscalYearsList',
+        { CooperativeId: cooperativeId }
+      );
+    };
+  }
   export class FiscalYear extends CRMConnector {
     get = async (fiscalYearId: string) => {
       return await this.executeRequest('uds_FiscalYearRequest', {
@@ -297,9 +321,25 @@ export namespace Services {
     ): Promise<Model.FiscalYear.Save.Response> => {
       return await this.executeTypeRequest('uds_FiscalYearUpdate', 3, request);
     };
+
+    createFromSource = async (
+      sourceFiscalYearId: string
+    ): Promise<BaseResponse> => {
+      return await this.executeTypeRequest('uds_FiscalYearCreate', 1, {
+        SourceFiscalYearId: sourceFiscalYearId,
+      });
+    };
+
+    createFromTemplate = async (
+      cooperativeId: string
+    ): Promise<BaseResponse> => {
+      return await this.executeTypeRequest('uds_FiscalYearCreate', 2, {
+        CooperativeId: cooperativeId,
+      });
+    };
   }
   export class ConsumptionImage extends CRMConnector {
-    get = async (fiscalYearId: string): Promise<Model.BaseResponse> => {
+    get = async (fiscalYearId: string): Promise<BaseResponse> => {
       return await this.executeTypeRequest(
         'uds_FiscalYearAttachmentRequest',
         2,
@@ -434,6 +474,7 @@ export namespace Services {
 
 /* eslint-disable*/
 import BaseResponse = Services.Model.BaseResponse;
+import FiscalYear = Services.Model.General.FiscalYear;
 import Liability = Services.Model.Liabilities.Liability;
 import LiabilityDetails = Services.Model.Liabilities.LiabilityDetails;
 import Comment = Services.Model.Comments.Comment;
@@ -446,5 +487,6 @@ export type {
   LiabilityDetails, 
   Organization, 
   LiabilityFormBody, 
-  BaseResponse 
+  BaseResponse,
+  FiscalYear,
 };
