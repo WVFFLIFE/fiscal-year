@@ -1,6 +1,7 @@
 import { memo, FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import useArticleEditorData from './useArticleEditorData';
+
 import { EditorData } from 'models';
 import { BaseResponseModel } from 'services';
 
@@ -69,7 +70,11 @@ const ArticleEditor: FC<ArticleEditorProps> = ({
               onChangeEditorState={handleChangeEditorState}
             />
           </div>
-          <div className={classes.actions}>
+          <div
+            className={clsx(classes.actions, {
+              [classes.active]: editModeOn,
+            })}
+          >
             {disabled ? null : editModeOn ? (
               <>
                 <ActionButton

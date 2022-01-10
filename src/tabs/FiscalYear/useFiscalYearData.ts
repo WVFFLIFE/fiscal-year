@@ -12,12 +12,9 @@ interface StateModel {
   commonCooperatives: CommonCooperativeModel[];
   extendedCooperatives: ExtendedCooperativeModel[];
   selectedCooperatives: CommonCooperativeModel[];
-  defaultCooperative: string | null;
-  defaultFiscalYear: string | null;
   loading: boolean;
   error: ErrorModel | null;
   selectedCalendarYear: CalendarYearOption | null;
-  showGeneralPage: boolean;
   showSummaryPage: boolean;
 }
 
@@ -26,12 +23,9 @@ const useFiscalYearData = () => {
     commonCooperatives: [],
     extendedCooperatives: [],
     selectedCooperatives: [],
-    defaultCooperative: (window.top as any)?.selectedData?.orgId,
-    defaultFiscalYear: (window.top as any)?.selectedData?.fyId,
     error: null,
     loading: true,
     selectedCalendarYear: null,
-    showGeneralPage: false,
     showSummaryPage: false,
   });
 
@@ -92,7 +86,11 @@ const useFiscalYearData = () => {
           loading: true,
         }));
 
-        const res = await Services.getCooperativesList();
+        const res = await Services.getCooperativesList(
+          undefined,
+          undefined,
+          true
+        );
 
         if (res.IsSuccess) {
           setState((prevState) => ({

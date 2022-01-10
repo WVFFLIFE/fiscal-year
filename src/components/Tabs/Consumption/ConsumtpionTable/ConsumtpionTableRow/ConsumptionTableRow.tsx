@@ -4,6 +4,7 @@ import Box from '@mui/material/Box';
 import Input from 'components/Input';
 import ActionButton from 'components/ActionButton';
 import { EditIcon, CloseIcon, RoundCheckIcon } from 'components/Icons';
+import Highlight from 'components/Highlight';
 
 import clsx from 'clsx';
 import { useStyles } from './style';
@@ -89,7 +90,7 @@ const ConsumptionTableRow: React.FC<ConsumptionTableRowProps> = ({
             inputClasses={{ input: classes.input }}
           />
         ) : (
-          data
+          data && <Highlight text={String(data)} />
         )}
       </Box>
       <Box className={clsx(classes.cell, classes.actions)}>

@@ -1,7 +1,9 @@
 import { memo, useMemo, FC } from 'react';
 import { useTranslation } from 'react-i18next';
+import useStateSelector from 'hooks/useStateSelector';
 import { PartyModel } from 'utils/fiscalYear';
 import useToggleSwitch from 'hooks/useToggleSwitch';
+import { search, AccessorModel } from 'utils/search';
 import { Column, SortModel } from 'models';
 
 import DefaultTable from 'components/DefaultTable';
@@ -36,6 +38,13 @@ const defaultSortParams: SortModel<PartyModel> = {
   type: 'alphanumeric',
 };
 
+const searchAccessorsList: AccessorModel[] = [
+  { accessor: 'role', type: 'string' },
+  { accessor: 'name', type: 'string' },
+  { accessor: 'startDate', type: 'date' },
+  { accessor: 'endDate', type: 'date' },
+];
+
 const PartySection: FC<PartySectionProps> = ({
   title,
   parties,
@@ -43,6 +52,10 @@ const PartySection: FC<PartySectionProps> = ({
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
+
+  const searchTerm = useStateSelector(
+    (state) => state.generalPage.filters.searchTerm
+  );
 
   const [expanded, toggleExpanded] = useToggleSwitch(defaultExpanded);
 
@@ -93,6 +106,11 @@ const PartySection: FC<PartySectionProps> = ({
     [classes]
   );
 
+  const filteredParties = useMemo(
+    () => search(parties, searchAccessorsList, searchTerm),
+    [searchTerm, parties]
+  );
+
   return (
     <Box>
       <Box className={classes.row} onClick={toggleExpanded}>
@@ -110,7 +128,7 @@ const PartySection: FC<PartySectionProps> = ({
       <Collapse in={expanded}>
         <Box padding="20px" paddingTop={0}>
           <DefaultTable
-            data={parties}
+            data={filteredParties}
             columns={columns}
             size="small"
             sortParams={defaultSortParams}

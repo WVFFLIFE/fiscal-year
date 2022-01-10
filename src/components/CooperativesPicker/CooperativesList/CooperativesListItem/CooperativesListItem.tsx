@@ -11,6 +11,7 @@ import clsx from 'clsx';
 import { useStyles } from './style';
 
 export interface CooperativesListItemProps<T extends CommonCooperativeModel> {
+  disabled?: boolean;
   multiple: boolean;
   cooperative: T;
   selected: boolean;
@@ -20,6 +21,7 @@ export interface CooperativesListItemProps<T extends CommonCooperativeModel> {
 }
 
 const CooperativesListItem = <T extends CommonCooperativeModel>({
+  disabled,
   multiple,
   cooperative,
   selected,
@@ -35,6 +37,8 @@ const CooperativesListItem = <T extends CommonCooperativeModel>({
     }
   }, [measure]);
 
+  const isDisabled = !selected && disabled;
+
   return (
     <MenuItem
       key={cooperative.Id}
@@ -44,12 +48,14 @@ const CooperativesListItem = <T extends CommonCooperativeModel>({
         selected: classes.selected,
       }}
       onMouseUp={() => onClick(cooperative, selected)}
+      disabled={isDisabled}
       data-testid="cooperative-item"
       style={style}
       component="div"
     >
       {multiple ? (
         <CheckboxControl
+          disabled={isDisabled}
           checked={selected}
           label={cooperative.Name}
           classes={{ label: classes.checkboxLabel }}

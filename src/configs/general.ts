@@ -1,5 +1,18 @@
+export interface GroupsModel {
+  IncludeClosingTheBookReport: boolean;
+  IncludeProfitStatementReport: boolean;
+  IncludeBalanceSheetReport: boolean;
+  IncludeBalanceSheetBreakdownReport: boolean;
+  IncludeLedgerAccountBook: boolean;
+  IncludeDailyBook: boolean;
+  IncludeBalance: boolean;
+  IncludeProductSales: boolean;
+  IncludeShareRegister: boolean;
+  // IncludeAnnualReportAndFinanceCalculationOfCooperative: boolean;
+}
+
 interface SelectionListItem {
-  id: string;
+  id: keyof GroupsModel;
   headerName: string;
 }
 
@@ -13,40 +26,40 @@ const generalConfig: Readonly<GeneralConfig> = {
   annualReportPage: {
     selectionList: [
       {
-        id: 'closingthebookreport',
+        id: 'IncludeClosingTheBookReport',
         headerName: '#dialog.annualreport.selection.closingthebookreport',
       },
       {
-        id: 'profitstatementreport',
+        id: 'IncludeProfitStatementReport',
         headerName: '#dialog.annualreport.selection.profitstatementreport',
       },
       {
-        id: 'balancesheetreport',
+        id: 'IncludeBalanceSheetReport',
         headerName: '#dialog.annualreport.selection.balancesheetreport',
       },
       {
-        id: 'balancesheetbreakdownreport',
+        id: 'IncludeBalanceSheetBreakdownReport',
         headerName:
           '#dialog.annualreport.selection.balancesheetbreakdownreport',
       },
       {
-        id: 'ledgeraccountbook',
+        id: 'IncludeLedgerAccountBook',
         headerName: '#dialog.annualreport.selection.ledgeraccountbook',
       },
       {
-        id: 'dailybook',
+        id: 'IncludeDailyBook',
         headerName: '#dialog.annualreport.selection.dailybook',
       },
       {
-        id: 'balance',
+        id: 'IncludeBalance',
         headerName: '#dialog.annualreport.selection.balance',
       },
       {
-        id: 'productsales',
+        id: 'IncludeProductSales',
         headerName: '#dialog.annualreport.selection.productsales',
       },
       {
-        id: 'shareregister',
+        id: 'IncludeShareRegister',
         headerName: '#dialog.annualreport.selection.shareregister',
       },
     ],

@@ -41,9 +41,13 @@ export const useStyles = makeStyles((theme) => ({
   },
   actions: {
     display: 'flex',
+    alignItems: 'flex-start',
     justifyContent: 'flex-end',
     flex: 2,
     opacity: 0,
+  },
+  active: {
+    opacity: 1,
   },
   cancelBtnOffset: {
     marginRight: 20,

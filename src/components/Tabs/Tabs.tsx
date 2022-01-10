@@ -1,6 +1,8 @@
 import { useState, SyntheticEvent, FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import useSelectFiscalYear from 'hooks/useSelectFiscalYear';
+import useAppDispatch from 'hooks/useAppDispatch';
+import { setSearchTerm } from 'features/generalPageSlice';
 
 import Box from '@mui/material/Box';
 import MuiTabs from '@mui/material/Tabs';
@@ -26,26 +28,28 @@ interface TabItemModel {
 const tabsList: TabItemModel[] = [
   { label: '#tab.general', value: 'general' },
   {
-    label: 'Fiscal Year Balances',
+    label: '#tab.balances',
     value: 'balances',
   },
   { label: '#tab.consumption', value: 'consumption' },
   { label: '#tab.annualreport', value: 'annualReport' },
   { label: '#tab.parties', value: 'parties' },
   { label: '#tab.appendexis', value: 'appendexis' },
-  { label: 'Liabilities', value: 'liabilities' },
+  { label: '#tab.liabilities', value: 'liabilities' },
   { label: '#tab.documents', value: 'documents' },
-  { label: 'Comments', value: 'comments' },
+  { label: '#tab.comments', value: 'comments' },
 ];
 
 const Tabs: FC = () => {
   const classes = useStyles();
   const { t } = useTranslation();
   const fiscalYear = useSelectFiscalYear();
+  const dispatch = useAppDispatch();
 
   const [selectedTab, setSelectedTab] = useState<string>('general');
 
   const handleChangeSelectedTab = (e: SyntheticEvent, newValue: string) => {
+    dispatch(setSearchTerm(''));
     setSelectedTab(newValue);
   };
 

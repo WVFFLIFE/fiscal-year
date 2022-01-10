@@ -4,12 +4,15 @@ import { useTranslation } from 'react-i18next';
 import { CommonCooperativeModel, FiscalYearModel } from 'models';
 import generalConfig from 'configs/general';
 
+import Box from '@mui/material/Box';
 import CooperativesPicker from 'components/CooperativesPicker';
 import FiscalYearPicker from 'components/FiscalYearPicker';
 import CheckboxControl from 'components/CheckboxControl';
 import ActionButton from 'components/ActionButton';
 import CaretRightIcon from 'components/Icons/ArrowRightIcon';
-import Box from '@mui/material/Box';
+import Dialog from 'components/Dialog';
+import SuccessDialogView from 'components/SuccessDialogView';
+import DialogError from 'components/DialogError';
 
 import { useStyles } from './style';
 
@@ -42,9 +45,12 @@ const AnnualReportForm = () => {
   const {
     state,
     filters,
-    selectedAll,
+    successDialog,
+    handleLoadReports,
     handleChangeSelectedGroup,
     handleSelectAll,
+    handleInitError,
+    handleSaveToDocuments,
   } = useAnnualReportFormData();
 
   const CheckboxClasses = useMemo(
@@ -54,6 +60,19 @@ const AnnualReportForm = () => {
     [classes]
   );
 
+  const { isIndeterminated, selectedAll } = useMemo(() => {
+    const valuesList = Object.values(state.selectedGroups);
+    const selectedAll = valuesList.every(Boolean);
+    const isIndeterminated = valuesList.some(Boolean) && !selectedAll;
+
+    return { isIndeterminated, selectedAll };
+  }, [state.selectedGroups]);
+
+  const selectedCooperatives = useMemo(
+    () => (filters.cooperatives.current ? [filters.cooperatives.current] : []),
+    [filters.cooperatives]
+  );
+
   return (
     <div className={classes.root}>
       <div>
@@ -61,9 +80,7 @@ const AnnualReportForm = () => {
           <CooperativesPicker
             disabled
             cooperatives={filters.cooperatives.list}
-            selectedCooperatives={
-              filters.cooperatives.current ? [filters.cooperatives.current] : []
-            }
+            selectedCooperatives={selectedCooperatives}
             onSelectCooperatives={mock}
           />
         </Box>
@@ -82,11 +99,11 @@ const AnnualReportForm = () => {
             label={t('#dialog.annualreport.selection.all')}
             checked={selectedAll}
             onChange={handleSelectAll}
-            indeterminate={!!state.selectedGroups.length && !selectedAll}
+            indeterminate={isIndeterminated}
           />
         </li>
         {generalConfig.annualReportPage.selectionList.map((group) => {
-          const checked = state.selectedGroups.includes(group.id);
+          const checked = state.selectedGroups[group.id];
           return (
             <li key={group.id} className={classes.selectionListItem}>
               <CheckboxControl
@@ -102,13 +119,36 @@ const AnnualReportForm = () => {
       </ul>
       <Divider />
       <div className={classes.btnsWrapper}>
-        <ActionButton palette="darkBlue" className={classes.loadBtn}>
+        <ActionButton
+          palette="darkBlue"
+          className={classes.loadBtn}
+          onClick={handleLoadReports}
+          disabled={state.creating || state.saving}
+          loading={state.creating}
+        >
           {t('#dialog.annualreport.button.load')}
         </ActionButton>
-        <ActionButton palette="darkBlue">
+        <ActionButton
+          palette="darkBlue"
+          onClick={handleSaveToDocuments}
+          disabled={state.creating || state.saving}
+          loading={state.saving}
+        >
           {t('#dialog.annualreport.button.savetodocuments')}
         </ActionButton>
       </div>
+      <Dialog
+        maxWidth="xs"
+        open={successDialog.isOpen}
+        handleClose={successDialog.close}
+        title={'Notification'}
+      >
+        <SuccessDialogView
+          text={t('#dialog.annualreport.savetodocuments.success')}
+          onClose={successDialog.close}
+        />
+      </Dialog>
+      <DialogError error={state.error} initError={handleInitError} />
     </div>
   );
 };

@@ -12,6 +12,7 @@ import TypeLink from './TypeLink';
 import Backdrop from 'components/Backdrop';
 import DialogError from 'components/DialogError';
 import { SubTitle } from 'components/Styled';
+import Highlight from 'components/Highlight';
 
 import clsx from 'clsx';
 import { useStyles } from './style';
@@ -46,7 +47,11 @@ const General: FC<GeneralTabProps> = ({ data }) => {
         accessor: 'type',
         type: 'string',
         headStyle: { width: '70%' },
-        render: (el) => <TypeLink href={el.link}>{el.type}</TypeLink>,
+        render: (el) => (
+          <TypeLink href={el.link}>
+            {el.type && <Highlight text={el.type} />}
+          </TypeLink>
+        ),
       },
       {
         label: '#tab.general.meetings.table.startdatetime',
@@ -66,7 +71,11 @@ const General: FC<GeneralTabProps> = ({ data }) => {
         type: 'string',
         headStyle: { width: '70%' },
         cellClassName: clsx(classes.commonTableCell, classes.type),
-        render: (el) => <TypeLink href={el.link}>{el.type}</TypeLink>,
+        render: (el) => (
+          <TypeLink href={el.link}>
+            {el.type && <Highlight text={el.type} />}
+          </TypeLink>
+        ),
       },
       {
         label: '#tab.general.auditing.table.startdate',

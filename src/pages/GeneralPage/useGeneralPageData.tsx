@@ -28,6 +28,8 @@ const useGeneralPageData = () => {
       generalPageData: state.generalPage,
     }));
 
+  const { filters } = generalPageData;
+
   useEffect(() => {
     if (firstMount.current && defaultCooperativeId && defaultFiscalYearId) {
       (async function () {
@@ -48,32 +50,29 @@ const useGeneralPageData = () => {
   // Update fiscal years list if it's not a first render
   // and cooperative in filter was changed.
   useEffect(() => {
-    if (generalPageData.filters.cooperatives.next && !firstMount.current) {
-      dispatch(
-        updateFiscalYearsList(generalPageData.filters.cooperatives.next.Id)
-      );
+    if (filters.cooperatives.next?.Id && !firstMount.current) {
+      dispatch(updateFiscalYearsList(filters.cooperatives.next.Id));
     }
-  }, [dispatch, generalPageData.filters.cooperatives.next]);
+  }, [dispatch, filters.cooperatives.next?.Id]);
 
   const backwardToSummaryPage = useCallback(() => {
     dispatch(resetDefaultIds());
   }, [dispatch]);
 
   const handleRefreshData = async () => {
-    // if (state.selected.cooperative && state.selected.fiscalYear) {
-    //   await fetchData(
-    //     state.selected.cooperative.Id,
-    //     state.selected.fiscalYear.Id
-    //   );
-    // }
-    // if (state.prev.fiscalYear?.Id) {
-    //   await fetchGeneralData(state.prev.fiscalYear.Id);
-    //   return;
-    // }
-    // if (state.selected.fiscalYear?.Id) {
-    //   await fetchGeneralData(state.selected.fiscalYear.Id);
-    //   return;
-    // }
+    if (filters.cooperatives.next && filters.fiscalYears.next) {
+      await dispatch(
+        fetchGeneralData({
+          coopId: filters.cooperatives.next.Id,
+          fyId: filters.fiscalYears.next.Id,
+        })
+      );
+    }
+
+    if (filters.fiscalYears.current) {
+      await dispatch(fetchGeneralFiscalYear(filters.fiscalYears.current.Id));
+      return;
+    }
   };
 
   const handleChangeSelectedCooperatives = useCallback(
@@ -105,19 +104,10 @@ const useGeneralPageData = () => {
 
   const handleApplyClick = () => {
     batch(() => {
-      if (
-        generalPageData.filters.fiscalYears.next &&
-        generalPageData.filters.cooperatives.next
-      ) {
-        dispatch(
-          setDefaultFiscalYearId(generalPageData.filters.fiscalYears.next.Id)
-        );
-        dispatch(
-          setDefaultCooperativeId(generalPageData.filters.cooperatives.next.Id)
-        );
-        dispatch(
-          fetchGeneralFiscalYear(generalPageData.filters.fiscalYears.next.Id)
-        );
+      if (filters.fiscalYears.next && filters.cooperatives.next) {
+        dispatch(setDefaultFiscalYearId(filters.fiscalYears.next.Id));
+        dispatch(setDefaultCooperativeId(filters.cooperatives.next.Id));
+        dispatch(fetchGeneralFiscalYear(filters.fiscalYears.next.Id));
       }
     });
   };

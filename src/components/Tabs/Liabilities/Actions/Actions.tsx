@@ -6,6 +6,7 @@ import { PlusIcon, DeleteIcon, EyeIcon, EditIcon } from 'components/Icons';
 import { useStyles } from './style';
 
 interface ActionsProps {
+  disabled?: boolean;
   selected: string[];
   onCreate?(): void;
   onEdit?(ids: string[]): void;
@@ -14,6 +15,7 @@ interface ActionsProps {
 }
 
 const Actions: React.FC<ActionsProps> = ({
+  disabled,
   selected,
   onCreate,
   onEdit,
@@ -22,8 +24,7 @@ const Actions: React.FC<ActionsProps> = ({
 }) => {
   const classes = useStyles();
 
-  const isEmpty = !!!selected.length;
-  const disabledEditBtn = isEmpty || selected.length !== 1;
+  const isAlone = selected.length === 1;
 
   const handleEdit = () => {
     onEdit && onEdit(selected);
@@ -34,10 +35,15 @@ const Actions: React.FC<ActionsProps> = ({
   };
 
   const handleView = () => {
-    if (selected.length === 1) {
+    if (isAlone) {
       onView && onView(selected);
     }
   };
+
+  const isEmpty = !!!selected.length;
+  const disabledEditBtn = isEmpty || !isAlone || disabled;
+  const isDisabledDeleteBtn = isEmpty || disabled;
+  const isDisabledViewBtn = !isAlone;
 
   return (
     <div className={classes.root}>
@@ -45,6 +51,7 @@ const Actions: React.FC<ActionsProps> = ({
         className={classes.btnOffset}
         startIcon={<PlusIcon />}
         onClick={onCreate}
+        disabled={disabled}
       >
         Add Liability
       </ActionButton>
@@ -52,7 +59,7 @@ const Actions: React.FC<ActionsProps> = ({
         className={classes.btnOffset}
         onClick={handleDelete}
         startIcon={<DeleteIcon />}
-        disabled={isEmpty}
+        disabled={isDisabledDeleteBtn}
       >
         Delete Liabilities
       </ActionButton>
@@ -60,7 +67,7 @@ const Actions: React.FC<ActionsProps> = ({
         className={classes.btnOffset}
         onClick={handleView}
         startIcon={<EyeIcon />}
-        disabled={selected.length !== 1}
+        disabled={isDisabledViewBtn}
       >
         View Liability
       </ActionButton>

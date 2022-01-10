@@ -6,6 +6,7 @@ import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableRow from '@mui/material/TableRow';
 import CommonTableHead from './CommonTableHead';
+import Highlight from 'components/Highlight';
 
 import clsx from 'clsx';
 import { useStyles, TableCell } from './style';
@@ -47,6 +48,11 @@ const CommonTable = <D extends { id: string }>({
             return (
               <TableRow key={item.id}>
                 {columns.map((column, idx) => {
+                  const text = getDataByType(
+                    item[column.accessor],
+                    column.type
+                  );
+
                   return (
                     <TableCell
                       key={idx}
@@ -57,7 +63,7 @@ const CommonTable = <D extends { id: string }>({
                         column.render(item)
                       ) : (
                         <span className={column.cellClassName}>
-                          {getDataByType(item[column.accessor], column.type)}
+                          {text && <Highlight text={text} />}
                         </span>
                       )}
                     </TableCell>

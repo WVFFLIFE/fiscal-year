@@ -93,6 +93,12 @@ const useLiabilitiesData = () => {
     }));
   };
 
+  /**
+   *
+   * @param ids - List of item`s id that will be deleted
+   * @param cb  - Callback function that will be executed
+   * after successfull deletion
+   */
   const handleDelete = async (ids: string[], cb?: () => void) => {
     try {
       setRequestState((prevState) => ({

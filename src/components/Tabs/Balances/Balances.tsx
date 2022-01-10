@@ -13,6 +13,7 @@ import ActionButton from 'components/ActionButton';
 import { SubTitle } from 'components/Styled';
 import { PlusIcon } from 'components/Icons';
 import Dialog from 'components/Dialog';
+import Highlight from 'components/Highlight';
 import Backdrop from 'components/Backdrop';
 import DialogError from 'components/DialogError';
 
@@ -65,11 +66,14 @@ const Balances: FC = () => {
         field: 'surplusDeficitPreviousFY',
         editable: true,
         type: 'float',
-        render: (data) => (
-          <span className={classes.deficit}>
-            {toNumberFormat(data.surplusDeficitPreviousFY)}
-          </span>
-        ),
+        render: (data) => {
+          const text = toNumberFormat(data.surplusDeficitPreviousFY);
+          return (
+            <span className={classes.deficit}>
+              {text && <Highlight text={text} />}
+            </span>
+          );
+        },
         onSave: (output, ...rest) =>
           savingInterceptor(
             output,
@@ -107,11 +111,14 @@ const Balances: FC = () => {
         field: 'surplusDeficitPreviousFY',
         editable: true,
         type: 'float',
-        render: (data) => (
-          <span className={classes.deficit}>
-            {toNumberFormat(data.surplusDeficitPreviousFY)}
-          </span>
-        ),
+        render: (data) => {
+          const text = toNumberFormat(data.surplusDeficitPreviousFY);
+          return (
+            <span className={classes.deficit}>
+              {text && <Highlight text={text} />}
+            </span>
+          );
+        },
         onSave: (output, ...rest) =>
           savingInterceptor(
             output,
@@ -156,11 +163,14 @@ const Balances: FC = () => {
           field: 'surplusDeficitPreviousFY',
           editable: true,
           type: 'float',
-          render: (data) => (
-            <span className={classes.deficit}>
-              {toNumberFormat(data.surplusDeficitPreviousFY)}
-            </span>
-          ),
+          render: (data) => {
+            const text = toNumberFormat(data.surplusDeficitPreviousFY);
+            return (
+              <span className={classes.deficit}>
+                {text && <Highlight text={text} />}
+              </span>
+            );
+          },
           onSave: (output, ...rest) =>
             savingInterceptor(
               output,

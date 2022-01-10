@@ -52,4 +52,7 @@ export const useStyles = makeStyles((theme) => ({
       fontSize: 12,
     },
   },
+  loader: {
+    color: 'inherit',
+  },
 }));

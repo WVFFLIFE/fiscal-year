@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import Input from 'components/Input';
 import ActionButton from 'components/ActionButton';
 import { EditIcon, CloseIcon, RoundCheckIcon } from 'components/Icons';
+import Highlight from 'components/Highlight';
 
 import clsx from 'clsx';
 import { useStyles } from './style';
@@ -37,6 +38,8 @@ const BalancesTableRow = <T extends object>({
     isValid,
   } = useBalancesTableRowData(data, column);
 
+  const text = String(data[column.field]);
+
   return (
     <div
       className={clsx(classes.row, className, {
@@ -59,7 +62,7 @@ const BalancesTableRow = <T extends object>({
         ) : column.render ? (
           column.render(data)
         ) : (
-          data[column.field]
+          text && <Highlight text={text} />
         )}
       </div>
       {column.editable && (

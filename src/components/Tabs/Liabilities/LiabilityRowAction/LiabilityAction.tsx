@@ -7,6 +7,7 @@ import { DeleteIcon, EditIcon, EyeIcon } from 'components/Icons';
 import { useStyles } from './style';
 
 interface LiabilityRowActionProps {
+  isClosedFiscalYear: boolean;
   liability: EnhancedLiability;
   onOpen?(ids: string[]): void;
   onDelete?(ids: string[]): void;
@@ -14,6 +15,7 @@ interface LiabilityRowActionProps {
 }
 
 const LiabilityRowAction: React.FC<LiabilityRowActionProps> = ({
+  isClosedFiscalYear,
   liability,
   onOpen,
   onDelete,
@@ -31,19 +33,23 @@ const LiabilityRowAction: React.FC<LiabilityRowActionProps> = ({
 
   return (
     <div className={classes.root} onClick={stopPropagation}>
-      <ActionButton onClick={handleDelete}>
-        <DeleteIcon className={classes.icon} />
-      </ActionButton>
+      {!isClosedFiscalYear && (
+        <ActionButton onClick={handleDelete}>
+          <DeleteIcon className={classes.icon} />
+        </ActionButton>
+      )}
       <ActionButton className={classes.btnOffset} onClick={handleOpen}>
         <EyeIcon className={classes.icon} />
       </ActionButton>
-      <ActionButton
-        className={classes.btnOffset}
-        palette="darkBlue"
-        onClick={handleEdit}
-      >
-        <EditIcon className={classes.icon} />
-      </ActionButton>
+      {!isClosedFiscalYear && (
+        <ActionButton
+          className={classes.btnOffset}
+          palette="darkBlue"
+          onClick={handleEdit}
+        >
+          <EditIcon className={classes.icon} />
+        </ActionButton>
+      )}
     </div>
   );
 };

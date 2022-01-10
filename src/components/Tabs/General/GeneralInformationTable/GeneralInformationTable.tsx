@@ -7,6 +7,7 @@ import TableBody from '@mui/material/TableBody';
 import TableHead from 'components/TableHead';
 import DatePicker from 'components/DatePicker';
 import ActionButton from 'components/ActionButton';
+import Highlight from 'components/Highlight';
 import { BodyTableCell, BodyTableRow } from 'components/Styled';
 import { EditIcon, RoundCheckIcon, CloseIcon } from 'components/Icons';
 
@@ -125,10 +126,12 @@ const GeneralInformationTable: React.FC<GeneralInformationTableProps> = ({
                     target="_blank"
                     rel="noreferrer"
                   >
-                    {item.name}
+                    {item.name && <Highlight text={item.name} />}
                   </a>
                 ) : (
-                  <span className={classes.link}>{item.name}</span>
+                  <span className={classes.link}>
+                    {item.name && <Highlight text={item.name} />}
+                  </span>
                 )}
               </BodyTableCell>
               <BodyTableCell>
@@ -140,7 +143,7 @@ const GeneralInformationTable: React.FC<GeneralInformationTableProps> = ({
                     onChange={handleChangeStartDate}
                   />
                 ) : startDate ? (
-                  defaultFormat(startDate)
+                  <Highlight text={defaultFormat(startDate)} />
                 ) : (
                   '&#9473;'
                 )}
@@ -153,12 +156,14 @@ const GeneralInformationTable: React.FC<GeneralInformationTableProps> = ({
                     onChange={handleChangeEndDate}
                   />
                 ) : endDate ? (
-                  defaultFormat(endDate)
+                  <Highlight text={defaultFormat(endDate)} />
                 ) : (
                   '-'
                 )}
               </BodyTableCell>
-              <BodyTableCell>{item.isClosed ? 'Yes' : 'No'}</BodyTableCell>
+              <BodyTableCell>
+                {<Highlight text={item.isClosed ? 'Yes' : 'No'} />}
+              </BodyTableCell>
               <BodyTableCell align="right">
                 <div className={clsx('cell-actions', classes.centered)}>
                   {open ? (

@@ -4,8 +4,8 @@ import {
   DefaultTableData,
   InnerTableComponentProps,
   SortModel,
+  SortParamsType,
 } from './models';
-import useSort from './useSort';
 
 import Table from '@mui/material/Table';
 import TableHead from './TableHead';
@@ -37,10 +37,22 @@ export type CheckboxProps<T extends object = DefaultTableData> = {
 };
 
 type ActionsTableProps<T extends object = DefaultTableData> = {
+  /**
+   * Class name that applies to table
+   */
   className?: string;
+  /**
+   * List of columns
+   */
   columns: ActionColumn<T>[];
   data: T[];
   sortParams?: SortModel<T>;
+  onChangeSortParams?(id: keyof T | string, type: SortParamsType): void;
+  /**
+   * If true - highlight searched text
+   * @default false
+   */
+  highlight?: boolean;
   HeadRowProps?: Omit<InnerTableComponentProps, 'onClick'>;
   BodyRowProps?: InnerTableComponentProps;
   CheckboxProps?: CheckboxProps<T>;
@@ -53,14 +65,12 @@ const ActionsTable = <T extends object = DefaultTableData>(
     className,
     columns,
     data,
-    sortParams: defaultSortParams,
+    sortParams,
+    onChangeSortParams,
+    highlight = false,
     BodyRowProps,
     CheckboxProps,
   } = props;
-  const { list, sortParams, onChangeSortParams } = useSort(
-    data,
-    defaultSortParams
-  );
 
   return (
     <Table className={className}>
@@ -71,9 +81,10 @@ const ActionsTable = <T extends object = DefaultTableData>(
         CheckboxHeadProps={CheckboxProps?.HeadProps}
       />
       <TableBody>
-        {list.map((item) => (
+        {data.map((item) => (
           <ActionsTableRow
             key={JSON.stringify(item)}
+            highlight={highlight}
             data={item}
             columns={columns}
             RowProps={BodyRowProps}

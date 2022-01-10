@@ -14,7 +14,7 @@ function convertByType(data: any, type: 'string' | 'date') {
   }
 }
 
-export interface AccessorModel<T extends {} = {}> {
+export interface AccessorModel<T extends object = { [key: string]: any }> {
   accessor: keyof T | ((el: T) => string | keyof T | null);
   type: 'string' | 'date';
 }
@@ -51,7 +51,7 @@ export function getText(searchTerm: string) {
       return input;
     }
 
-    let substr = input.substr(index, searchTerm.length);
+    let substr = input.substring(index, searchTerm.length);
 
     return (
       <>

@@ -1,11 +1,17 @@
 import { useState, useEffect } from 'react';
+import useMountedEffect from 'hooks/useMountedEffect';
+import _toLower from 'lodash/toLower';
+
 import {
   EditorState,
   convertFromRaw,
   convertToRaw,
   ContentState,
+  CompositeDecorator,
 } from 'draft-js';
 import draftToHtml from 'draftjs-to-html';
+
+import DefaultHighlight from 'components/Highlight/Default';
 
 export interface EditorData {
   text?: string | null;
@@ -13,29 +19,68 @@ export interface EditorData {
   html?: string | null;
 }
 
-export function convertDataToState(editorData?: EditorData) {
+export function convertDataToState(
+  editorData: EditorData | null,
+  searchTerm?: string
+) {
   if (!editorData) return EditorState.createEmpty();
   const { text, formatted } = editorData;
 
+  let editorState;
+
   try {
     if (formatted) {
-      return EditorState.createWithContent(
+      editorState = EditorState.createWithContent(
         convertFromRaw(JSON.parse(formatted))
       );
+    } else if (text) {
+      editorState = EditorState.createWithContent(
+        ContentState.createFromText(text)
+      );
+    } else {
+      editorState = EditorState.createEmpty();
     }
-
-    if (text) {
-      return EditorState.createWithContent(ContentState.createFromText(text));
-    }
-
-    return EditorState.createEmpty();
   } catch (err) {
+    console.error(err);
     if (text) {
-      return EditorState.createWithContent(ContentState.createFromText(text));
+      editorState = EditorState.createWithContent(
+        ContentState.createFromText(text)
+      );
+    } else {
+      editorState = EditorState.createEmpty();
     }
-    return EditorState.createEmpty();
   }
+
+  return searchTerm
+    ? EditorState.set(editorState, {
+        decorator: generateDecorator(searchTerm),
+      })
+    : editorState;
 }
+
+// export function convertDataToState(editorData: EditorData | null) {
+//   if (!editorData) return EditorState.createEmpty();
+//   const { text, formatted } = editorData;
+
+//   try {
+//     if (formatted) {
+//       return EditorState.createWithContent(
+//         convertFromRaw(JSON.parse(formatted))
+//       );
+//     }
+
+//     if (text) {
+//       return EditorState.createWithContent(ContentState.createFromText(text));
+//     }
+
+//     return EditorState.createEmpty();
+//   } catch (err) {
+//     if (text) {
+//       return EditorState.createWithContent(ContentState.createFromText(text));
+//     }
+//     return EditorState.createEmpty();
+//   }
+// }
 
 export function convertStateToData(editorState: null): null;
 export function convertStateToData(editrState: EditorState): EditorData;
@@ -50,15 +95,61 @@ export function convertStateToData(editorState: EditorState | null) {
   return editorData;
 }
 
-const useEditor = (editorData?: EditorData) => {
+interface Options {
+  searchTerm?: string;
+}
+
+const generateDecorator = (highlightTerm: string) => {
+  const regex = new RegExp(highlightTerm, 'g');
+  return new CompositeDecorator([
+    {
+      strategy: (contentBlock, callback) => {
+        if (highlightTerm !== '') {
+          findWithRegex(regex, contentBlock, callback);
+        }
+      },
+      component: DefaultHighlight,
+    },
+  ]);
+};
+
+const findWithRegex = (regex: any, contentBlock: any, callback: any) => {
+  const text = contentBlock.getText();
+  let matchArr, start, end;
+  while ((matchArr = regex.exec(_toLower(text))) !== null) {
+    start = matchArr.index;
+    end = start + matchArr[0].length;
+    callback(start, end);
+  }
+};
+
+const useEditor = (
+  editorData: EditorData | null = null,
+  options: Options = { searchTerm: '' }
+) => {
+  const { searchTerm } = options;
+
   const [editorState, setEditorState] = useState<EditorState>(
     EditorState.createEmpty()
   );
+
   useEffect(() => {
-    if (editorData) {
-      setEditorState(convertDataToState(editorData));
-    }
+    setEditorState(convertDataToState(editorData, searchTerm));
   }, [editorData]);
+
+  // useEffect(() => {
+  //   setEditorState(convertDataToState(editorData, searchTerm));
+  // }, [editorData]);
+
+  useMountedEffect(() => {
+    if (searchTerm) {
+      setEditorState(
+        EditorState.set(editorState, {
+          decorator: generateDecorator(searchTerm),
+        })
+      );
+    }
+  }, [searchTerm]);
 
   return [editorState, setEditorState] as const;
 };

@@ -7,6 +7,7 @@ import TableHead from 'components/TableHead';
 import TableBody from '@mui/material/TableBody';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
+import Highlight from 'components/Highlight';
 
 import clsx from 'clsx';
 import { useStyles } from './style';
@@ -80,6 +81,7 @@ const DefaultTable = <T extends object>({
                     type = 'string',
                     bodyCellClassName,
                   } = column;
+                  const text = renderAs(item[field], type);
                   return (
                     <TableCell
                       key={column.field as string}
@@ -94,7 +96,7 @@ const DefaultTable = <T extends object>({
                         bodyCellClassName
                       )}
                     >
-                      {renderAs(item[field], type)}
+                      {text && <Highlight text={text} />}
                     </TableCell>
                   );
                 })}

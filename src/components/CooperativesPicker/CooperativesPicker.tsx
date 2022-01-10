@@ -151,27 +151,21 @@ const Body = <T extends CommonCooperativeModel>({
   };
 
   const quickFilterOptions: QuickFilterOption[] = useMemo(
-    () =>
-      [
-        {
-          id: 'myOwn',
-          label: '#control.quickfilter.myown',
-        },
-        {
-          id: 'pmCompany',
-          label: '#control.quickfilter.pmcompany',
-        },
-      ].concat(
-        multiple
-          ? []
-          : [
-              {
-                id: 'all',
-                label: '#control.quickfilter.all',
-              },
-            ]
-      ),
-    [multiple]
+    () => [
+      {
+        id: 'myOwn',
+        label: '#control.quickfilter.myown',
+      },
+      {
+        id: 'pmCompany',
+        label: '#control.quickfilter.pmcompany',
+      },
+      {
+        id: 'all',
+        label: '#control.quickfilter.all',
+      },
+    ],
+    []
   );
 
   return (
@@ -201,12 +195,18 @@ const Body = <T extends CommonCooperativeModel>({
           paddingLeft="16px"
           paddingRight="16px"
         >
-          <CheckboxControl
-            checked={selectedAll}
-            onChange={handleToggleSelectAll}
-            label="Select All"
-            indeterminate={!!currentCooperative.length && !selectedAll}
-          />
+          {activeQuickFilter === 'all' ? (
+            <span style={{ fontSize: 14, fontWeight: 300 }}>
+              You can select up to 5 items
+            </span>
+          ) : (
+            <CheckboxControl
+              checked={selectedAll}
+              onChange={handleToggleSelectAll}
+              label="Select All"
+              indeterminate={!!currentCooperative.length && !selectedAll}
+            />
+          )}
           <Button
             onClick={resetFilters}
             className={classes.closeBtn}
@@ -221,6 +221,11 @@ const Body = <T extends CommonCooperativeModel>({
       )}
       <CooperativesList
         className={classes.list}
+        disabled={
+          multiple &&
+          activeQuickFilter === 'all' &&
+          currentCooperative.length >= 5
+        }
         multiple={multiple}
         cooperatives={filteredCooperativesBySearchTerm}
         selected={currentCooperative}

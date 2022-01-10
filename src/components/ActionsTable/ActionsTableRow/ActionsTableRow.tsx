@@ -10,6 +10,7 @@ import { CheckboxProps as CheckboxPropsModel } from '../ActionsTable';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import Checkbox from 'components/Checkbox';
+import Highlight from 'components/Highlight';
 
 import renderAs from 'utils/renderAs';
 
@@ -19,6 +20,7 @@ import { useStyles } from './style';
 interface ActionsTableRowProps<T extends object = DefaultTableData> {
   data: T;
   columns: ActionColumn<T>[];
+  highlight: boolean;
   RowProps?: InnerTableComponentProps;
   CheckboxProps?: CheckboxPropsModel<T>['BodyProps'];
 }
@@ -64,7 +66,9 @@ const ActionsTableRow = <T extends object = DefaultTableData>(
               ? column.render(data)
               : column.type === 'translate'
               ? cellData && typeof cellData === 'string' && t(cellData)
-              : renderAs(cellData, column.type)}
+              : renderAs(cellData, column.type) && (
+                  <Highlight text={renderAs(cellData, column.type) as string} />
+                )}
           </TableCell>
         );
       })}

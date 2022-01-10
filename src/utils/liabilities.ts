@@ -6,6 +6,7 @@ import {
   TypeCode,
 } from 'enums/liabilities';
 import {
+  getLiabilityGeneralTypeLabel,
   getLiabilityProductLabel,
   getLiabilityTypeLabel,
   getLiabilityUsageLabel,
@@ -20,6 +21,7 @@ export interface EnhancedLiability {
   endDate: string | null;
   documentNumber: string | null;
   liabilityGeneralTypeCode: GeneralTypeCode | null;
+  liabilityGeneralTypeLabel: string | null;
   liabilityUsageCode: UsageCode | null;
   liabilityUsageLabel: string | null;
   liabilityProductCode: ProductCode | null;
@@ -40,6 +42,9 @@ export function liabilitiesAdapter(
     endDate: liability.EndDate,
     id: liability.Id,
     liabilityGeneralTypeCode: liability.GeneralType,
+    liabilityGeneralTypeLabel: getLiabilityGeneralTypeLabel(
+      liability.GeneralType
+    ),
     liabilityProductCode: liability.Product,
     liabilityProductLabel:
       liability.Product && getLiabilityProductLabel(liability.Product),

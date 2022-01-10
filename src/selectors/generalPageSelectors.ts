@@ -9,6 +9,10 @@ export const selectFiscalYearId = createDraftSafeSelector(
   selectFiscalYear,
   (fiscalYear) => fiscalYear?.id || null
 );
+export const selectIsClosedField = createDraftSafeSelector(
+  selectFiscalYear,
+  (fiscalYear) => !!fiscalYear?.isClosed
+);
 
 export const selectConsumptionData = createDraftSafeSelector(
   selectFiscalYear,

@@ -18,10 +18,15 @@ import { useStyles } from './style';
 
 interface LiabilityViewFormProps {
   id: string;
+  isClosed: boolean;
   onEdit(): void;
 }
 
-const LiablityViewForm: React.FC<LiabilityViewFormProps> = ({ id, onEdit }) => {
+const LiablityViewForm: React.FC<LiabilityViewFormProps> = ({
+  id,
+  isClosed,
+  onEdit,
+}) => {
   const classes = useStyles();
 
   const { requestState, handleInitError } = useLiabilityViewFormData(id);
@@ -44,13 +49,15 @@ const LiablityViewForm: React.FC<LiabilityViewFormProps> = ({ id, onEdit }) => {
               modifiedBy={liability.ModifiedByName}
               modifiedOn={liability.ModifiedOn}
             />
-            <ActionButton
-              palette="darkBlue"
-              startIcon={<EditIcon />}
-              onClick={onEdit}
-            >
-              Edit Liability
-            </ActionButton>
+            {!isClosed && (
+              <ActionButton
+                palette="darkBlue"
+                startIcon={<EditIcon />}
+                onClick={onEdit}
+              >
+                Edit Liability
+              </ActionButton>
+            )}
           </div>
           <div className={classes.divider}></div>
           <div className={classes.columnsWrapper}>

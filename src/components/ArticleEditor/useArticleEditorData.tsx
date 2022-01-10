@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import useStateSelector from 'hooks/useStateSelector';
 import useEditor, {
   convertStateToData,
   convertDataToState,
@@ -23,12 +24,17 @@ const useArticleEditorData = (
   ) => Promise<BaseResponseModel | undefined>,
   onUpdate: () => Promise<unknown>
 ) => {
+  const searchTerm = useStateSelector(
+    (state) => state.generalPage.filters.searchTerm
+  );
   const [requestState, setRequestState] = useState<RequestState>({
     loading: false,
     error: null,
   });
   const [editModeOn, handleToggleEditMode] = useToggleSwitch();
-  const [editorState, handleChangeEditorState] = useEditor(editorData);
+  const [editorState, handleChangeEditorState] = useEditor(editorData, {
+    searchTerm,
+  });
 
   const handleSave = useCallback(async () => {
     try {

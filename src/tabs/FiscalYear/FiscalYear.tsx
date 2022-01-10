@@ -1,11 +1,12 @@
 import useFiscalYearData from './useFiscalYearData';
 import useStateSelector from 'hooks/useStateSelector';
 
+import SummaryPage from 'pages/SummaryPage';
+import GeneralPage from 'pages/GeneralPage';
+
 import TopBar from 'components/TopBar';
 import Backdrop from 'components/Backdrop';
 import DialogError from 'components/DialogError';
-import SummaryPage from 'components/SummaryPage';
-import GeneralPage from 'components/GeneralPage';
 
 const FiscalYear = () => {
   const { defaultCooperativeId, defaultFiscalYearId } = useStateSelector(
@@ -14,8 +15,6 @@ const FiscalYear = () => {
   const { state, handleInitError } = useFiscalYearData();
 
   const showGeneralPage = defaultFiscalYearId && defaultCooperativeId;
-  const showLoader = state.loading;
-  const errors = state.error;
 
   return (
     <>
@@ -25,8 +24,8 @@ const FiscalYear = () => {
       ) : (
         <SummaryPage commonCooperatives={state.commonCooperatives} />
       )}
-      <Backdrop loading={showLoader} />
-      <DialogError error={errors} initError={handleInitError} />
+      <Backdrop loading={state.loading} />
+      <DialogError error={state.error} initError={handleInitError} />
     </>
   );
 };

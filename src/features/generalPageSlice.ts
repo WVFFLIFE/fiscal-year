@@ -100,15 +100,15 @@ export const updateFiscalYearsList = createAsyncThunk(
 
       if (res.IsSuccess) {
         const { generalPage } = getState() as { generalPage: GeneralPageState };
-        const currentFiscalYear = generalPage.filters.fiscalYears.current;
+        const nextFiscalYear = generalPage.filters.fiscalYears.next;
 
         return {
           list: res.FiscalYears,
           newFiscalYear:
-            currentFiscalYear?.StartDate && currentFiscalYear?.EndDate
+            nextFiscalYear?.StartDate && nextFiscalYear?.EndDate
               ? findFiscalYearByDate(
-                  currentFiscalYear.StartDate,
-                  currentFiscalYear.EndDate,
+                  nextFiscalYear.StartDate,
+                  nextFiscalYear.EndDate,
                   res.FiscalYears
                 )
               : null,
@@ -256,7 +256,7 @@ export const generalPageSlice = createSlice({
       })
       .addCase(updateFiscalYearsList.fulfilled, (state, action) => {
         state.filters.fiscalYears.list = action.payload.list;
-        state.filters.fiscalYears.current = action.payload.newFiscalYear;
+        state.filters.fiscalYears.next = action.payload.newFiscalYear;
         state.loading = false;
       })
       .addCase(updateFiscalYearsList.rejected, (state, action) => {

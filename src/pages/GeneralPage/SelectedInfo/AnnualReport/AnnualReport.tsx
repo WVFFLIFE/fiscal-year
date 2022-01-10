@@ -1,3 +1,4 @@
+import { memo, FC } from 'react';
 import useToggleSwitch from 'hooks/useToggleSwitch';
 import { useTranslation } from 'react-i18next';
 
@@ -8,7 +9,7 @@ import AnnualReportForm from './AnnualReportForm';
 
 import { useStyles } from './style';
 
-const AnnualReport: React.FC = () => {
+const AnnualReport: FC = () => {
   const classes = useStyles();
   const { t } = useTranslation();
 
@@ -22,7 +23,7 @@ const AnnualReport: React.FC = () => {
         startIcon={<ReportIcon />}
         onClick={toggleAnnualReportDialogVisibility}
       >
-        Annual report page
+        {t('#button.annualreportpage')}
       </ActionButton>
       <Dialog
         open={openAnnualReportDialog}
@@ -35,4 +36,4 @@ const AnnualReport: React.FC = () => {
   );
 };
 
-export default AnnualReport;
+export default memo(AnnualReport);

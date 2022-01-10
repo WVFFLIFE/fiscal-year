@@ -14,10 +14,17 @@ export const useStyles = makeStyles((theme) => ({
   description: {
     margin: 0,
     marginTop: 30,
-    fontSize: 24,
+    fontSize: 18,
     fontFamily: 'Proxima Nova',
     fontWeight: 600,
     color: '#000',
     textAlign: 'center',
+  },
+  btnsWrapper: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    width: '100%',
+    marginTop: 30,
   },
 }));

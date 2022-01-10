@@ -296,7 +296,7 @@ const useGeneralData = (data: GeneralModel) => {
     () => [
       {
         id: data.id,
-        cooperativeLink: data.cooperativeId,
+        cooperativeLink: data.cooperativeLink,
         endDate: data.endDate,
         isClosed: data.isClosed,
         name: data.cooperativeName,

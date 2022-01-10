@@ -1,11 +1,13 @@
 import { memo, forwardRef } from 'react';
 import Button, { ButtonProps } from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import clsx from 'clsx';
 import { useStyles } from './style';
 
 interface ActionButtonProps extends ButtonProps {
   palette?: 'darkBlue' | 'white';
+  loading?: boolean;
 }
 
 type DefaultButtonProps =
@@ -13,7 +15,7 @@ type DefaultButtonProps =
   | ({ href: string } & ButtonProps<'a', ActionButtonProps>);
 
 const ActionButton = forwardRef<HTMLButtonElement, DefaultButtonProps>(
-  ({ palette = 'white', className, children, ...rest }, ref) => {
+  ({ palette = 'white', className, children, loading, ...rest }, ref) => {
     const classes = useStyles();
 
     return (
@@ -30,6 +32,11 @@ const ActionButton = forwardRef<HTMLButtonElement, DefaultButtonProps>(
           endIcon: classes.endIcon,
           ...rest.classes,
         }}
+        endIcon={
+          loading ? (
+            <CircularProgress size={15} className={classes.loader} />
+          ) : undefined
+        }
       >
         {children}
       </Button>

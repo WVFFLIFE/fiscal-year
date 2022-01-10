@@ -139,7 +139,7 @@ const useConsumptionData = () => {
         }));
       }
     },
-    [fiscalYear?.id]
+    [fiscalYear]
   );
 
   const handleFetchConsumptionImage = async (fiscalYearId: string) => {

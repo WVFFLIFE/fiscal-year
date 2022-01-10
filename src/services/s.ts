@@ -200,6 +200,38 @@ export namespace Services {
         }
       }
     }
+
+    export namespace AnnualReports {
+      export interface Report {
+        DocumentBody: string;
+        DocumentName: string;
+        MimeType: string;
+        ReportType: string;
+      }
+      export namespace Get {
+        export interface Request {
+          CooperativeId: string;
+          FiscalYearId: string;
+          IncludeClosingTheBookReport: boolean;
+          IncludeProfitStatementReport: boolean;
+          IncludeBalanceSheetReport: boolean;
+          IncludeBalanceSheetBreakdownReport: boolean;
+          // IncludeAnnualReportAndFinanceCalculationOfCooperative: boolean;
+          IncludeLedgerAccountBook: boolean;
+          IncludeDailyBook: boolean;
+          IncludeBalance: boolean;
+          IncludeProductSales: boolean;
+          IncludeShareRegister: boolean;
+        }
+        export interface ReportsResponse extends BaseResponse {
+          Reports: Report[];
+        }
+        export interface ArchieveResponse extends BaseResponse {
+          ArchieveName: string;
+          Content: string;
+        }
+      }
+    }
   }
 
   class CRMConnector {
@@ -470,6 +502,34 @@ export namespace Services {
       });
     };
   }
+  export class AnnualReports extends CRMConnector {
+    async get(
+      reports: Model.AnnualReports.Get.Request,
+      archive: true
+    ): Promise<Model.AnnualReports.Get.ArchieveResponse>;
+    async get(
+      reports: Model.AnnualReports.Get.Request,
+      archieve: false
+    ): Promise<Model.AnnualReports.Get.ReportsResponse>;
+    async get(
+      reports: Model.AnnualReports.Get.Request,
+      archive: boolean
+    ): Promise<
+      | Model.AnnualReports.Get.ReportsResponse
+      | Model.AnnualReports.Get.ArchieveResponse
+    > {
+      return await this.executeTypeRequest(
+        'uds_FiscalYearReports',
+        archive ? 3 : 1,
+        reports
+      );
+    }
+    save = async (
+      reports: Model.AnnualReports.Get.Request
+    ): Promise<BaseResponse> => {
+      return await this.executeTypeRequest('uds_FiscalYearReports', 2, reports);
+    };
+  }
 }
 
 /* eslint-disable*/
@@ -480,8 +540,10 @@ import LiabilityDetails = Services.Model.Liabilities.LiabilityDetails;
 import Comment = Services.Model.Comments.Comment;
 import Organization = Services.Model.Liabilities.Parties.Organization;
 import LiabilityFormBody = Services.Model.Liabilities.Create.Request;
+import Report = Services.Model.AnnualReports.Report;
 
-export type { 
+export type {
+  Report,
   Liability, 
   Comment, 
   LiabilityDetails, 

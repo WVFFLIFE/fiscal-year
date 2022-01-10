@@ -1,10 +1,17 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import useStateSelector from 'hooks/useStateSelector';
 import useLiabilitiesData from './useLiabilitiesData';
 import useDialogStateWithId from 'hooks/useDialogStateWithId';
 import useToggleSwitch from 'hooks/useToggleSwitch';
 import usePagination, { slice } from 'hooks/usePagination';
-import { ActionColumn, InnerTableComponentProps } from 'models/TableModel';
+import useSort from 'hooks/useSort';
+import {
+  ActionColumn,
+  InnerTableComponentProps,
+  SortModel,
+} from 'models/TableModel';
+import { selectIsClosedField } from 'selectors/generalPageSelectors';
 import { EnhancedLiability } from 'utils/liabilities';
 
 import ActionsTable, {
@@ -27,10 +34,17 @@ import { useStyles } from './style';
 
 const CHECKBOX_COLUMN_WIDTH = 40;
 const rowsPerPageOptions = [10, 20, 30];
+const defaultSortParams: SortModel<EnhancedLiability> = {
+  order: 'asc',
+  orderBy: 'name',
+  type: 'alphanumeric',
+};
 
 const Liabilities = () => {
   const classes = useStyles();
   const { t } = useTranslation();
+
+  const isClosed = useStateSelector(selectIsClosedField);
 
   const {
     requestState,
@@ -41,6 +55,10 @@ const Liabilities = () => {
     handleToggleSelectRow,
   } = useLiabilitiesData();
 
+  const { list, sortParams, onChangeSortParams } = useSort(
+    requestState.liabilities,
+    defaultSortParams
+  );
   const {
     rowsPerPage,
     currentPage,
@@ -66,7 +84,7 @@ const Liabilities = () => {
       field: 'name',
       HeadCellProps: {
         className: classes.fixed,
-        style: { width: 170, left: CHECKBOX_COLUMN_WIDTH, background: '#fff' },
+        style: { width: 220, left: CHECKBOX_COLUMN_WIDTH, background: '#fff' },
       },
       BodyCellProps: {
         className: clsx(classes.fixed, classes.semibold),
@@ -75,10 +93,10 @@ const Liabilities = () => {
     },
     {
       label: '#tab.liabilities.table.liabilitytype',
-      field: 'liabilityTypeLabel',
+      field: 'liabilityGeneralTypeLabel',
       type: 'translate',
       HeadCellProps: {
-        style: { width: 150 },
+        style: { width: 200 },
       },
       BodyCellProps: {
         className: classes.semibold,
@@ -193,13 +211,14 @@ const Liabilities = () => {
       render: (data) => (
         <LiabilityRowAction
           liability={data}
+          isClosedFiscalYear={isClosed}
           onOpen={viewFormDialogState.open}
           onEdit={editFormDialogState.open}
           onDelete={confirmationDeleteDialogState.open}
         />
       ),
       HeadCellProps: {
-        style: { width: 200 },
+        style: { width: isClosed ? 90 : 200 },
       },
       BodyCellProps: {
         className: classes.actionCell,
@@ -250,8 +269,8 @@ const Liabilities = () => {
   );
 
   const slicedData = useMemo(
-    () => slice(requestState.liabilities, currentPage, rowsPerPage),
-    [requestState.liabilities, currentPage, rowsPerPage]
+    () => slice(list, currentPage, rowsPerPage),
+    [list, currentPage, rowsPerPage]
   );
 
   return (
@@ -261,6 +280,7 @@ const Liabilities = () => {
       onInitError={handleInitError}
     >
       <Actions
+        disabled={isClosed}
         selected={requestState.selectedRows}
         onCreate={toggleCreateFormVisibility}
         onView={viewFormDialogState.open}
@@ -269,9 +289,12 @@ const Liabilities = () => {
       />
       <Scroll className={classes.root}>
         <ActionsTable
+          highlight
           className={classes.table}
           data={slicedData}
           columns={columns}
+          sortParams={sortParams}
+          onChangeSortParams={onChangeSortParams}
           CheckboxProps={CheckboxProps}
           BodyRowProps={ActionsTableRowProps}
         />
@@ -296,6 +319,7 @@ const Liabilities = () => {
         {viewFormDialogState.ids.length && (
           <LiablityViewForm
             id={viewFormDialogState.ids[0]}
+            isClosed={isClosed}
             onEdit={handleEdit}
           />
         )}
