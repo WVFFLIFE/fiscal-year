@@ -1,7 +1,10 @@
 import { useState, forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import useEditor, { convertStateToData } from 'hooks/useEditor';
+import useStateSelector from 'hooks/useStateSelector';
 import { EditorState } from 'draft-js';
+
+import { selectCommentsSettings } from 'selectors/settingsSelectors';
 
 import CommentSection from '../CommentSection';
 import ActionButton from 'components/ActionButton';
@@ -47,6 +50,8 @@ const AddNewComment = forwardRef<HTMLDivElement, AddNewCommentProps>(
     const classes = useStyles();
     const { t } = useTranslation();
 
+    const commentsSettings = useStateSelector(selectCommentsSettings);
+
     const [loading, setLoading] = useState(false);
     const [editorState, setEditorState] = useEditor();
 
@@ -76,7 +81,11 @@ const AddNewComment = forwardRef<HTMLDivElement, AddNewCommentProps>(
       setLoading(false);
     };
 
-    const isDisabledAddBtn = loading || !hasText(editorState);
+    const isCharactersLimitExceeded =
+      editorState.getCurrentContent().getPlainText().length >
+      commentsSettings.commentMaxLength;
+    const isDisabledAddBtn =
+      loading || !hasText(editorState) || isCharactersLimitExceeded;
 
     return (
       <div className={className} ref={ref}>
