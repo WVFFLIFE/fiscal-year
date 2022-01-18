@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { ErrorModel, OptionalNumber, OptionalString } from 'models';
 
 import useAppDispatch from 'hooks/useAppDispatch';
@@ -7,6 +7,7 @@ import useSelectFiscalYear from 'hooks/useSelectFiscalYear';
 import useToggleSwitch from 'hooks/useToggleSwitch';
 
 import { fetchGeneralFiscalYear } from 'features/generalPageSlice';
+import { reset } from 'features/balanceSlice';
 
 import {
   selectBalancesData,
@@ -45,6 +46,12 @@ const useBalancesData = () => {
     loading: false,
     error: null,
   });
+
+  useEffect(() => {
+    return () => {
+      dispatch(reset());
+    };
+  }, []);
 
   const handleSaveFields = useCallback(
     async (
@@ -132,7 +139,7 @@ const useBalancesData = () => {
         }));
       }
     },
-    [balancesData, fiscalYear?.id]
+    [balancesData, fiscalYear, products]
   );
 
   const handleInitError = () => {

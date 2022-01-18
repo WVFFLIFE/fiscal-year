@@ -15,7 +15,7 @@ export const useStyles = makeStyles((theme) => ({
     boxShadow: 'none',
   },
   error: {
-    borderColor: theme.color.warning,
+    borderColor: theme.color.red,
   },
   iconBtn: {
     padding: 3,

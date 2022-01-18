@@ -1,15 +1,17 @@
 import { useState, useEffect, useCallback } from 'react';
+import useAppDispatch from 'hooks/useAppDispatch';
 import {
   CommonCooperativeModel,
   ErrorModel,
   ExtendedCooperativeModel,
   CalendarYearOption,
 } from 'models';
+import { setCooperativesList } from 'features/generalPageSlice';
+
 import { format } from 'date-fns';
 import Services from 'services';
 
 interface StateModel {
-  commonCooperatives: CommonCooperativeModel[];
   extendedCooperatives: ExtendedCooperativeModel[];
   selectedCooperatives: CommonCooperativeModel[];
   loading: boolean;
@@ -19,8 +21,8 @@ interface StateModel {
 }
 
 const useFiscalYearData = () => {
+  const dispatch = useAppDispatch();
   const [state, setState] = useState<StateModel>({
-    commonCooperatives: [],
     extendedCooperatives: [],
     selectedCooperatives: [],
     error: null,
@@ -93,9 +95,9 @@ const useFiscalYearData = () => {
         );
 
         if (res.IsSuccess) {
+          dispatch(setCooperativesList(res.Cooperatives));
           setState((prevState) => ({
             ...prevState,
-            commonCooperatives: res.Cooperatives,
             loading: false,
           }));
         } else {
@@ -115,7 +117,7 @@ const useFiscalYearData = () => {
         }));
       }
     })();
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     setState((prevState) => ({

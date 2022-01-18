@@ -2,6 +2,8 @@ import { configureStore, Middleware } from '@reduxjs/toolkit';
 
 import appReducer from 'features/appSlice';
 import generalPageReducer from 'features/generalPageSlice';
+import balanceReducer from 'features/balanceSlice';
+import settingsReducer from 'features/settingsSlice';
 
 import _pick from 'lodash/pick';
 
@@ -44,6 +46,8 @@ const store = configureStore({
   reducer: {
     app: appReducer,
     generalPage: generalPageReducer,
+    balance: balanceReducer,
+    settings: settingsReducer,
   },
 });
 

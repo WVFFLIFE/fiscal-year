@@ -14,6 +14,9 @@ export const useStyles = makeStyles((theme) => ({
   datepicker: {
     maxWidth: 170,
   },
+  datepickerError: {
+    borderColor: theme.color.red,
+  },
   centered: {
     display: 'flex',
     alignItems: 'center',
@@ -24,5 +27,29 @@ export const useStyles = makeStyles((theme) => ({
   },
   row: {
     background: theme.color.greyLight2,
+  },
+  bodyRow: {
+    '&:hover': {
+      background: theme.color.transparentBlue,
+
+      '& $actions': {
+        opacity: 1,
+      },
+    },
+  },
+  actions: {
+    opacity: 0,
+  },
+  active: {
+    '& $actions': {
+      opacity: 1,
+    },
+  },
+  disabled: {
+    background: 'transparent',
+  },
+  warningIcon: {
+    fontSize: 48,
+    color: 'rgba(219, 118, 0, 1)',
   },
 }));

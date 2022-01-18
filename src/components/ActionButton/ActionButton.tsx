@@ -35,7 +35,9 @@ const ActionButton = forwardRef<HTMLButtonElement, DefaultButtonProps>(
         endIcon={
           loading ? (
             <CircularProgress size={15} className={classes.loader} />
-          ) : undefined
+          ) : (
+            rest.endIcon
+          )
         }
       >
         {children}

@@ -3,10 +3,9 @@ import useBalancesTableRowData from './useBalancesTableRowData';
 import { Column } from '../models';
 import { useTranslation } from 'react-i18next';
 
-import Input from 'components/Input';
-import ActionButton from 'components/ActionButton';
-import { EditIcon, CloseIcon, RoundCheckIcon } from 'components/Icons';
 import Highlight from 'components/Highlight';
+import TextEditor from './TextEditor';
+import RowActions from './RowActions';
 
 import clsx from 'clsx';
 import { useStyles } from './style';
@@ -30,74 +29,53 @@ const BalancesTableRow = <T extends object>({
   const isDisabled = disabled || column.disabled;
 
   const {
+    activeEditMode,
     inputData,
-    toggleEditMode,
-    editModeOn,
-    handleChangeInputData,
-    handleSave,
     isValid,
+    handleChangeInputData,
+    handleActivateEditMode,
+    handleResetEditMode,
+    handleSave,
   } = useBalancesTableRowData(data, column);
 
-  const text = String(data[column.field]);
+  const text = data[column.field];
 
   return (
     <div
       className={clsx(classes.row, className, {
+        [classes.active]: activeEditMode,
         [classes.disabled]: isDisabled,
       })}
     >
       <div className={classes.item}>{t(column.label)}</div>
       <div className={clsx(classes.item, classes.inputWrapper)}>
-        {editModeOn ? (
-          <Input
+        {activeEditMode ? (
+          <TextEditor
+            autoFocus
+            className={clsx({ [classes.warning]: !isValid })}
+            type={column.type}
             value={inputData}
             onChange={handleChangeInputData}
-            classes={{
-              root: clsx(classes.input, {
-                [classes.warning]: !isValid,
-              }),
-            }}
-            inputClasses={{ input: classes.input }}
           />
         ) : column.render ? (
           column.render(data)
         ) : (
-          text && <Highlight text={text} />
+          text && <Highlight text={String(text)} />
         )}
       </div>
-      {column.editable && (
+      {column.editable ? (
         <div className={clsx(classes.item, classes.actions)}>
-          {editModeOn ? (
-            <>
-              <ActionButton
-                palette="white"
-                size="small"
-                className={classes.btnOffset}
-                onClick={toggleEditMode}
-                disabled={disabled}
-              >
-                <CloseIcon className={classes.icon} />
-              </ActionButton>
-              <ActionButton
-                palette="darkBlue"
-                size="small"
-                disabled={!isValid || disabled}
-                onClick={handleSave}
-              >
-                <RoundCheckIcon className={classes.icon} />
-              </ActionButton>
-            </>
-          ) : (
-            <ActionButton
-              palette="darkBlue"
-              size="small"
-              onClick={toggleEditMode}
-              disabled={disabled}
-            >
-              <EditIcon className={classes.icon} />
-            </ActionButton>
-          )}
+          <RowActions
+            active={activeEditMode}
+            onActivateEditMode={handleActivateEditMode}
+            onResetEditMode={handleResetEditMode}
+            onSave={handleSave}
+            disabled={disabled}
+            isValid={isValid}
+          />
         </div>
+      ) : (
+        <div className={classes.item}></div>
       )}
     </div>
   );

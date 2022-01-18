@@ -4,7 +4,10 @@ import useToggleSwitch from 'hooks/useToggleSwitch';
 
 import useStateSelector from 'hooks/useStateSelector';
 
-import { selectEvents } from 'selectors/generalPageSelectors';
+import {
+  selectEvents,
+  selectIsClosedField,
+} from 'selectors/generalPageSelectors';
 
 import ActionButton from 'components/ActionButton';
 import Menu from '@mui/material/Menu';
@@ -20,9 +23,14 @@ const CreateEvent = () => {
 
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  const events = useStateSelector(selectEvents);
+  const { events, isClosed } = useStateSelector((state) => ({
+    events: selectEvents(state),
+    isClosed: selectIsClosedField(state),
+  }));
 
   const [openMenu, toggleMenuVisibility] = useToggleSwitch();
+
+  const isDisabledOpenBtn = !!!events || isClosed;
 
   return (
     <>
@@ -32,7 +40,7 @@ const CreateEvent = () => {
         startIcon={<PlusIcon />}
         endIcon={<ArrowIcon />}
         onClick={toggleMenuVisibility}
-        disabled={!!!events}
+        disabled={isDisabledOpenBtn}
       >
         {t('#createevent.title')}
       </ActionButton>

@@ -2,12 +2,7 @@ import { ErrorModel } from 'models';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import useAppDispatch from 'hooks/useAppDispatch';
-
-import { fetchGeneralFiscalYear } from 'features/generalPageSlice';
-
 import { sleep, readFile } from 'utils';
-import { serverFormat } from 'utils/dates';
 import { GeneralModel } from 'utils/fiscalYear';
 import { GeneralInformationDataModel } from './GeneralInformationTable';
 import Services from 'services';
@@ -24,7 +19,6 @@ interface StateModel {
 }
 
 const useGeneralData = (data: GeneralModel) => {
-  const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const [state, setState] = useState<StateModel>({
     file: null,
@@ -38,7 +32,6 @@ const useGeneralData = (data: GeneralModel) => {
   });
 
   const coopId = data.cooperativeId;
-  const fiscalYearId = data.id;
 
   useEffect(() => {
     async function getCoverImage(id: string) {
@@ -139,7 +132,7 @@ const useGeneralData = (data: GeneralModel) => {
         } else {
           throw new Error(
             updateRes.ResponseCode === 1
-              ? 'The upload file is too large'
+              ? t('#error.uploadedfileistoolarge')
               : String(updateRes.Message || getRes.Message)
           );
         }
@@ -215,83 +208,6 @@ const useGeneralData = (data: GeneralModel) => {
     }));
   };
 
-  /**
-   *  Validate selected fiscal year dates
-   * @param {Date} startDate
-   * @param {Date} endDate
-   * @returns true if validation is successfully completed,
-   * else - undefined
-   */
-  const validate = async (startDate: Date, endDate: Date) => {
-    if (!fiscalYearId) return;
-    try {
-      setState((prevState) => ({
-        ...prevState,
-        saving: true,
-      }));
-
-      const res = await Services.validateFiscalYearChanges(
-        null,
-        fiscalYearId,
-        serverFormat(startDate),
-        serverFormat(endDate)
-      );
-
-      if (res.IsSuccess) return true;
-
-      throw new Error(
-        res.ValidationResult
-          ? t(`#error.fiscalyear.validating.status.${res.ValidationResult}`)
-          : res.Message
-      );
-    } catch (err) {
-      console.error(err);
-
-      setState((prevState) => ({
-        ...prevState,
-        saving: false,
-        error: { messages: [String(err)] },
-      }));
-    }
-  };
-
-  const handleSaveFiscalYear = useCallback(
-    async (startDate: Date, endDate: Date) => {
-      if (!fiscalYearId) return;
-      const isValid = await validate(startDate, endDate);
-
-      if (isValid) {
-        try {
-          const res = await Services.fiscalYearGeneralUpdate({
-            FiscalYearId: fiscalYearId,
-            StartDate: serverFormat(startDate),
-            EndDate: serverFormat(endDate),
-          });
-
-          if (res.IsSuccess) {
-            setState((prevState) => ({
-              ...prevState,
-              saving: false,
-            }));
-
-            dispatch(fetchGeneralFiscalYear(fiscalYearId));
-          } else {
-            throw new Error(res.Message);
-          }
-        } catch (err) {
-          console.error(err);
-
-          setState((prevState) => ({
-            ...prevState,
-            saving: false,
-            error: { messages: [String(err)] },
-          }));
-        }
-      }
-    },
-    [fiscalYearId]
-  );
-
   const generalInformationList: GeneralInformationDataModel[] = useMemo(
     () => [
       {
@@ -311,7 +227,6 @@ const useGeneralData = (data: GeneralModel) => {
     generalInformationList,
     handleChangeCurrentFile,
     handleDeleteCurrentFile,
-    handleSaveFiscalYear,
     handleInitError,
   };
 };

@@ -20,7 +20,7 @@ function makeInitialValues(
     liabilityPartyId: liability.PartyId,
     priceItemRate: toNumberFormat(liability.PriceItemRate) || '',
     product: liability.Product,
-    quantity: toNumberFormat(liability.Quantity, 6) || '',
+    quantity: toNumberFormat(liability.Quantity, { decimalScale: 6 }) || '',
     startDate: liability.StartDate ? new Date(liability.StartDate) : null,
     type: liability.Type,
     usage: liability.Usage,

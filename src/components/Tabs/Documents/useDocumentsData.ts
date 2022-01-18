@@ -1,4 +1,5 @@
 import { useMemo, useEffect, useCallback, useState, ChangeEvent } from 'react';
+import useStateSelector from 'hooks/useStateSelector';
 import {
   ErrorModel,
   SuccessType,
@@ -9,14 +10,13 @@ import {
   SortParamsType,
 } from 'models';
 
-import useSelectFiscalYear from 'hooks/useSelectFiscalYear';
-
 import Services from 'services';
 
 import { saveAs } from 'file-saver';
 import _first from 'lodash/first';
 import _last from 'lodash/last';
 import { isPublished, isFolder, extractDocs, getErrorsList } from 'utils';
+import { search, AccessorModel } from 'utils/search';
 import {
   prepareData,
   countEntitiesAmount,
@@ -66,8 +66,19 @@ interface State {
   folderExists: boolean;
 }
 
+const searchAccessorList: AccessorModel<DocumentModel | FolderModel>[] = [
+  { accessor: 'Name', type: 'string' },
+  { accessor: 'Values.Service_x002f_Process', type: 'string' },
+  { accessor: 'Values.Information_x0020_Group', type: 'string' },
+  { accessor: 'Values.Modified', type: 'string' },
+  { accessor: 'Values.Editor', type: 'string' },
+];
+
 const useDocumentsData = () => {
-  const fiscalYear = useSelectFiscalYear();
+  const { fiscalYear, searchTerm } = useStateSelector((state) => ({
+    fiscalYear: state.generalPage.generalFiscalYear,
+    searchTerm: state.generalPage.filters.searchTerm,
+  }));
   const [state, setState] = useState<State>({
     breadcrumbsList: [],
     loading: false,
@@ -151,6 +162,10 @@ const useDocumentsData = () => {
       ? prepareData(filteredActiveFolder, sortParams)
       : [];
   }, [filteredActiveFolder, sortParams]);
+
+  const filteredListBySearchTerm = useMemo(() => {
+    return search(list, searchAccessorList, searchTerm);
+  }, [list, searchTerm]);
 
   const amount = useMemo(() => {
     return countEntitiesAmount(selectedItems);
@@ -674,11 +689,11 @@ const useDocumentsData = () => {
 
   const paginatedList = useMemo(() => {
     const { currentPage, rowsPerPage } = pagination;
-    return list.slice(
+    return filteredListBySearchTerm.slice(
       currentPage * rowsPerPage,
       currentPage * rowsPerPage + rowsPerPage
     );
-  }, [list, pagination]);
+  }, [filteredListBySearchTerm, pagination]);
 
   return {
     hasFolder: state.hasFolder,
@@ -700,7 +715,7 @@ const useDocumentsData = () => {
     editDocumentDialogState,
     editFolderDialogState,
     sortParams,
-    totalItems: list.length,
+    totalItems: filteredListBySearchTerm.length,
     list: paginatedList,
     amount,
     selectedItems,

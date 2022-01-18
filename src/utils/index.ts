@@ -118,15 +118,22 @@ export function toIntFormat(num: number | null | undefined) {
     .replace(/\./g, ',');
 }
 
+interface Options {
+  decimalScale?: number;
+  decimalSeparator?: string;
+}
+
 export function toNumberFormat(
   input: number | null | undefined,
-  decimalLength = 2
+  options: Options = { decimalScale: 2, decimalSeparator: ' ' }
 ) {
   if (!input) return null;
 
-  let [num, decimal] = input.toFixed(decimalLength).split('.');
+  const { decimalScale = 2, decimalSeparator = ' ' } = options;
 
-  return `${num.replace(/\B(?=(\d{3})+(?!\d))/g, ' ')},${decimal}`;
+  let [num, decimal] = input.toFixed(decimalScale).split('.');
+
+  return `${num.replace(/\B(?=(\d{3})+(?!\d))/g, decimalSeparator)},${decimal}`;
 }
 
 export function isNull(input: any) {
@@ -140,7 +147,10 @@ export function isObject(input: any) {
 }
 
 export function toFloatStr(input: string, decimalLength = 2) {
-  let value = input.replace(/[^0-9,]/g, '').replace(/[,](?=.*[,])/g, '');
+  let value = input
+    .replace(/[^0-9,]/g, '')
+    .replace(/\./g, ',')
+    .replace(/[,](?=.*[,])/g, '');
 
   let [num, decimal] = value.split(',');
 

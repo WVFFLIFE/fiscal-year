@@ -6,3 +6,9 @@ export namespace ResponseStatus {
     YearIntersects = 4,
   }
 }
+
+/* eslint-disable */
+import FiscalYearValidatingStatus = ResponseStatus.FiscalYearValidatingStatus;
+/* eslint-enable */
+
+export { FiscalYearValidatingStatus };

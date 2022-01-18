@@ -5,28 +5,32 @@ import SummaryPage from 'pages/SummaryPage';
 import GeneralPage from 'pages/GeneralPage';
 
 import TopBar from 'components/TopBar';
-import Backdrop from 'components/Backdrop';
-import DialogError from 'components/DialogError';
+import SuspenceFacade from 'components/SuspenceFacade';
 
 const FiscalYear = () => {
-  const { defaultCooperativeId, defaultFiscalYearId } = useStateSelector(
-    (state) => state.app
-  );
+  const { defaultCooperativeId, defaultFiscalYearId, cooperatives } =
+    useStateSelector((state) => ({
+      defaultCooperativeId: state.app.defaultCooperativeId,
+      defaultFiscalYearId: state.app.defaultFiscalYearId,
+      cooperatives: state.generalPage.filters.cooperatives.list,
+    }));
   const { state, handleInitError } = useFiscalYearData();
 
   const showGeneralPage = defaultFiscalYearId && defaultCooperativeId;
 
   return (
-    <>
+    <SuspenceFacade
+      loading={state.loading}
+      error={state.error}
+      onInitError={handleInitError}
+    >
       <TopBar />
       {showGeneralPage ? (
         <GeneralPage />
       ) : (
-        <SummaryPage commonCooperatives={state.commonCooperatives} />
+        <SummaryPage commonCooperatives={cooperatives} />
       )}
-      <Backdrop loading={state.loading} />
-      <DialogError error={state.error} initError={handleInitError} />
-    </>
+    </SuspenceFacade>
   );
 };
 

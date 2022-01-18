@@ -10,9 +10,11 @@ interface MeetingDateProps {
   highlight(input: any): any;
   actualDate: string | null;
   plannedDate: string | null;
+  link: string | null;
 }
 
 const MeetingDate: React.FC<MeetingDateProps> = ({
+  link,
   highlight,
   actualDate,
   plannedDate,
@@ -32,21 +34,20 @@ const MeetingDate: React.FC<MeetingDateProps> = ({
     const isWarning = isBefore(pd, new Date());
 
     return (
-      <span
+      <a
         className={clsx(classes.date, {
           [classes.warning]: isWarning,
         })}
+        href={link ?? undefined}
+        target="_blank"
+        rel="noopener noreferrer"
       >
         {highlight(defaultFormat(pd))}
-      </span>
+      </a>
     );
   }
 
-  return (
-    <span className={clsx(classes.warning, classes.noBorder)}>
-      {highlight('No date')}
-    </span>
-  );
+  return null;
 };
 
 export default MeetingDate;

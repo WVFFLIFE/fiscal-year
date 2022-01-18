@@ -10,7 +10,7 @@ import { AnnualReportModel } from 'models/AnnualReportModel';
 import { BalancesModel } from 'models/BalancesModel';
 import { ConsumptionModel } from 'models/ConsumptionModel';
 import { GeneralModel } from 'models/GeneralModel';
-import { Services as S } from './s';
+import { BaseResponse, Services as S } from './s';
 
 export interface BaseResponseModel {
   IsSuccess: boolean;
@@ -122,9 +122,11 @@ export interface CommonCooperativeModel extends BaseCooperativeModel {
 export interface ExtendedCooperativeModel extends BaseCooperativeModel {
   AuditDeliveryDate: string | null;
   AuditDoneDate: string | null;
+  AuditMeetingLink: string | null;
   AuditMeetingType: string | null;
   AuditReturnNeededDate: string | null;
   BoardMeetingActualDate: string | null;
+  BoardMeetingLink: string | null;
   BoardMeetingPlannedDate: string | null;
   BoardMeetingType: string | null;
   Comments: string | null;
@@ -134,6 +136,7 @@ export interface ExtendedCooperativeModel extends BaseCooperativeModel {
   FiscalYearName: string | null;
   FiscalYearStartDate: string | null;
   GeneralMeetingActualDate: string | null;
+  GeneralMeetingLink: string | null;
   GeneralMeetingPlannedDate: string | null;
   GeneralMeetingType: string | null;
   IsFinancialCalculationsAccepted: boolean | null;
@@ -235,9 +238,21 @@ interface FiscalYearCommentsUpdateRequest {
   Comments: string;
 }
 
-interface FiscalYearValidationRes extends BaseResponseModel {
-  ValidationResult: ResponseStatus.FiscalYearValidatingStatus | null;
-}
+type FiscalYearValidationRes = (
+  | {
+      ValidationResult:
+        | ResponseStatus.FiscalYearValidatingStatus.BadDates
+        | ResponseStatus.FiscalYearValidatingStatus.NotFullYear
+        | ResponseStatus.FiscalYearValidatingStatus.OK
+        | null;
+    }
+  | {
+      ValidationResult: ResponseStatus.FiscalYearValidatingStatus.YearIntersects;
+      IntersectPeriodEndDate: string;
+      IntersectPeriodStartDate: string;
+    }
+) &
+  BaseResponse;
 
 export interface BalanceUpdateRequest {
   FiscalYearId: string;
@@ -273,11 +288,36 @@ interface ConsumptionUpdateRequest {
 }
 
 export interface SettingsModel {
+  AccountingBasisMaxLength: number;
+  AccountingBooksMaxLength: number;
+  AnnualGeneralMeetingsMaxLength: number;
+  BalanceSheetNotesMaxLength: number;
+  BoardsProposalOnThePLMaxLength: number;
+  BudgetComprasionMaxLength: number;
+  Comment: number;
+  ConsumptionDataMaxLength: number;
   CooperativeCoverImageMaxLength: number;
   CooperativeCoverImageMaxSize: number;
+  EssentialEventsMaxLength: number;
   FiscalYearConsumptionImageMaxLength: number;
   FiscalYearConsumptionImageMaxSize: number;
+  FutureDevelopmentMaxLength: number;
   LanguageCode: number;
+  LiabilityDescription: number;
+  LiabilityDocumentNumber: number;
+  LiabilityName: number;
+  LiquidityMaxLength: number;
+  LoansMaturingOverFiveYearsMaxLength: number;
+  PersistentStrainsAndMortgagesMaxLength: number;
+  PersonnelMaxLength: number;
+  PropertyMeintenanceProductNameMaxLength: number;
+  SpecFinCalcProductName1MaxLength: number;
+  SpecFinCalcProductName2MaxLength: number;
+  SpecFinCalcProductName3MaxLength: number;
+  SpecFinCalcProductName4MaxLength: number;
+  SpecFinCalcProductName5MaxLength: number;
+  TheBoardOfDirectorsConvenedDuringTheFYMaxLength: number;
+  VATCalculationsProductNameMaxLength: number;
 }
 
 interface SettingsResponse extends BaseResponseModel {

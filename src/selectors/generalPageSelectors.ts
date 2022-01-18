@@ -48,13 +48,17 @@ export const selectVATCalculationData = createDraftSafeSelector(
         }
       : null
 );
+export const selectAnnualReportData = createDraftSafeSelector(
+  selectFiscalYear,
+  (fiscalYear) => fiscalYear?.annualReport || null
+);
 export const selectAppendexisData = createDraftSafeSelector(
   selectFiscalYear,
   (fiscalYear) => fiscalYear?.appendexis || null
 );
 export const selectRunningNumberSettings = createDraftSafeSelector(
   selectAppendexisData,
-  (appendexis) => appendexis?.runningNumberSettings || null
+  (appendexis) => appendexis?.runningNumberSettings || []
 );
 export const selectEvents = createDraftSafeSelector(
   selectFiscalYear,

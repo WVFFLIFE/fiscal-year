@@ -9,6 +9,8 @@ import ActionButton from 'components/ActionButton';
 import Dialog from 'components/Dialog';
 import InfoIcon from 'components/Icons/InfoIcon';
 import RunningNumberSettingsTable from './RunningNumberSettingsTable';
+import DialogError from 'components/DialogError';
+import Backdrop from 'components/Backdrop';
 
 import { useStyles } from './style';
 
@@ -16,8 +18,16 @@ const Appendexis = () => {
   const { t } = useTranslation();
   const classes = useStyles();
 
-  const { columns, isClosed, runningNumberSettings, handleUpdateFiscalYear } =
-    useAppendexisData();
+  const {
+    articleId,
+    columns,
+    requestState,
+    isClosed,
+    runningNumberSettings,
+    handleSaveArticle,
+    handleSelectArticle,
+    handleInitError,
+  } = useAppendexisData();
   const [showDialog, toggleDialogVisibility] = useToggleSwitch();
 
   return (
@@ -32,15 +42,19 @@ const Appendexis = () => {
         </ActionButton>
       </Box>
       <Box>
-        {columns.map((column, idx) => {
+        {columns.map((column) => {
           return (
             <ArticleEditor
-              key={idx}
-              title={column.label}
+              key={column.id}
+              activeId={articleId.current}
+              prevId={articleId.prev}
               data={column.editorData}
-              onSave={column.onSave}
-              onUpdate={handleUpdateFiscalYear}
               disabled={isClosed}
+              id={column.id}
+              maxCharactersLength={column.maxLength}
+              title={column.label}
+              onSave={handleSaveArticle}
+              onSelectArticle={handleSelectArticle}
             />
           );
         })}
@@ -55,6 +69,8 @@ const Appendexis = () => {
           <RunningNumberSettingsTable data={runningNumberSettings} />
         )}
       </Dialog>
+      <DialogError error={requestState.error} initError={handleInitError} />
+      <Backdrop loading={requestState.loading} />
     </Box>
   );
 };

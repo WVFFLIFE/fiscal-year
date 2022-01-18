@@ -1,130 +1,142 @@
-import { memo, FC } from 'react';
+import { memo, FC, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import useArticleEditorData from './useArticleEditorData';
 
 import { EditorData } from 'models';
-import { BaseResponseModel } from 'services';
 
 import Box from '@mui/material/Box';
 import TextEditor from 'components/TextEditor';
 import ActionButton from 'components/ActionButton';
-import DialogError from 'components/DialogError';
 import { SubTitle } from 'components/Styled';
 import { EditIcon, RoundCheckIcon } from 'components/Icons';
-import CircularProgress from '@mui/material/CircularProgress';
 
 import clsx from 'clsx';
 import { useStyles } from './style';
 
 interface ArticleEditorProps {
   className?: string;
-  title?: string;
+  title: string;
+  activeId: string | null;
+  prevId: string | null;
+  id: string;
   data: EditorData;
+  maxCharactersLength?: number;
+  singleline?: boolean;
   disabled?: boolean;
-  onSave: (
-    text: string | null,
-    formatted: string | null,
-    html: string | null
-  ) => Promise<BaseResponseModel | undefined>;
-  onUpdate: () => Promise<unknown>;
+  onSave(id: string, editorData: EditorData, cb?: () => void): Promise<unknown>;
+  onSelectArticle(id: string | null): void;
 }
 
 const ArticleEditor: FC<ArticleEditorProps> = ({
+  activeId,
+  prevId,
   className,
-  title,
   data,
   disabled,
+  maxCharactersLength = 2000,
+  id,
+  singleline,
+  title,
   onSave,
-  onUpdate,
+  onSelectArticle,
 }) => {
   const { t } = useTranslation();
   const classes = useStyles();
 
   const {
-    requestState,
-    editModeOn,
+    activeEditMode,
     editorState,
     handleChangeEditorState,
-    handleSave,
-    handleToggleEditMode,
-    handleCancelEditMode,
-    handleInitError,
-  } = useArticleEditorData(data, onSave, onUpdate);
+    handleSaveCurrentArticle,
+    handleSelectArticle,
+    handleUnselectArticle,
+  } = useArticleEditorData({
+    activeId,
+    prevId,
+    id,
+    editorData: data,
+    onSave,
+    onSelectArticle,
+  });
+
+  const isDisabledTextEditor = disabled || !!!activeEditMode;
+
+  const currentContentLength = useMemo(() => {
+    return activeEditMode
+      ? editorState.getCurrentContent().getPlainText().length
+      : 0;
+  }, [editorState, activeEditMode]);
+
+  const isLimitExceeded = currentContentLength > maxCharactersLength;
 
   return (
-    <Box className={classes.section}>
-      {title && <SubTitle className={classes.titleOffset}>{t(title)}</SubTitle>}
-      {editorState && (
+    <Box
+      className={clsx(classes.section, {
+        [classes.disabledSection]: disabled,
+      })}
+    >
+      <SubTitle className={classes.titleOffset}>{t(title)}</SubTitle>
+      <div className={clsx(classes.root, className)}>
+        <div className={classes.editor}>
+          <TextEditor
+            classes={{
+              controlPanel: classes.controlPanel,
+            }}
+            maxCharactersLength={maxCharactersLength}
+            disabled={isDisabledTextEditor}
+            editorState={editorState}
+            singleline={singleline}
+            onChangeEditorState={handleChangeEditorState}
+          />
+        </div>
         <div
-          className={clsx(classes.root, className, {
-            [classes.rootDisabled]: disabled,
+          className={clsx(classes.actions, {
+            [classes.active]: activeEditMode,
           })}
         >
-          <div className={classes.editor}>
-            <TextEditor
-              classes={{
-                controlPanel: classes.controlPanel,
-              }}
-              disabled={disabled || !!!editModeOn}
-              editorState={editorState}
-              onChangeEditorState={handleChangeEditorState}
-            />
-          </div>
-          <div
-            className={clsx(classes.actions, {
-              [classes.active]: editModeOn,
-            })}
-          >
-            {disabled ? null : editModeOn ? (
-              <>
-                <ActionButton
-                  onClick={handleCancelEditMode}
-                  className={clsx(classes.btn, classes.cancelBtnOffset)}
-                  classes={{
-                    startIcon: classes.startIcon,
-                  }}
-                  size="small"
-                  palette="white"
-                >
-                  {t('#button.cancel')}
-                </ActionButton>
-                <ActionButton
-                  onClick={handleSave}
-                  className={classes.btn}
-                  classes={{
-                    startIcon: classes.startIcon,
-                  }}
-                  palette="darkBlue"
-                  size="small"
-                  disabled={requestState.loading}
-                  startIcon={<RoundCheckIcon />}
-                  endIcon={
-                    requestState.loading ? (
-                      <CircularProgress size={15} className={classes.loader} />
-                    ) : null
-                  }
-                >
-                  {t('#button.save')}
-                </ActionButton>
-              </>
-            ) : (
+          {disabled ? null : activeEditMode ? (
+            <>
               <ActionButton
-                onClick={handleToggleEditMode}
+                onClick={handleUnselectArticle}
+                className={clsx(classes.btn, classes.cancelBtnOffset)}
+                classes={{
+                  startIcon: classes.startIcon,
+                }}
+                size="small"
+                palette="white"
+              >
+                {t('#button.cancel')}
+              </ActionButton>
+              <ActionButton
+                onClick={handleSaveCurrentArticle}
                 className={classes.btn}
                 classes={{
                   startIcon: classes.startIcon,
                 }}
-                palette="white"
+                disabled={isLimitExceeded}
+                palette="darkBlue"
                 size="small"
-                startIcon={<EditIcon />}
+                startIcon={<RoundCheckIcon />}
               >
-                {t('#button.edit')}
+                {t('#button.save')}
               </ActionButton>
-            )}
-          </div>
+            </>
+          ) : (
+            <ActionButton
+              onClick={handleSelectArticle}
+              className={classes.btn}
+              classes={{
+                startIcon: classes.startIcon,
+              }}
+              palette="white"
+              size="small"
+              startIcon={<EditIcon />}
+            >
+              {t('#button.edit')}
+            </ActionButton>
+          )}
         </div>
-      )}
-      <DialogError error={requestState.error} initError={handleInitError} />
+      </div>
     </Box>
   );
 };

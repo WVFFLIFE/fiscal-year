@@ -1,219 +1,277 @@
-import { useMemo, useCallback } from 'react';
-import { AnnualReportModel } from 'utils/fiscalYear';
+import { useMemo, useState, useCallback } from 'react';
+
+import { ErrorModel, EditorData } from 'models';
 
 import useAppDispatch from 'hooks/useAppDispatch';
+import useStateSelector from 'hooks/useStateSelector';
 import useSelectFiscalYear from 'hooks/useSelectFiscalYear';
 import { fetchGeneralFiscalYear } from 'features/generalPageSlice';
 
-import { saveRequestAdapter } from './utils';
-import Services, { BaseResponseModel } from 'services';
+import { selectAnnualReportData } from 'selectors/generalPageSelectors';
+import { selectAnnualReportSettings } from 'selectors/settingsSelectors';
 
-interface EditorData {
-  text: string | null;
-  formatted: string | null;
-  html: string | null;
-}
+import Services from 'services';
 
 interface Column {
+  id: string;
   label: string;
   editorData: EditorData;
-  onSave(
-    text: string | null,
-    formatted: string | null,
-    html: string | null
-  ): Promise<BaseResponseModel>;
+  maxLength?: number;
+  singleline?: boolean;
 }
 
-const useAnnualReportData = (data: AnnualReportModel) => {
+interface RequestStateModel {
+  loading: boolean;
+  error: ErrorModel | null;
+}
+
+interface ArticleIdModel {
+  current: string | null;
+  prev: string | null;
+}
+
+const useAnnualReportData = () => {
   const dispatch = useAppDispatch();
   const fiscalYear = useSelectFiscalYear();
+  const { annualReport, annualReportSettings } = useStateSelector((state) => ({
+    annualReport: selectAnnualReportData(state),
+    annualReportSettings: selectAnnualReportSettings(state),
+  }));
 
-  const saveFields = async (req: { [key: string]: string | null }) => {
-    const reqBody = {
-      FiscalYearId: fiscalYear?.id || null,
-      PersistentStrainsAndMortgages: data.persistentStrainsAndMortgages,
-      PersistentStrainsAndMortgagesFormatted:
-        data.persistentStrainsAndMortgagesFormatted,
-      PersistentStrainsAndMortgagesHtml: data.persistentStrainsAndMortgagesHtml,
+  const [requestState, setRequestState] = useState<RequestStateModel>({
+    loading: false,
+    error: null,
+  });
+  const [articleId, setArticleId] = useState<ArticleIdModel>({
+    current: null,
+    prev: null,
+  });
 
-      AnnualGeneralMeetings: data.annualGeneralMeetings,
-      AnnualGeneralMeetingsFormatted: data.annualGeneralMeetingsFormatted,
-      AnnualGeneralMeetingsHtml: data.annualGeneralMeetingsHtml,
+  // useEffect(() => {
+  //   setArticleId({
+  //     current: null,
+  //     prev: null,
+  //   });
+  // }, [fiscalYear]);
 
-      TheBoardOfDirectorsConvenedDuringTheFY:
-        data.theBoardOfDirectorsConvenedDuringTheFY,
-      TheBoardOfDirectorsConvenedDuringTheFYFormatted:
-        data.theBoardOfDirectorsConvenedDuringTheFYFormatted,
-      TheBoardOfDirectorsConvenedDuringTheFYHtml:
-        data.theBoardOfDirectorsConvenedDuringTheFYHtml,
+  const handleSelectArticle = useCallback((id: string | null) => {
+    setArticleId((prevState) => ({
+      ...prevState,
+      current: id,
+      prev: id ? prevState.current : null,
+    }));
+  }, []);
 
-      EssentialEvents: data.essentialEvents,
-      EssentialEventsFormatted: data.essentialEventsFormatted,
-      EssentialEventsHtml: data.essentialEventsHtml,
+  const handleSaveArticle = useCallback(
+    async (id: string, editorData: EditorData, cb?: () => void) => {
+      if (!fiscalYear?.id || !annualReport) return;
+      try {
+        setRequestState((prevState) => ({
+          ...prevState,
+          loading: true,
+        }));
 
-      ConsumptionData: data.consumptionData,
-      ConsumptionDataFormatted: data.consumptionDataFormatted,
-      ConsumptionDataHtml: data.consumptionDataHtml,
+        const newData = {
+          [id]: editorData.text,
+          [`${id}Formatted`]: editorData.formatted,
+          [`${id}Html`]: editorData.html,
+        };
+        const reqBody = {
+          FiscalYearId: fiscalYear?.id || null,
+          PersistentStrainsAndMortgages:
+            annualReport.persistentStrainsAndMortgages,
+          PersistentStrainsAndMortgagesFormatted:
+            annualReport.persistentStrainsAndMortgagesFormatted,
+          PersistentStrainsAndMortgagesHtml:
+            annualReport.persistentStrainsAndMortgagesHtml,
 
-      FutureDevelopment: data.futureDevelopment,
-      FutureDevelopmentFormatted: data.futureDevelopmentFormatted,
-      FutureDevelopmentHtml: data.futureDevelopmentHtml,
+          AnnualGeneralMeetings: annualReport.annualGeneralMeetings,
+          AnnualGeneralMeetingsFormatted:
+            annualReport.annualGeneralMeetingsFormatted,
+          AnnualGeneralMeetingsHtml: annualReport.annualGeneralMeetingsHtml,
 
-      Liquidity: data.liquidity,
-      LiquidityFormatted: data.liquidityFormatted,
-      LiquidityHtml: data.liquidityHtml,
+          TheBoardOfDirectorsConvenedDuringTheFY:
+            annualReport.theBoardOfDirectorsConvenedDuringTheFY,
+          TheBoardOfDirectorsConvenedDuringTheFYFormatted:
+            annualReport.theBoardOfDirectorsConvenedDuringTheFYFormatted,
+          TheBoardOfDirectorsConvenedDuringTheFYHtml:
+            annualReport.theBoardOfDirectorsConvenedDuringTheFYHtml,
 
-      BudgetComprasion: data.budgetComprasion,
-      BudgetComprasionFormatted: data.budgetComprasionFormatted,
-      BudgetComprasionHtml: data.budgetComprasionHtml,
+          EssentialEvents: annualReport.essentialEvents,
+          EssentialEventsFormatted: annualReport.essentialEventsFormatted,
+          EssentialEventsHtml: annualReport.essentialEventsHtml,
 
-      BoardsProposalOnThePL: data.boardsProposalOnThePL,
-      BoardsProposalOnThePLFormatted: data.boardsProposalOnThePLFormatted,
-      BoardsProposalOnThePLHtml: data.boardsProposalOnThePLHtml,
-      ...req,
-    };
+          ConsumptionData: annualReport.consumptionData,
+          ConsumptionDataFormatted: annualReport.consumptionDataFormatted,
+          ConsumptionDataHtml: annualReport.consumptionDataHtml,
 
-    return Services.fiscalYearAnnualReportUpdate(reqBody);
-  };
+          FutureDevelopment: annualReport.futureDevelopment,
+          FutureDevelopmentFormatted: annualReport.futureDevelopmentFormatted,
+          FutureDevelopmentHtml: annualReport.futureDevelopmentHtml,
 
-  const updateFiscalYear = useCallback(async () => {
-    if (fiscalYear?.id) dispatch(fetchGeneralFiscalYear(fiscalYear.id));
-  }, [fiscalYear]);
+          Liquidity: annualReport.liquidity,
+          LiquidityFormatted: annualReport.liquidityFormatted,
+          LiquidityHtml: annualReport.liquidityHtml,
 
-  const columns: Column[] = useMemo(
-    () => [
-      {
-        label: '#tab.annualreport.subtitle.persistentstrainsandmortgages',
-        editorData: {
-          formatted: data.persistentStrainsAndMortgagesFormatted,
-          html: data.persistentStrainsAndMortgagesHtml,
-          text: data.persistentStrainsAndMortgages,
-        },
-        onSave: (text, formatted, html) =>
-          saveFields(
-            saveRequestAdapter(text, formatted, html, {
-              type: 'persistentStrainsAndMortgages',
-            })
-          ),
-      },
-      {
-        label: '#tab.annualreport.subtitle.annualgeneralmeetings',
-        editorData: {
-          formatted: data.annualGeneralMeetingsFormatted,
-          html: data.annualGeneralMeetingsHtml,
-          text: data.annualGeneralMeetings,
-        },
-        onSave: (text, formatted, html) =>
-          saveFields(
-            saveRequestAdapter(text, formatted, html, {
-              type: 'annualGeneralMeetings',
-            })
-          ),
-      },
-      {
-        label:
-          '#tab.annualreport.subtitle.theboardofdirectorsconvenedduringthefiscalyear',
-        editorData: {
-          formatted: data.theBoardOfDirectorsConvenedDuringTheFYFormatted,
-          html: data.theBoardOfDirectorsConvenedDuringTheFYHtml,
-          text: data.theBoardOfDirectorsConvenedDuringTheFY,
-        },
-        onSave: (text, formatted, html) =>
-          saveFields(
-            saveRequestAdapter(text, formatted, html, {
-              type: 'theBoardOfDirectorsConvenedDuring',
-            })
-          ),
-      },
-      {
-        label: '#tab.annualreport.subtitle.essentialevents',
-        editorData: {
-          formatted: data.essentialEventsFormatted,
-          html: data.essentialEventsHtml,
-          text: data.essentialEvents,
-        },
-        onSave: (text, formatted, html) =>
-          saveFields(
-            saveRequestAdapter(text, formatted, html, {
-              type: 'essentialEvents',
-            })
-          ),
-      },
-      {
-        label: '#tab.annualreport.subtitle.consumptiondata',
-        editorData: {
-          formatted: data.consumptionDataFormatted,
-          html: data.consumptionDataHtml,
-          text: data.consumptionData,
-        },
-        onSave: (text, formatted, html) =>
-          saveFields(
-            saveRequestAdapter(text, formatted, html, {
-              type: 'consumptionData',
-            })
-          ),
-      },
-      {
-        label: '#tab.annualreport.subtitle.futuredevelopment',
-        editorData: {
-          formatted: data.futureDevelopmentFormatted,
-          html: data.futureDevelopmentHtml,
-          text: data.futureDevelopment,
-        },
-        onSave: (text, formatted, html) =>
-          saveFields(
-            saveRequestAdapter(text, formatted, html, {
-              type: 'futureDevelopment',
-            })
-          ),
-      },
-      {
-        label: '#tab.annualreport.subtitle.liquidity',
-        editorData: {
-          formatted: data.liquidityFormatted,
-          html: data.liquidityHtml,
-          text: data.liquidity,
-        },
-        onSave: (text, formatted, html) =>
-          saveFields(
-            saveRequestAdapter(text, formatted, html, {
-              type: 'liquidity',
-            })
-          ),
-      },
-      {
-        label: '#tab.annualreport.subtitle.budgetcomparison',
-        editorData: {
-          formatted: data.budgetComprasionFormatted,
-          html: data.budgetComprasionHtml,
-          text: data.budgetComprasion,
-        },
-        onSave: (text, formatted, html) =>
-          saveFields(
-            saveRequestAdapter(text, formatted, html, {
-              type: 'budgetComprasion',
-            })
-          ),
-      },
-      {
-        label: '#tab.annualreport.subtitle.boardsproposalonthepl',
-        editorData: {
-          formatted: data.boardsProposalOnThePLFormatted,
-          html: data.boardsProposalOnThePLHtml,
-          text: data.boardsProposalOnThePL,
-        },
-        onSave: (text, formatted, html) =>
-          saveFields(
-            saveRequestAdapter(text, formatted, html, {
-              type: 'boardsProposalOnThePL',
-            })
-          ),
-      },
-    ],
-    [data]
+          BudgetComprasion: annualReport.budgetComprasion,
+          BudgetComprasionFormatted: annualReport.budgetComprasionFormatted,
+          BudgetComprasionHtml: annualReport.budgetComprasionHtml,
+
+          BoardsProposalOnThePL: annualReport.boardsProposalOnThePL,
+          BoardsProposalOnThePLFormatted:
+            annualReport.boardsProposalOnThePLFormatted,
+          BoardsProposalOnThePLHtml: annualReport.boardsProposalOnThePLHtml,
+          ...newData,
+        };
+
+        const res = await Services.fiscalYearAnnualReportUpdate(reqBody);
+
+        if (res.IsSuccess) {
+          setRequestState((prevState) => ({
+            ...prevState,
+            loading: false,
+            error: null,
+          }));
+
+          if (cb) cb();
+
+          await dispatch(fetchGeneralFiscalYear(fiscalYear.id));
+        } else {
+          throw new Error(res.Message);
+        }
+      } catch (err) {
+        console.error(err);
+
+        setRequestState((prevState) => ({
+          ...prevState,
+          loading: false,
+          error: { messages: [String(err)] },
+        }));
+      }
+    },
+    [annualReport, dispatch, fiscalYear?.id]
   );
 
-  return { columns, isClosed: !!fiscalYear?.isClosed, updateFiscalYear };
+  const handleInitError = () => {
+    setRequestState((prevState) => ({
+      ...prevState,
+      error: null,
+    }));
+  };
+
+  const columns: Column[] = useMemo(
+    () =>
+      annualReport
+        ? [
+            {
+              id: 'PersistentStrainsAndMortgages',
+              label: '#tab.annualreport.subtitle.persistentstrainsandmortgages',
+              editorData: {
+                formatted: annualReport.persistentStrainsAndMortgagesFormatted,
+                html: annualReport.persistentStrainsAndMortgagesHtml,
+                text: annualReport.persistentStrainsAndMortgages,
+              },
+              maxLength:
+                annualReportSettings.persistentStrainsAndMortgagesMaxLength,
+            },
+            {
+              id: 'AnnualGeneralMeetings',
+              label: '#tab.annualreport.subtitle.annualgeneralmeetings',
+              editorData: {
+                formatted: annualReport.annualGeneralMeetingsFormatted,
+                html: annualReport.annualGeneralMeetingsHtml,
+                text: annualReport.annualGeneralMeetings,
+              },
+              maxLength: annualReportSettings.annualGeneralMeetingsMaxLength,
+            },
+            {
+              id: 'TheBoardOfDirectorsConvenedDuringTheFY',
+              label:
+                '#tab.annualreport.subtitle.theboardofdirectorsconvenedduringthefiscalyear',
+              editorData: {
+                formatted:
+                  annualReport.theBoardOfDirectorsConvenedDuringTheFYFormatted,
+                html: annualReport.theBoardOfDirectorsConvenedDuringTheFYHtml,
+                text: annualReport.theBoardOfDirectorsConvenedDuringTheFY,
+              },
+              maxLength:
+                annualReportSettings.theBoardOfDirectorsConvenedDuringTheFYMaxLength,
+              singleline: true,
+            },
+            {
+              id: 'EssentialEvents',
+              label: '#tab.annualreport.subtitle.essentialevents',
+              editorData: {
+                formatted: annualReport.essentialEventsFormatted,
+                html: annualReport.essentialEventsHtml,
+                text: annualReport.essentialEvents,
+              },
+              maxLength: annualReportSettings.essentialEventsMaxLength,
+            },
+            {
+              id: 'ConsumptionData',
+              label: '#tab.annualreport.subtitle.consumptiondata',
+              editorData: {
+                formatted: annualReport.consumptionDataFormatted,
+                html: annualReport.consumptionDataHtml,
+                text: annualReport.consumptionData,
+              },
+              maxLength: annualReportSettings.consumptionDataMaxLength,
+            },
+            {
+              id: 'FutureDevelopment',
+              label: '#tab.annualreport.subtitle.futuredevelopment',
+              editorData: {
+                formatted: annualReport.futureDevelopmentFormatted,
+                html: annualReport.futureDevelopmentHtml,
+                text: annualReport.futureDevelopment,
+              },
+              maxLength: annualReportSettings.futureDevelopmentMaxLength,
+            },
+            {
+              id: 'Liquidity',
+              label: '#tab.annualreport.subtitle.liquidity',
+              editorData: {
+                formatted: annualReport.liquidityFormatted,
+                html: annualReport.liquidityHtml,
+                text: annualReport.liquidity,
+              },
+              maxLength: annualReportSettings.liquidityMaxLength,
+            },
+            {
+              id: 'BudgetComprasion',
+              label: '#tab.annualreport.subtitle.budgetcomparison',
+              editorData: {
+                formatted: annualReport.budgetComprasionFormatted,
+                html: annualReport.budgetComprasionHtml,
+                text: annualReport.budgetComprasion,
+              },
+              maxLength: annualReportSettings.budgetComprasionMaxLength,
+            },
+            {
+              id: 'BoardsProposalOnThePL',
+              label: '#tab.annualreport.subtitle.boardsproposalonthepl',
+              editorData: {
+                formatted: annualReport.boardsProposalOnThePLFormatted,
+                html: annualReport.boardsProposalOnThePLHtml,
+                text: annualReport.boardsProposalOnThePL,
+              },
+              maxLength: annualReportSettings.boardsProposalOnThePLMaxLength,
+            },
+          ]
+        : [],
+    [annualReport, annualReportSettings]
+  );
+
+  return {
+    articleId,
+    columns,
+    requestState,
+    isClosed: !!fiscalYear?.isClosed,
+    handleSaveArticle,
+    handleInitError,
+    handleSelectArticle,
+  };
 };
 
 export default useAnnualReportData;

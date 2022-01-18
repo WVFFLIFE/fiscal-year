@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import useSummaryPageData from './useSummaryPageData';
 import useSearchTerm from 'hooks/useSearchTerm';
@@ -39,7 +39,7 @@ interface SummaryPageProps {
   commonCooperatives: CommonCooperativeModel[];
 }
 
-const SummaryPage: React.FC<SummaryPageProps> = ({ commonCooperatives }) => {
+const SummaryPage: FC<SummaryPageProps> = ({ commonCooperatives }) => {
   const classes = useStyles();
   const { t } = useTranslation();
 

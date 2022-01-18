@@ -17,10 +17,14 @@ import {
   setNextCooperative,
   setNextFiscalYear,
   resetError,
+  resetGeneralFiscalYear,
+  refreshGeneralData,
 } from 'features/generalPageSlice';
 
 const useGeneralPageData = () => {
   const firstMount = useRef(true);
+  const fetchedGeneralData = useRef(false);
+
   const dispatch = useAppDispatch();
   const { defaultCooperativeId, defaultFiscalYearId, generalPageData } =
     useStateSelector((state) => ({
@@ -55,19 +59,28 @@ const useGeneralPageData = () => {
     }
   }, [dispatch, filters.cooperatives.next?.Id]);
 
+  useEffect(() => {
+    batch(async () => {
+      if (
+        filters.fiscalYears.next &&
+        filters.cooperatives.next &&
+        !fetchedGeneralData.current
+      ) {
+        fetchedGeneralData.current = true;
+        dispatch(fetchGeneralFiscalYear(filters.fiscalYears.next.Id));
+      }
+    });
+  }, [filters.fiscalYears.next, filters.cooperatives.next, dispatch]);
+
   const backwardToSummaryPage = useCallback(() => {
-    dispatch(resetDefaultIds());
+    batch(() => {
+      dispatch(resetDefaultIds());
+      dispatch(resetGeneralFiscalYear());
+    });
   }, [dispatch]);
 
   const handleRefreshData = async () => {
-    if (filters.cooperatives.next && filters.fiscalYears.next) {
-      await dispatch(
-        fetchGeneralData({
-          coopId: filters.cooperatives.next.Id,
-          fyId: filters.fiscalYears.next.Id,
-        })
-      );
-    }
+    await dispatch(refreshGeneralData());
 
     if (filters.fiscalYears.current) {
       await dispatch(fetchGeneralFiscalYear(filters.fiscalYears.current.Id));

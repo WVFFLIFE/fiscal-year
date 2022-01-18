@@ -16,6 +16,11 @@ export const useStyles = makeStyles((theme) => ({
       },
     },
   },
+  active: {
+    '& $actions': {
+      opacity: 1,
+    },
+  },
   disabled: {
     '&:hover': {
       background: 'transparent',

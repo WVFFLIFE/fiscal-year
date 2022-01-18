@@ -1,6 +1,10 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import Services from 'services';
+import useAppDispatch from 'hooks/useAppDispatch';
+import useStateSelector from 'hooks/useStateSelector';
+
+import { fetchSettings } from 'features/settingsSlice';
+
 import { getLangString } from 'utils';
 
 import FiscalYear from 'tabs/FiscalYear';
@@ -8,24 +12,17 @@ import { RootContainer } from 'components/Styled';
 
 const App = () => {
   const { i18n } = useTranslation();
+  const dispatch = useAppDispatch();
+
+  const languageCode = useStateSelector((state) => state.settings.languageCode);
 
   useEffect(() => {
-    const fetchSettings = async () => {
-      try {
-        const res = await Services.getSettings();
+    dispatch(fetchSettings());
+  }, [dispatch]);
 
-        if (res.IsSuccess) {
-          i18n.changeLanguage(getLangString(res.Settings.LanguageCode));
-        } else {
-          throw new Error(res.Message);
-        }
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    fetchSettings();
-  }, []);
+  useEffect(() => {
+    i18n.changeLanguage(getLangString(languageCode));
+  }, [languageCode, i18n]);
 
   return (
     <RootContainer>

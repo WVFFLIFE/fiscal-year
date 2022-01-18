@@ -25,19 +25,17 @@ function getRequestFieldName(options: Options) {
   }
 }
 
-type SaveInput = { [key: string]: OptionalString | OptionalNumber };
+type Request = { [key: string]: OptionalString | OptionalNumber };
 
 export function savingInterceptor<
   Output extends OptionalString | OptionalNumber,
-  ArgumentsType extends any[],
   ReturnType
 >(
   output: Output,
   options: Options,
-  saveHandler: (saveInput: SaveInput, ...args: ArgumentsType) => ReturnType,
-  ...args: ArgumentsType
+  saveHandler: (request: Request) => ReturnType
 ): ReturnType {
   let requestFieldName = getRequestFieldName(options);
 
-  return saveHandler({ [requestFieldName]: output }, ...args);
+  return saveHandler({ [requestFieldName]: output });
 }

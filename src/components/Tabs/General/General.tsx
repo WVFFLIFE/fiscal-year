@@ -37,7 +37,6 @@ const General: FC<GeneralTabProps> = ({ data }) => {
     handleInitError,
     handleChangeCurrentFile,
     handleDeleteCurrentFile,
-    handleSaveFiscalYear,
   } = useGeneralData(data);
 
   const meetingColumns: CommonTableColumn<MeetingModel>[] = useMemo(
@@ -78,7 +77,7 @@ const General: FC<GeneralTabProps> = ({ data }) => {
         ),
       },
       {
-        label: '#tab.general.auditing.table.startdate',
+        label: '#tab.general.auditing.table.returnneededdate',
         accessor: 'returnNeededDate',
         type: 'date',
         cellClassName: clsx(classes.commonTableCell, classes.date),
@@ -96,7 +95,6 @@ const General: FC<GeneralTabProps> = ({ data }) => {
         <GeneralInformationTable
           list={generalInformationList}
           disabled={data.isClosed}
-          onSaveFiscalYear={handleSaveFiscalYear}
         />
       </Box>
       <Box display="flex" flexWrap="wrap">

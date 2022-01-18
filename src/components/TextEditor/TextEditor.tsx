@@ -1,4 +1,5 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
+import { findDOMNode } from 'react-dom';
 
 import { Editor, EditorState, RichUtils, Modifier } from 'draft-js';
 import 'draft-js/dist/Draft.css';
@@ -43,6 +44,7 @@ interface TextEditorProps {
   editorState: EditorState;
   maxCharactersLength?: number;
   placeholder?: string;
+  singleline?: boolean;
   onChangeEditorState(editorState: EditorState): void;
 }
 
@@ -55,8 +57,9 @@ const TextEditor: React.FC<TextEditorProps> = ({
   classes: rootClasses,
   disabled = false,
   editorState,
-  maxCharactersLength = 2000,
+  maxCharactersLength,
   placeholder,
+  singleline,
   onChangeEditorState,
 }) => {
   const classes = useStyles();
@@ -93,106 +96,191 @@ const TextEditor: React.FC<TextEditorProps> = ({
     [editorState]
   );
 
-  const _getLengthOfSelectedText = () => {
-    const currentSelection = editorState.getSelection();
-    const isCollapsed = currentSelection.isCollapsed();
+  // const _getLengthOfSelectedText = () => {
+  //   const currentSelection = editorState.getSelection();
+  //   const isCollapsed = currentSelection.isCollapsed();
 
-    let length = 0;
+  //   let length = 0;
 
-    if (!isCollapsed) {
-      const currentContent = editorState.getCurrentContent();
-      const startKey = currentSelection.getStartKey();
-      const endKey = currentSelection.getEndKey();
-      const startBlock = currentContent.getBlockForKey(startKey);
-      const isStartAndEndBlockAreTheSame = startKey === endKey;
-      const startBlockTextLength = startBlock.getLength();
-      const startSelectedTextLength =
-        startBlockTextLength - currentSelection.getStartOffset();
-      const endSelectedTextLength = currentSelection.getEndOffset();
-      const keyAfterEnd = currentContent.getKeyAfter(endKey);
-      if (isStartAndEndBlockAreTheSame) {
-        length +=
-          currentSelection.getEndOffset() - currentSelection.getStartOffset();
-      } else {
-        let currentKey = startKey;
+  //   if (!isCollapsed) {
+  //     const currentContent = editorState.getCurrentContent();
+  //     const startKey = currentSelection.getStartKey();
+  //     const endKey = currentSelection.getEndKey();
+  //     const startBlock = currentContent.getBlockForKey(startKey);
+  //     const isStartAndEndBlockAreTheSame = startKey === endKey;
+  //     const startBlockTextLength = startBlock.getLength();
+  //     const startSelectedTextLength =
+  //       startBlockTextLength - currentSelection.getStartOffset();
+  //     const endSelectedTextLength = currentSelection.getEndOffset();
+  //     const keyAfterEnd = currentContent.getKeyAfter(endKey);
+  //     if (isStartAndEndBlockAreTheSame) {
+  //       length +=
+  //         currentSelection.getEndOffset() - currentSelection.getStartOffset();
+  //     } else {
+  //       let currentKey = startKey;
 
-        while (currentKey && currentKey !== keyAfterEnd) {
-          if (currentKey === startKey) {
-            length += startSelectedTextLength + 1;
-          } else if (currentKey === endKey) {
-            length += endSelectedTextLength;
-          } else {
-            length += currentContent.getBlockForKey(currentKey).getLength() + 1;
-          }
+  //       while (currentKey && currentKey !== keyAfterEnd) {
+  //         if (currentKey === startKey) {
+  //           length += startSelectedTextLength + 1;
+  //         } else if (currentKey === endKey) {
+  //           length += endSelectedTextLength;
+  //         } else {
+  //           length += currentContent.getBlockForKey(currentKey).getLength() + 1;
+  //         }
 
-          currentKey = currentContent.getKeyAfter(currentKey);
-        }
-      }
-    }
+  //         currentKey = currentContent.getKeyAfter(currentKey);
+  //       }
+  //     }
+  //   }
 
-    return length;
-  };
+  //   return length;
+  // };
 
-  const _handleBeforeInput = () => {
-    const currentContent = editorState.getCurrentContent();
-    const currentContentLength = currentContent.getPlainText('').length;
-    const selectedTextLength = _getLengthOfSelectedText();
+  // const _handleBeforeInput = () => {
+  //   const currentContent = editorState.getCurrentContent();
+  //   const currentContentLength = currentContent.getPlainText('').length;
+  //   const selectedTextLength = _getLengthOfSelectedText();
 
-    if (currentContentLength - selectedTextLength > maxCharactersLength - 1) {
-      return 'handled';
-    }
-    return 'not-handled';
-  };
+  //   if (currentContentLength - selectedTextLength > maxCharactersLength - 1) {
+  //     return 'handled';
+  //   }
+  //   return 'not-handled';
+  // };
 
-  const _removeSelection = () => {
-    const selection = editorState.getSelection();
-    const startKey = selection.getStartKey();
-    const startOffset = selection.getStartOffset();
-    const endKey = selection.getEndKey();
-    const endOffset = selection.getEndOffset();
-    if (startKey !== endKey || startOffset !== endOffset) {
-      const newContent = Modifier.removeRange(
-        editorState.getCurrentContent(),
-        selection,
-        'forward'
-      );
-      const tempEditorState = EditorState.push(
-        editorState,
-        newContent,
-        'remove-range'
-      );
-      onChangeEditorState(tempEditorState);
-      return tempEditorState;
-    }
-    return editorState;
-  };
+  // const _removeSelection = () => {
+  //   const selection = editorState.getSelection();
+  //   const startKey = selection.getStartKey();
+  //   const startOffset = selection.getStartOffset();
+  //   const endKey = selection.getEndKey();
+  //   const endOffset = selection.getEndOffset();
+  //   if (startKey !== endKey || startOffset !== endOffset) {
+  //     const newContent = Modifier.removeRange(
+  //       editorState.getCurrentContent(),
+  //       selection,
+  //       'forward'
+  //     );
+  //     const tempEditorState = EditorState.push(
+  //       editorState,
+  //       newContent,
+  //       'remove-range'
+  //     );
+  //     onChangeEditorState(tempEditorState);
+  //     return tempEditorState;
+  //   }
+  //   return editorState;
+  // };
 
-  const _addPastedContent = (input: string, editorState: EditorState) => {
-    const inputLength = editorState.getCurrentContent().getPlainText().length;
-    let remainingLength = maxCharactersLength - inputLength;
+  // const _addPastedContent = (input: string, editorState: EditorState) => {
+  //   const inputLength = editorState.getCurrentContent().getPlainText().length;
+  //   let remainingLength = maxCharactersLength - inputLength;
 
-    const newContent = Modifier.insertText(
-      editorState.getCurrentContent(),
-      editorState.getSelection(),
-      input.slice(0, remainingLength)
-    );
-    onChangeEditorState(
-      EditorState.push(editorState, newContent, 'insert-characters')
-    );
-  };
+  //   const newContent = Modifier.insertText(
+  //     editorState.getCurrentContent(),
+  //     editorState.getSelection(),
+  //     input.slice(0, remainingLength)
+  //   );
+  //   onChangeEditorState(
+  //     EditorState.push(editorState, newContent, 'insert-characters')
+  //   );
+  // };
+  // const _handlePastedText = (pastedText: string) => {
+  //   const currentContent = editorState.getCurrentContent();
+  //   const currentContentLength = currentContent.getPlainText('').length;
+  //   const selectedTextLength = _getLengthOfSelectedText();
+
+  //   if (
+  //     currentContentLength + pastedText.length - selectedTextLength >
+  //     maxCharactersLength
+  //   ) {
+  //     const selection = editorState.getSelection();
+  //     const isCollapsed = selection.isCollapsed();
+  //     const tempEditorState = !isCollapsed ? _removeSelection() : editorState;
+  //     _addPastedContent(pastedText, tempEditorState);
+
+  //     return 'handled';
+  //   }
+
+  //   if (singleline) {
+  //     onChangeEditorState(
+  //       EditorState.push(
+  //         editorState,
+  //         Modifier.replaceText(
+  //           editorState.getCurrentContent(),
+  //           editorState.getSelection(),
+  //           pastedText.replace(/\n/g, ' ')
+  //         ),
+  //         'insert-characters'
+  //       )
+  //     );
+
+  //     requestAnimationFrame(() => {
+  //       const editorNode = findDOMNode(editorRef.current);
+  //       if (editorNode) {
+  //         const scrollingContainer = (editorNode as Element).querySelector(
+  //           '.public-DraftStyleDefault-block'
+  //         );
+  //         const context = document.createElement('canvas').getContext('2d');
+
+  //         if (context && scrollingContainer) {
+  //           context.font = window.getComputedStyle(editorNode as Element).font;
+
+  //           const textUpToEndOfPaste = editorState
+  //             .getCurrentContent()
+  //             .getPlainText(' ')
+  //             .substring(0, editorState.getSelection().getFocusOffset());
+  //           const pastedTextWidthOffset =
+  //             context.measureText(textUpToEndOfPaste);
+
+  //           scrollingContainer.scrollLeft =
+  //             pastedTextWidthOffset.width -
+  //             (editorNode as Element).clientWidth / 2;
+  //         }
+  //       }
+  //     });
+
+  //     return 'handled';
+  //   }
+  //   return 'not-handled';
+  // };
+
   const _handlePastedText = (pastedText: string) => {
-    const currentContent = editorState.getCurrentContent();
-    const currentContentLength = currentContent.getPlainText('').length;
-    const selectedTextLength = _getLengthOfSelectedText();
+    if (singleline) {
+      onChangeEditorState(
+        EditorState.push(
+          editorState,
+          Modifier.replaceText(
+            editorState.getCurrentContent(),
+            editorState.getSelection(),
+            pastedText.replace(/\n/g, ' ')
+          ),
+          'insert-characters'
+        )
+      );
 
-    if (
-      currentContentLength + pastedText.length - selectedTextLength >
-      maxCharactersLength
-    ) {
-      const selection = editorState.getSelection();
-      const isCollapsed = selection.isCollapsed();
-      const tempEditorState = !isCollapsed ? _removeSelection() : editorState;
-      _addPastedContent(pastedText, tempEditorState);
+      requestAnimationFrame(() => {
+        const editorNode = findDOMNode(editorRef.current);
+        if (editorNode) {
+          const scrollingContainer = (editorNode as Element).querySelector(
+            '.public-DraftStyleDefault-block'
+          );
+          const context = document.createElement('canvas').getContext('2d');
+
+          if (context && scrollingContainer) {
+            context.font = window.getComputedStyle(editorNode as Element).font;
+
+            const textUpToEndOfPaste = editorState
+              .getCurrentContent()
+              .getPlainText(' ')
+              .substring(0, editorState.getSelection().getFocusOffset());
+            const pastedTextWidthOffset =
+              context.measureText(textUpToEndOfPaste);
+
+            scrollingContainer.scrollLeft =
+              pastedTextWidthOffset.width -
+              (editorNode as Element).clientWidth / 2;
+          }
+        }
+      });
 
       return 'handled';
     }
@@ -205,12 +293,29 @@ const TextEditor: React.FC<TextEditorProps> = ({
     }
   }, [disabled]);
 
+  const currentContentLength = useMemo(() => {
+    return maxCharactersLength
+      ? editorState.getCurrentContent().getPlainText().length
+      : 0;
+  }, [editorState, maxCharactersLength]);
+
+  const isLimitExceeded = maxCharactersLength
+    ? currentContentLength > maxCharactersLength
+    : false;
+
   return (
-    <div className={classes.root}>
+    <div
+      className={clsx(classes.root, {
+        [classes.singleline]: singleline,
+      })}
+    >
       {!disabled && (
         <ControlsPanel
           className={rootClasses?.controlPanel}
           controls={controls}
+          currentCharactersLength={currentContentLength}
+          maxCharactersLength={maxCharactersLength}
+          isLimitExceeded={isLimitExceeded}
           onToggleInlineStyle={handleToggleInlineStyle}
           onToggleBlockType={handleToggleBlockType}
           currentInlineStyle={editorState.getCurrentInlineStyle()}
@@ -218,7 +323,9 @@ const TextEditor: React.FC<TextEditorProps> = ({
       )}
       <div
         className={clsx(classes.editorWrapper, rootClasses?.root, {
+          [classes.editorWrapperSingleline]: singleline,
           [classes.focused]: focused,
+          [classes.exceeded]: isLimitExceeded,
           [clsx(classes.disabled, rootClasses?.disabled)]: disabled,
         })}
         onClick={disabled ? undefined : focusEditor}
@@ -231,8 +338,9 @@ const TextEditor: React.FC<TextEditorProps> = ({
           onFocus={focusEditor}
           onBlur={onBlur}
           placeholder={placeholder}
-          handleBeforeInput={_handleBeforeInput}
+          // handleBeforeInput={_handleBeforeInput}
           handlePastedText={_handlePastedText}
+          handleReturn={singleline ? () => 'handled' : undefined}
         />
       </div>
     </div>

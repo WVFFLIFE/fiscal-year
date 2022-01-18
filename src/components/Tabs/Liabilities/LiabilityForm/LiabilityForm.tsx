@@ -5,6 +5,10 @@ import {
   UsageCode,
 } from 'enums/liabilities';
 import { useTranslation } from 'react-i18next';
+import useStateSelector from 'hooks/useStateSelector';
+
+import { selectLiabilitiesSettings } from 'selectors/settingsSelectors';
+
 import useLiabilityCreateFormData, {
   InitialValues,
 } from './useLiabilityCreateFormData';
@@ -42,6 +46,8 @@ const LiabilityForm: React.FC<LiabilityFormProps> = ({
   const classes = useStyles();
   const { t } = useTranslation();
 
+  const liabilitiesSettings = useStateSelector(selectLiabilitiesSettings);
+
   const {
     formik,
     error,
@@ -76,6 +82,10 @@ const LiabilityForm: React.FC<LiabilityFormProps> = ({
                 value: formik.values.liabilityName,
                 onChange: handleChangeInput,
                 name: 'liabilityName',
+                type: 'text',
+                inputProps: {
+                  maxLength: liabilitiesSettings.nameMaxLength,
+                },
               }}
             />
           </li>
@@ -105,6 +115,9 @@ const LiabilityForm: React.FC<LiabilityFormProps> = ({
                 maxRows: 5,
                 placeholder: 'Type description here',
                 inputClasses: { input: classes.textarea },
+                inputProps: {
+                  maxLength: liabilitiesSettings.descriptionMaxLength,
+                },
               }}
             />
           </li>
@@ -170,6 +183,10 @@ const LiabilityForm: React.FC<LiabilityFormProps> = ({
                 value: formik.values.documentNumber,
                 onChange: handleChangeInput,
                 name: 'documentNumber',
+                type: 'text',
+                inputProps: {
+                  maxLength: liabilitiesSettings.documentNumberMaxLength,
+                },
               }}
             />
           </li>

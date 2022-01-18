@@ -1,4 +1,7 @@
 import { EditorState } from 'draft-js';
+import useStateSelector from 'hooks/useStateSelector';
+
+import { selectCommentsSettings } from 'selectors/settingsSelectors';
 
 import TextEditor from 'components/TextEditor';
 import Avatar from '../Avatar';
@@ -20,6 +23,8 @@ const CommentSection: React.FC<CommentSectionProps> = ({
 }) => {
   const classes = useStyles();
 
+  const commentsSettings = useStateSelector(selectCommentsSettings);
+
   return (
     <div className={classes.root}>
       <div className={classes.sidebar}>
@@ -29,6 +34,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({
         placeholder={placeholder}
         editorState={editorState}
         onChangeEditorState={onChangeEditorState}
+        maxCharactersLength={commentsSettings.commentMaxLength}
       />
     </div>
   );

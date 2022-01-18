@@ -4,6 +4,9 @@ export const useStyles = makeStyles((theme) => ({
   section: {
     marginBottom: 10,
     padding: 20,
+    '&:hover $actions': {
+      opacity: 1,
+    },
     '&:nth-child(2n)': {
       background: theme.color.greyLight2,
 
@@ -15,19 +18,16 @@ export const useStyles = makeStyles((theme) => ({
       marginBottom: 0,
     },
   },
+  disabledSection: {
+    '&:hover $actions': {
+      opacity: 0,
+    },
+  },
   titleOffset: {
     marginBottom: 20,
   },
   root: {
     display: 'flex',
-    '&:hover $actions': {
-      opacity: 1,
-    },
-  },
-  rootDisabled: {
-    '&:hover $actions': {
-      opacity: 0,
-    },
   },
   btn: {
     fontSize: 12,
@@ -36,14 +36,15 @@ export const useStyles = makeStyles((theme) => ({
     textTransform: 'none',
   },
   editor: {
-    flex: 8,
-    marginRight: 20,
+    maxWidth: '80%',
+    width: '100%',
   },
   actions: {
     display: 'flex',
     alignItems: 'flex-start',
     justifyContent: 'flex-end',
-    flex: 2,
+    maxWidth: '20%',
+    width: '100%',
     opacity: 0,
   },
   active: {

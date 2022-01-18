@@ -1,8 +1,12 @@
-import { useState, SyntheticEvent, FC } from 'react';
+import { useState, useEffect, SyntheticEvent, FC, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import useSelectFiscalYear from 'hooks/useSelectFiscalYear';
 import useAppDispatch from 'hooks/useAppDispatch';
+import useToggleSwitch from 'hooks/useToggleSwitch';
 import { setSearchTerm } from 'features/generalPageSlice';
+
+import { tabsList } from 'configs/tabs';
+import unsavedChangesTracker from 'utils/unsavedChangesTracker';
 
 import Box from '@mui/material/Box';
 import MuiTabs from '@mui/material/Tabs';
@@ -16,42 +20,53 @@ import Appendexis from './Appendexis';
 import Parties from './Parties';
 import Liabilities from './Liabilities';
 import Comments from './Comments';
+import UnsavedChanges from './UnsavedChanges';
 
 import { useStyles } from './style';
-
-interface TabItemModel {
-  value: string;
-  label: string;
-  disabled?: boolean;
-}
-
-const tabsList: TabItemModel[] = [
-  { label: '#tab.general', value: 'general' },
-  {
-    label: '#tab.balances',
-    value: 'balances',
-  },
-  { label: '#tab.consumption', value: 'consumption' },
-  { label: '#tab.annualreport', value: 'annualReport' },
-  { label: '#tab.parties', value: 'parties' },
-  { label: '#tab.appendexis', value: 'appendexis' },
-  { label: '#tab.liabilities', value: 'liabilities' },
-  { label: '#tab.documents', value: 'documents' },
-  { label: '#tab.comments', value: 'comments' },
-];
 
 const Tabs: FC = () => {
   const classes = useStyles();
   const { t } = useTranslation();
+
   const fiscalYear = useSelectFiscalYear();
   const dispatch = useAppDispatch();
 
   const [selectedTab, setSelectedTab] = useState<string>('general');
+  const [unsavedChangesDialogOpen, toggleUnsavedChangesDialogVisibility] =
+    useToggleSwitch();
 
-  const handleChangeSelectedTab = (e: SyntheticEvent, newValue: string) => {
-    dispatch(setSearchTerm(''));
-    setSelectedTab(newValue);
+  useEffect(() => {
+    unsavedChangesTracker.resetSaveAction();
+  }, [fiscalYear]);
+
+  const handleChangeSelectedTab = (event: SyntheticEvent, newValue: string) => {
+    const changeSelectedTab = () => {
+      dispatch(setSearchTerm(''));
+      setSelectedTab(newValue);
+    };
+
+    if (unsavedChangesTracker.hasUnsavedChanges) {
+      unsavedChangesTracker.setPendingAction(changeSelectedTab);
+      toggleUnsavedChangesDialogVisibility();
+    } else {
+      changeSelectedTab();
+    }
   };
+
+  const tabsClasses = useMemo(
+    () => ({
+      root: classes.tabs,
+      indicator: classes.indicator,
+    }),
+    [classes]
+  );
+
+  const tabClasses = useMemo(
+    () => ({
+      selected: classes.selected,
+    }),
+    [classes]
+  );
 
   if (!fiscalYear) return null;
 
@@ -60,7 +75,7 @@ const Tabs: FC = () => {
       <MuiTabs
         value={selectedTab}
         onChange={handleChangeSelectedTab}
-        classes={{ root: classes.tabs, indicator: classes.indicator }}
+        classes={tabsClasses}
       >
         {tabsList.map((tabItem) => {
           return (
@@ -68,9 +83,7 @@ const Tabs: FC = () => {
               key={tabItem.value}
               value={tabItem.value}
               className={classes.tab}
-              classes={{
-                selected: classes.selected,
-              }}
+              classes={tabClasses}
               label={t(tabItem.label)}
               disabled={tabItem.disabled}
             />
@@ -81,15 +94,17 @@ const Tabs: FC = () => {
         {selectedTab === 'general' && <General data={fiscalYear.general} />}
         {selectedTab === 'balances' && <Balances />}
         {selectedTab === 'consumption' && <Consumption />}
-        {selectedTab === 'annualReport' && (
-          <AnnualReport data={fiscalYear.annualReport} />
-        )}
+        {selectedTab === 'annualReport' && <AnnualReport />}
         {selectedTab === 'parties' && <Parties />}
         {selectedTab === 'appendexis' && <Appendexis />}
         {selectedTab === 'liabilities' && <Liabilities />}
         {selectedTab === 'comments' && <Comments />}
         {selectedTab === 'documents' && <Documents />}
       </Box>
+      <UnsavedChanges
+        open={unsavedChangesDialogOpen}
+        onClose={toggleUnsavedChangesDialogVisibility}
+      />
     </Box>
   );
 };

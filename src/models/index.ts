@@ -100,6 +100,7 @@ export interface Column<T extends object = { [key: string]: any }> {
   style?: CSSProperties;
   bodyCellClassName?: string;
   type?: 'string' | 'date' | 'datetime' | 'documentcode' | 'int';
+  render?: (data: T) => JSX.Element | string | null;
 }
 
 export interface AttributeHeaderModel {
@@ -116,6 +117,7 @@ export interface FiscalYearDocumentsListResponseModel {
 }
 
 export interface ErrorModel {
+  title?: string;
   messages: string[];
 }
 

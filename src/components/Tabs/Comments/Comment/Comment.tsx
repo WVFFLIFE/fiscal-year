@@ -1,10 +1,12 @@
 import { memo, FC, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import useStateSelector from 'hooks/useStateSelector';
 import useCommentData from './useCommentData';
 import { Comment as CommentModel } from 'services/s';
 import { EditorState } from 'draft-js';
 
 import { dateTimeFormat } from 'utils/dates';
+import { selectCommentsSettings } from 'selectors/settingsSelectors';
 
 import AddNewComment from '../AddNewComment';
 import TextEditor from 'components/TextEditor';
@@ -57,6 +59,7 @@ const Comment: FC<CommentProps> = ({
   const { t } = useTranslation();
 
   const addNewCommentRef = useRef<HTMLDivElement>(null);
+  const commentsSettings = useStateSelector(selectCommentsSettings);
 
   const {
     isReadFlag,
@@ -124,6 +127,7 @@ const Comment: FC<CommentProps> = ({
             }}
             editorState={editorState}
             onChangeEditorState={setEditorState}
+            maxCharactersLength={commentsSettings.commentMaxLength}
           />
           {editMode ? (
             <div className={classes.editBtnsWrapper}>
@@ -147,7 +151,7 @@ const Comment: FC<CommentProps> = ({
           ) : (
             <div className={classes.footer}>
               <div className={classes.flex}>
-                <span className={classes.edited}>{`Edited ${
+                <span className={classes.edited}>{`${t('#comments.edited')} ${
                   comment.ModifiedOn
                     ? dateTimeFormat(new Date(comment.ModifiedOn))
                     : ''
@@ -157,14 +161,14 @@ const Comment: FC<CommentProps> = ({
                     className={classes.replyBtn}
                     onClick={toggleReplyMode}
                   >
-                    Reply
+                    {t('#comments.reply')}
                   </Button>
                 )}
               </div>
               {!comment.IsRead && (
                 <div className={classes.flex}>
                   <CheckboxControl
-                    label={'Mark as read'}
+                    label={t('#comments.markasread')}
                     checked={isReadFlag}
                     classes={{ label: classes.checkboxLabel }}
                     onChange={handleChangeIsReadFlag}
@@ -185,8 +189,8 @@ const Comment: FC<CommentProps> = ({
           maxWidth="sm"
           open={showDeleteConfirmation}
           handleClose={toggleShowDeleteConfirmation}
-          title="Delete comment?"
-          description="Are you sure you want to delete this comment?"
+          title={t('#comments.delete.title')}
+          description={t('#comments.delete.description')}
           Icon={<RoundQuestionIcon className={classes.warningIcon} />}
           ApplyBtnProps={{
             label: t('#button.delete'),

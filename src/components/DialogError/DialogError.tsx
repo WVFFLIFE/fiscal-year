@@ -1,12 +1,17 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { ErrorModel } from 'models';
 
 import Dialog from 'components/Dialog';
 import ErrroView from 'components/ErrorView';
+import ActionButton from 'components/ActionButton';
+
+import { useStyles } from './style';
 
 interface DialogErrorProps {
   error: ErrorModel | null;
+  title?: string;
   initError(): void;
 }
 
@@ -18,7 +23,11 @@ interface ModalState {
 const DialogError: React.FC<DialogErrorProps> = ({
   error: propsError,
   initError,
+  title,
 }) => {
+  const classes = useStyles();
+  const { t } = useTranslation();
+
   const [modalState, setModalState] = useState<ModalState>({
     open: false,
     error: null,
@@ -52,7 +61,14 @@ const DialogError: React.FC<DialogErrorProps> = ({
       handleClose={handleCloseModal}
       TransitionProps={{ onExited: initError }}
     >
-      {error?.messages ? <ErrroView messages={error.messages} /> : null}
+      {error?.messages ? (
+        <ErrroView title={title} messages={error.messages} />
+      ) : null}
+      <div className={classes.btnsWrapper}>
+        <ActionButton onClick={handleCloseModal} palette="darkBlue">
+          {t('#button.ok')}
+        </ActionButton>
+      </div>
     </Dialog>
   );
 };

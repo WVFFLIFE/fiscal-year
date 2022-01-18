@@ -1,6 +1,5 @@
 import useGeneralPageData from './useGeneralPageData';
 import { useTranslation } from 'react-i18next';
-import useSelectFiscalYear from 'hooks/useSelectFiscalYear';
 
 import Box from '@mui/material/Box';
 import {
@@ -24,7 +23,6 @@ import { useStyles } from './style';
 const GeneralPage: React.FC = () => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const fiscalYear = useSelectFiscalYear();
   const {
     generalPageData,
     backwardToSummaryPage,
@@ -89,7 +87,7 @@ const GeneralPage: React.FC = () => {
             fiscalYear={filters.fiscalYears.current}
             backwardToSummaryPage={backwardToSummaryPage}
           />
-          {fiscalYear && <Tabs />}
+          <Tabs />
         </Container>
       ) : (
         <InfoBox>{t('#info.selectanotherfiscalyear')}</InfoBox>

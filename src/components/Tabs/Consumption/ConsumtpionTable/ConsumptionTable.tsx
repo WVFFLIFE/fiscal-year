@@ -1,3 +1,4 @@
+import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ConsumptionModel } from 'utils/fiscalYear';
 
@@ -20,28 +21,40 @@ const ConsumptionTable: React.FC<ConsumptionTableProps> = ({
 }) => {
   const { t } = useTranslation();
 
+  const [activeRowId, setActiveRowId] = useState<string | null>(null);
+
+  const handleSetActiveRow = useCallback((id: string | null) => {
+    setActiveRowId(id);
+  }, []);
+
   return (
     <Box>
       <ConsumptionTableRow
+        active={activeRowId === 'HeatEnergyOfHotWater'}
         data={data.heatEnergyOfHotWater}
         field="HeatEnergyOfHotWater"
         label={t('#tab.consumption.table.heatenergyofhotwater')}
         disabled={disabled}
         onSave={onSaveConsumption}
+        onSelectActiveRow={handleSetActiveRow}
       />
       <ConsumptionTableRow
+        active={activeRowId === 'ConsumptionOfHotWater'}
         data={data.consumptionOfHotWater}
         field="ConsumptionOfHotWater"
         label={t('#tab.consumption.table.consumptionofhotwater')}
         disabled={disabled}
         onSave={onSaveConsumption}
+        onSelectActiveRow={handleSetActiveRow}
       />
       <ConsumptionTableRow
+        active={activeRowId === 'Population'}
         data={data.population}
         field="Population"
         label={t('#tab.consumption.table.population')}
         disabled={disabled}
         onSave={onSaveConsumption}
+        onSelectActiveRow={handleSetActiveRow}
       />
     </Box>
   );

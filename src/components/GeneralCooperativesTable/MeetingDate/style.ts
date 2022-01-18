@@ -12,6 +12,7 @@ export const useStyles = makeStyles((theme) => ({
     color: 'rgba(51,51,51,1)',
     borderBottom: '1px solid',
     borderColor: 'currentColor',
+    textDecoration: 'none',
   },
   warning: {
     fontWeight: 600,

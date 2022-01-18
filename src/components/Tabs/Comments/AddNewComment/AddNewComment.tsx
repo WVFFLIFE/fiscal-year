@@ -1,4 +1,5 @@
 import { useState, forwardRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import useEditor, { convertStateToData } from 'hooks/useEditor';
 import { EditorState } from 'draft-js';
 
@@ -44,6 +45,7 @@ const AddNewComment = forwardRef<HTMLDivElement, AddNewCommentProps>(
     ref
   ) => {
     const classes = useStyles();
+    const { t } = useTranslation();
 
     const [loading, setLoading] = useState(false);
     const [editorState, setEditorState] = useEditor();
@@ -81,7 +83,7 @@ const AddNewComment = forwardRef<HTMLDivElement, AddNewCommentProps>(
         <CommentSection
           editorState={editorState}
           onChangeEditorState={setEditorState}
-          placeholder="Type your comment here..."
+          placeholder={t('#comment.typeyourcomment')}
         />
         <div className={classes.btnsRow}>
           {withCancelBtn && onCancel && (
@@ -89,7 +91,7 @@ const AddNewComment = forwardRef<HTMLDivElement, AddNewCommentProps>(
               className={classes.cancelBtnOffset}
               onClick={onCancel}
             >
-              Cancel
+              {t('#button.cancel')}
             </ActionButton>
           )}
           <ActionButton
@@ -102,7 +104,7 @@ const AddNewComment = forwardRef<HTMLDivElement, AddNewCommentProps>(
             }
             onClick={handleAddComment}
           >
-            Add Comment
+            {t('#comments.addnewcomment')}
           </ActionButton>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, ChangeEvent } from 'react';
+import useStateSelector from 'hooks/useStateSelector';
 import useEditor, {
   EditorData,
   convertStateToData,
@@ -26,6 +27,10 @@ const useCommentData = (
     [comment]
   );
 
+  const searchTerm = useStateSelector(
+    (state) => state.generalPage.filters.searchTerm
+  );
+
   const [isReadFlag, setIsReadFlag] = useState(false);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -34,7 +39,7 @@ const useCommentData = (
   const [replyMode, toggleReplyMode] = useToggleSwitch();
   const [showDeleteConfirmation, toggleShowDeleteConfirmation] =
     useToggleSwitch();
-  const [editorState, setEditorState] = useEditor(editorData);
+  const [editorState, setEditorState] = useEditor(editorData, { searchTerm });
 
   const handleChangeIsReadFlag = (e: ChangeEvent<HTMLInputElement>) => {
     const { checked } = e.target;

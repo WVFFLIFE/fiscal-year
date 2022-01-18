@@ -22,7 +22,7 @@ const BalancesTable = <T extends object>({
     <div className={classes.row}>
       {columns.map((column) => (
         <BalancesTableRow
-          key={column.field as string}
+          key={column.id}
           className={className}
           column={column}
           data={data}

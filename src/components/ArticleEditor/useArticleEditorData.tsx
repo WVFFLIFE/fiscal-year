@@ -1,104 +1,99 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import useStateSelector from 'hooks/useStateSelector';
 import useEditor, {
   convertStateToData,
   convertDataToState,
   EditorData,
 } from 'hooks/useEditor';
-import useToggleSwitch from 'hooks/useToggleSwitch';
-import { ErrorModel } from 'models';
 
-import { BaseResponseModel } from 'services';
+import { EditorState } from 'draft-js';
+import unsavedChangesTracker from 'utils/unsavedChangesTracker';
 
-interface RequestState {
-  loading: boolean;
-  error: ErrorModel | null;
+interface HookOptions {
+  activeId: string | null;
+  prevId: string | null;
+  id: string;
+  editorData: EditorData;
+  onSave(id: string, editorData: EditorData, cb?: () => void): Promise<unknown>;
+  onSelectArticle(id: string | null): void;
 }
 
-const useArticleEditorData = (
-  editorData: EditorData,
-  onSave: (
-    text: string | null,
-    formatted: string | null,
-    html: string | null
-  ) => Promise<BaseResponseModel | undefined>,
-  onUpdate: () => Promise<unknown>
-) => {
+const useArticleEditorData = (options: HookOptions) => {
+  const { activeId, prevId, id, editorData, onSave, onSelectArticle } = options;
+
+  const prevEditorState = useRef<EditorState>(convertDataToState(editorData));
+
   const searchTerm = useStateSelector(
     (state) => state.generalPage.filters.searchTerm
   );
-  const [requestState, setRequestState] = useState<RequestState>({
-    loading: false,
-    error: null,
-  });
-  const [editModeOn, handleToggleEditMode] = useToggleSwitch();
-  const [editorState, handleChangeEditorState] = useEditor(editorData, {
+  const [editorState, changeEditorState] = useEditor(editorData, {
     searchTerm,
   });
+  const [activeEditMode, setActiveEditMode] = useState(false);
+  const [touched, setTouched] = useState(false);
 
-  const handleSave = useCallback(async () => {
-    try {
-      setRequestState((prevState) => ({
-        ...prevState,
-        loading: true,
-      }));
-
-      const req = convertStateToData(editorState);
-      if (!req) {
-        throw new Error(`EditorState is empty`);
+  const handleChangeEditorState = useCallback(
+    (newEditorState: EditorState) => {
+      if (newEditorState.getLastChangeType() === 'insert-characters') {
+        setTouched(true);
       }
 
-      const res = await onSave(
-        req.text || null,
-        req.formatted || null,
-        req.html || null
-      );
+      changeEditorState(newEditorState);
+    },
+    [changeEditorState]
+  );
 
-      if (!res) {
-        throw new Error('Application error. onSave return undefined');
-      }
-
-      if (res.IsSuccess) {
-        setRequestState((prevState) => ({
-          ...prevState,
-          loading: false,
-        }));
-        handleToggleEditMode();
-
-        onUpdate();
-      } else {
-        throw new Error(res.Message);
-      }
-    } catch (err) {
-      setRequestState((prevState) => ({
-        ...prevState,
-        loading: false,
-        error: { messages: [String(err)] },
-      }));
-    }
-  }, [editorState]);
-
-  const handleCancelEditMode = useCallback(() => {
-    handleToggleEditMode();
-    handleChangeEditorState(convertDataToState(editorData));
-  }, [editorData]);
-
-  const handleInitError = () => {
-    setRequestState((prevState) => ({
-      ...prevState,
-      error: null,
-    }));
+  const handleSelectArticle = () => {
+    onSelectArticle(id);
   };
 
+  const handleUnselectArticle = () => {
+    setTouched(false);
+    onSelectArticle(null);
+    changeEditorState(prevEditorState.current);
+  };
+
+  const handleSaveCurrentArticle = async () => {
+    const editorData = convertStateToData(editorState);
+    await onSave(id, editorData, handleUnselectArticle);
+  };
+
+  const handleSavePrevArticle = async () => {
+    const editorData = convertStateToData(editorState);
+
+    const untouch = () => setTouched(false);
+
+    await onSave(id, editorData, untouch);
+  };
+
+  useEffect(() => {
+    setActiveEditMode(activeId === id && !activeEditMode);
+  }, [activeId]);
+
+  useEffect(() => {
+    if (!activeEditMode && activeId && prevId === id && touched) {
+      handleSavePrevArticle();
+    }
+  }, [activeEditMode]);
+
+  useEffect(() => {
+    if (touched) {
+      unsavedChangesTracker.addSaveAction(async () => {
+        await handleSaveCurrentArticle();
+        return true;
+      });
+    } else {
+      unsavedChangesTracker.resetSaveAction();
+    }
+  }, [touched, editorState]);
+
   return {
-    requestState,
-    editModeOn,
+    activeEditMode,
     editorState,
-    handleToggleEditMode,
     handleChangeEditorState,
-    handleSave,
-    handleCancelEditMode,
-    handleInitError,
+    handleSaveCurrentArticle,
+    handleSelectArticle,
+    handleUnselectArticle,
   };
 };
 

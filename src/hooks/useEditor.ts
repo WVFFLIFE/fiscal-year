@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import useMountedEffect from 'hooks/useMountedEffect';
 import _toLower from 'lodash/toLower';
 
@@ -58,30 +58,6 @@ export function convertDataToState(
     : editorState;
 }
 
-// export function convertDataToState(editorData: EditorData | null) {
-//   if (!editorData) return EditorState.createEmpty();
-//   const { text, formatted } = editorData;
-
-//   try {
-//     if (formatted) {
-//       return EditorState.createWithContent(
-//         convertFromRaw(JSON.parse(formatted))
-//       );
-//     }
-
-//     if (text) {
-//       return EditorState.createWithContent(ContentState.createFromText(text));
-//     }
-
-//     return EditorState.createEmpty();
-//   } catch (err) {
-//     if (text) {
-//       return EditorState.createWithContent(ContentState.createFromText(text));
-//     }
-//     return EditorState.createEmpty();
-//   }
-// }
-
 export function convertStateToData(editorState: null): null;
 export function convertStateToData(editrState: EditorState): EditorData;
 export function convertStateToData(editorState: EditorState | null) {
@@ -129,17 +105,13 @@ const useEditor = (
 ) => {
   const { searchTerm } = options;
 
-  const [editorState, setEditorState] = useState<EditorState>(
-    EditorState.createEmpty()
+  const [editorState, setEditorState] = useState<EditorState>(() =>
+    convertDataToState(editorData, searchTerm)
   );
 
-  useEffect(() => {
+  useMountedEffect(() => {
     setEditorState(convertDataToState(editorData, searchTerm));
   }, [editorData]);
-
-  // useEffect(() => {
-  //   setEditorState(convertDataToState(editorData, searchTerm));
-  // }, [editorData]);
 
   useMountedEffect(() => {
     if (searchTerm) {
@@ -148,6 +120,8 @@ const useEditor = (
           decorator: generateDecorator(searchTerm),
         })
       );
+    } else {
+      setEditorState(convertDataToState(editorData, searchTerm));
     }
   }, [searchTerm]);
 

@@ -23,6 +23,7 @@ import DocumentsTableHead from './DocumentsTableHead';
 import Checkbox from 'components/Checkbox';
 import ActionButton from 'components/ActionButton';
 import Tooltip from 'components/Tooltip';
+import Highlight from 'components/Highlight';
 import {
   DeleteIcon,
   EditIcon,
@@ -138,21 +139,25 @@ const DocumentsTable: React.FC<DocumentsTableProps> = ({
                       [classes.folderName]: folder,
                     })}
                   >
-                    {item.Name}
+                    <Highlight text={item.Name} />
                   </span>
                 </span>
               </MuiTableCell>
               <MuiTableCell className={classes.cell}>
-                {_get(item, 'Values.Service_x002f_Process')}
+                <Highlight
+                  text={_get(item, 'Values.Service_x002f_Process', null)}
+                />
               </MuiTableCell>
               <MuiTableCell className={classes.cell}>
-                {_get(item, 'Values.Information_x0020_Group')}
+                <Highlight
+                  text={_get(item, 'Values.Information_x0020_Group', null)}
+                />
               </MuiTableCell>
               <MuiTableCell className={classes.cell}>
-                {_get(item, 'Values.Modified')}
+                <Highlight text={_get(item, 'Values.Modified', null)} />
               </MuiTableCell>
               <MuiTableCell className={classes.cell}>
-                {_get(item, 'Values.Editor')}
+                <Highlight text={_get(item, 'Values.Editor', null)} />
               </MuiTableCell>
               <MuiTableCell className={classes.cell}>
                 <div

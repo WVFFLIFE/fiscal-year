@@ -1,4 +1,5 @@
 import { memo, FC, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Column } from 'models';
 import { RunningNumberSettingsItem } from 'utils/fiscalYear';
 import useSort from 'hooks/useSort';
@@ -21,11 +22,12 @@ const RunningNumberSettingsTable: FC<RunningNumberSettingsTableProps> = ({
   data,
 }) => {
   const classes = useStyles();
+  const { t } = useTranslation();
 
   const { list, sortParams, onChangeSortParams } = useSort(data, {
     order: 'asc',
-    orderBy: 'createdOn',
-    type: 'date',
+    orderBy: 'documentTypeLabel',
+    type: 'alphanumeric',
   });
 
   const columns: Column<RunningNumberSettingsItem>[] = useMemo(
@@ -36,6 +38,7 @@ const RunningNumberSettingsTable: FC<RunningNumberSettingsTableProps> = ({
         sortable: true,
         align: 'left',
         bodyCellClassName: classes.semibold,
+        render: (data) => data.documentTypeLabel && t(data.documentTypeLabel),
       },
       {
         label: '#tab.appendexis.runningnumbersettings.table.startnumber',
@@ -69,7 +72,7 @@ const RunningNumberSettingsTable: FC<RunningNumberSettingsTableProps> = ({
         bodyCellClassName: classes.light,
       },
     ],
-    [classes]
+    [classes, t]
   );
 
   return (
@@ -96,7 +99,9 @@ const RunningNumberSettingsTable: FC<RunningNumberSettingsTableProps> = ({
                     align={align}
                     className={clsx(classes.cell, bodyCellClassName)}
                   >
-                    {renderAs(item[field], type)}
+                    {column.render
+                      ? column.render(item)
+                      : renderAs(item[field], type)}
                   </TableCell>
                 );
               })}

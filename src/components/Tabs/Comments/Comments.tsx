@@ -1,4 +1,5 @@
 import { useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import useCommentsData from './useCommentsData';
 
 import SuspenceFacade from 'components/SuspenceFacade';
@@ -11,6 +12,7 @@ import { useStyles } from './style';
 
 const Comments = () => {
   const classes = useStyles();
+  const { t } = useTranslation();
   const parentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -36,7 +38,7 @@ const Comments = () => {
     >
       <div className={classes.root}>
         {requestState.comments.length ? null : (
-          <div className={classes.billet}>Empty in Comments...</div>
+          <div className={classes.billet}>{t('#comments.empty')}</div>
         )}
         <div className={classes.container}>
           <Scroll className={classes.commentsWrapper} ref={parentRef}>

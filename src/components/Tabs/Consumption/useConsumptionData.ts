@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, ChangeEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ErrorModel } from 'models';
 
 import useAppDispatch from 'hooks/useAppDispatch';
@@ -22,6 +23,8 @@ interface StateModel {
 }
 
 const useConsumptionData = () => {
+  const { t } = useTranslation();
+
   const dispatch = useAppDispatch();
   const fiscalYear = useSelectFiscalYear();
   const consumptionData = useStateSelector(selectConsumptionData);
@@ -95,7 +98,7 @@ const useConsumptionData = () => {
         } else {
           throw new Error(
             updateRes.ResponseCode === 1
-              ? 'The upload file is too large'
+              ? t('#error.uploadedfileistoolarge')
               : String(updateRes.Message)
           );
         }
@@ -216,19 +219,6 @@ const useConsumptionData = () => {
     }
   };
 
-  const handleChangeAddConsumptionReportToClosingTheBookReport = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      if (!state.saving) {
-        const { checked } = e.target;
-
-        handleSaveConsumptionMeter({
-          AddConsumptionReportToClosingTheBookReport: checked,
-        });
-      }
-    },
-    [state.saving]
-  );
-
   const handleSaveConsumptionMeter = useCallback(
     async (options: { [key: string]: number | boolean }) => {
       if (!consumptionData || !fiscalYear?.id) return;
@@ -256,7 +246,7 @@ const useConsumptionData = () => {
             saving: false,
           }));
 
-          dispatch(fetchGeneralFiscalYear(fiscalYear.id));
+          await dispatch(fetchGeneralFiscalYear(fiscalYear.id));
         } else {
           setState((prevState) => ({
             ...prevState,
@@ -274,7 +264,20 @@ const useConsumptionData = () => {
         }));
       }
     },
-    [state, fiscalYear?.id]
+    [fiscalYear, consumptionData, dispatch]
+  );
+
+  const handleChangeAddConsumptionReportToClosingTheBookReport = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      if (!state.saving) {
+        const { checked } = e.target;
+
+        handleSaveConsumptionMeter({
+          AddConsumptionReportToClosingTheBookReport: checked,
+        });
+      }
+    },
+    [state.saving, handleSaveConsumptionMeter]
   );
 
   const handleInitError = () => {

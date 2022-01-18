@@ -12,15 +12,15 @@ import {
 import _get from 'lodash/get';
 
 const dict = {
-  [DocumentTypeCode.AccountStatement]: 'Account Statement',
+  [DocumentTypeCode.AccountStatement]: '#documenttype.accountstatement', // Account Statement
   [DocumentTypeCode.BankAccount]: 'Bank Account',
-  [DocumentTypeCode.IncomingInvoice]: 'Incoming Invoice',
-  [DocumentTypeCode.ManualEvent]: 'Manual Event',
-  [DocumentTypeCode.MemoVoucher]: 'Memo Voucher',
+  [DocumentTypeCode.IncomingInvoice]: '#documenttype.incominginvoice', // Incoming Invoices
+  [DocumentTypeCode.ManualEvent]: '#documenttype.manualevent', // Manual Event
+  [DocumentTypeCode.MemoVoucher]: '#documenttype.manualevent',
   [DocumentTypeCode.OutgoingPayment]: 'Outgoing Payment',
-  [DocumentTypeCode.Payment]: 'Payment',
-  [DocumentTypeCode.PurchaseOrder]: 'Purchase Order',
-  [DocumentTypeCode.SalesInvoice]: 'Sales Invoice',
+  [DocumentTypeCode.Payment]: '#documenttype.payments', // Payments
+  [DocumentTypeCode.PurchaseOrder]: '#documenttype.incominginvoice',
+  [DocumentTypeCode.SalesInvoice]: '#documenttype.salesinvoices', // Sales Invoices
 };
 
 function get<T extends object, K extends keyof T>(
@@ -161,7 +161,7 @@ export interface AppendexisModel {
   personnelFormatted: OptionalString;
   personnelHtml: OptionalString;
 
-  runningNumberSettings: RunningNumberSettingsItem[];
+  runningNumberSettings: GeneralFiscalYearModel['AdditionalSettings'];
 }
 
 export interface PartyModel {
@@ -238,8 +238,9 @@ function meetingsAdapter(
   }));
 }
 
-function additionalSettingsAdapter(
-  additionalSettings: GeneralFiscalYearModel['AdditionalSettings']
+export function additionalSettingsAdapter(
+  additionalSettings: GeneralFiscalYearModel['AdditionalSettings'],
+  translate: Function
 ): RunningNumberSettingsItem[] {
   return additionalSettings.map((item) => {
     const documentTypeCode: DocumentTypeCode | null = get(
@@ -251,7 +252,7 @@ function additionalSettingsAdapter(
       createdOn: get(item, 'CreatedOn'),
       currentNumber: get(item, 'CurrentNumber'),
       documentTypeCode: documentTypeCode,
-      documentTypeLabel: documentTypeCode && dict[documentTypeCode],
+      documentTypeLabel: documentTypeCode && translate(dict[documentTypeCode]),
       id: get(item, 'Id'),
       ownerName: get(item, 'OwnerName'),
       startNumber: get(item, 'StartNumber'),
@@ -356,9 +357,7 @@ export function makeFiscalYear(
       personnel: get(fiscalYearRes, 'Personnel'),
       personnelFormatted: get(fiscalYearRes, 'PersonnelFormatted'),
       personnelHtml: get(fiscalYearRes, 'PersonnelHtml'),
-      runningNumberSettings: additionalSettingsAdapter(
-        get(fiscalYearRes, 'AdditionalSettings', [])
-      ),
+      runningNumberSettings: get(fiscalYearRes, 'AdditionalSettings', []),
     },
     balances: {
       products: [

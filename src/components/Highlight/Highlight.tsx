@@ -4,7 +4,7 @@ import Scroller from './Scroller';
 import _toLower from 'lodash/toLower';
 
 interface HighlightProps {
-  text: string;
+  text: string | null;
 }
 
 const Highlight: React.FC<HighlightProps> = ({ text }) => {
@@ -14,7 +14,7 @@ const Highlight: React.FC<HighlightProps> = ({ text }) => {
   );
 
   let content: any = text;
-  let index = _toLower(text).indexOf(_toLower(searchTerm));
+  let index = text ? _toLower(text).indexOf(_toLower(searchTerm)) : -1;
 
   useEffect(() => {
     if (ref.current && searchTerm && index !== 1) {
@@ -26,7 +26,7 @@ const Highlight: React.FC<HighlightProps> = ({ text }) => {
     };
   }, [index, searchTerm]);
 
-  if (searchTerm && index !== -1) {
+  if (text && searchTerm && index !== -1) {
     let substr = text.substr(index, searchTerm.length);
     content = (
       <>

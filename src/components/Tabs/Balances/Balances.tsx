@@ -1,7 +1,10 @@
 import { FC, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+
 import { Column } from './BalancesTable/models';
+
 import useBalancesData from './useBalancesData';
+
 import { BalanceProductModel, CommonProductDataModel } from 'utils/fiscalYear';
 import { toNumberFormat } from 'utils';
 import { savingInterceptor } from './utils';
@@ -47,9 +50,11 @@ const Balances: FC = () => {
   const propertyMaintenanceColumns: Column<CommonProductDataModel>[] = useMemo(
     () => [
       {
+        id: 'PropertyMeintenanceProductName',
         label: '#tab.balances.propertymaintenance.productname',
         field: 'productName',
-        editable: true,
+        editable: false,
+        type: 'string',
         onSave: (output, ...rest) =>
           savingInterceptor(
             output,
@@ -57,15 +62,15 @@ const Balances: FC = () => {
               type: 'property-maintenance',
               property: 'productName',
             },
-            handleSaveFields,
-            ...rest
+            (req) => handleSaveFields(req, ...rest)
           ),
       },
       {
+        id: 'PropertyMeintenanceSurplusDeficitPreviousFY',
         label: '#tab.balances.propertymaintenance.deficit',
         field: 'surplusDeficitPreviousFY',
         editable: true,
-        type: 'float',
+        type: 'number',
         render: (data) => {
           const text = toNumberFormat(data.surplusDeficitPreviousFY);
           return (
@@ -81,20 +86,21 @@ const Balances: FC = () => {
               type: 'property-maintenance',
               property: 'surplusDeficitPreviousFY',
             },
-            handleSaveFields,
-            ...rest
+            (req) => handleSaveFields(req, ...rest)
           ),
       },
     ],
-    [classes]
+    [classes, handleSaveFields]
   );
 
   const vatCalculationColumns: Column<CommonProductDataModel>[] = useMemo(
     () => [
       {
+        id: 'VATCalculationsProductName',
         label: '#tab.balances.vatcalculation.productname',
         field: 'productName',
-        editable: true,
+        editable: false,
+        type: 'string',
         onSave: (output, ...rest) =>
           savingInterceptor(
             output,
@@ -102,15 +108,15 @@ const Balances: FC = () => {
               type: 'vat-calculation',
               property: 'productName',
             },
-            handleSaveFields,
-            ...rest
+            (req) => handleSaveFields(req, ...rest)
           ),
       },
       {
+        id: 'VATCalculationsSurplusDeficitPreviousFY',
         label: '#tab.balances.vatcalculation.deficit',
         field: 'surplusDeficitPreviousFY',
         editable: true,
-        type: 'float',
+        type: 'number',
         render: (data) => {
           const text = toNumberFormat(data.surplusDeficitPreviousFY);
           return (
@@ -126,12 +132,11 @@ const Balances: FC = () => {
               type: 'vat-calculation',
               property: 'surplusDeficitPreviousFY',
             },
-            handleSaveFields,
-            ...rest
+            (req) => handleSaveFields(req, ...rest)
           ),
       },
     ],
-    [classes]
+    [classes, handleSaveFields]
   );
 
   const productsList:
@@ -143,9 +148,11 @@ const Balances: FC = () => {
       product,
       [
         {
+          id: `SpecFinCalcProductName${product.index}`,
           label: '#tab.balances.specialfinancialcalculation.productname',
           field: 'productName',
           editable: true,
+          type: 'string',
           onSave: (output, ...rest) =>
             savingInterceptor(
               output,
@@ -154,15 +161,15 @@ const Balances: FC = () => {
                 index: product.index,
                 property: 'productName',
               },
-              handleSaveFields,
-              ...rest
+              (req) => handleSaveFields(req, ...rest)
             ),
         },
         {
+          id: `SpecFinCalcSurplusDeficitPreviousFY${product.index}`,
           label: '#tab.balances.vatcalculation.deficit',
           field: 'surplusDeficitPreviousFY',
           editable: true,
-          type: 'float',
+          type: 'number',
           render: (data) => {
             const text = toNumberFormat(data.surplusDeficitPreviousFY);
             return (
@@ -179,13 +186,12 @@ const Balances: FC = () => {
                 index: product.index,
                 property: 'surplusDeficitPreviousFY',
               },
-              handleSaveFields,
-              ...rest
+              (req) => handleSaveFields(req, ...rest)
             ),
         },
       ],
     ]);
-  }, [products]);
+  }, [classes, products, handleSaveFields]);
 
   return (
     <Box>

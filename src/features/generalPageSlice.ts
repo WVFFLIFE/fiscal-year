@@ -92,6 +92,23 @@ interface Request {
   fyId: string;
 }
 
+export const fetchCooperativesList = createAsyncThunk(
+  'generalPage/fetchCooperativesList',
+  async (_, { getState }) => {
+    const { generalPage } = getState() as { generalPage: GeneralPageState };
+    const nextFiscalYear = generalPage.filters.fiscalYears.next;
+
+    const startDate = nextFiscalYear?.StartDate
+      ? serverFormat(new Date(nextFiscalYear.StartDate))
+      : undefined;
+    const endDate = nextFiscalYear?.EndDate
+      ? serverFormat(new Date(nextFiscalYear.EndDate))
+      : undefined;
+
+    return await Services.getCooperativesList(startDate, endDate, true);
+  }
+);
+
 export const updateFiscalYearsList = createAsyncThunk(
   'generalPage/updateFiscalYearsList',
   async (coopId: string, { getState, rejectWithValue }) => {
@@ -126,8 +143,11 @@ export const updateFiscalYearsList = createAsyncThunk(
 
 export const fetchGeneralData = createAsyncThunk(
   'generalPage/fetchData',
-  async (req: Request, { rejectWithValue }) => {
+  async (req: Request, { getState, rejectWithValue }) => {
     try {
+      const { generalPage } = getState() as { generalPage: GeneralPageState };
+      const cooperatives = generalPage.filters.cooperatives.list;
+
       const fiscalYearsRes = await Services.getCooperativeFiscalYearsList(
         req.coopId
       );
@@ -145,27 +165,13 @@ export const fetchGeneralData = createAsyncThunk(
         throw new Error('Fiscal year is not found');
       }
 
-      const cooperativesListRes = await Services.getCooperativesList(
-        serverFormat(new Date(currentFiscalYear.StartDate)),
-        serverFormat(new Date(currentFiscalYear.EndDate)),
-        true
-      );
-
-      if (!cooperativesListRes.IsSuccess) {
-        throw new Error(cooperativesListRes.Message);
-      }
-
-      const currentCooperative = findCooperative(
-        req.coopId,
-        cooperativesListRes.Cooperatives
-      );
+      const currentCooperative = findCooperative(req.coopId, cooperatives);
 
       if (!currentCooperative) {
         throw new Error('Cooperative is not found');
       }
 
       return {
-        cooperatives: cooperativesListRes.Cooperatives,
         currentCooperative,
         fiscalYears: fiscalYearsRes.FiscalYears,
         currentFiscalYear,
@@ -197,10 +203,51 @@ export const fetchGeneralFiscalYear = createAsyncThunk(
   }
 );
 
+export const refreshGeneralData = createAsyncThunk(
+  'generalPage/refreshGeneralData',
+  async (_, { rejectWithValue, getState, dispatch }) => {
+    try {
+      const res = await dispatch(fetchCooperativesList()).unwrap();
+
+      if (!res.IsSuccess) throw new Error(res.Message);
+
+      const { generalPage } = getState() as { generalPage: GeneralPageState };
+
+      const coopId = generalPage.filters.cooperatives.current?.Id;
+      const fyId = generalPage.filters.fiscalYears.current?.Id;
+
+      if (coopId && fyId) {
+        const generalDataRes = await dispatch(
+          fetchGeneralData({ coopId, fyId })
+        ).unwrap();
+
+        return { cooperatives: res.Cooperatives, ...generalDataRes };
+      } else {
+        throw new Error(`
+          Entity is missing (FiscalYearId = ${fyId}; CooperativeId = ${coopId})
+        `);
+      }
+    } catch (err) {
+      console.error(err);
+
+      return rejectWithValue(err);
+    }
+  }
+);
+
 export const generalPageSlice = createSlice({
   name: 'generalPage',
   initialState,
   reducers: {
+    resetGeneralFiscalYear: (state) => {
+      state.generalFiscalYear = null;
+    },
+    setCooperativesList: (
+      state,
+      action: PayloadAction<CommonCooperativeModel[]>
+    ) => {
+      state.filters.cooperatives.list = action.payload;
+    },
     setCurrentCooperative: (
       state,
       action: PayloadAction<CommonCooperativeModel | null>
@@ -239,10 +286,10 @@ export const generalPageSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchGeneralData.fulfilled, (state, action) => {
-        state.filters.cooperatives.list = action.payload.cooperatives;
         state.filters.cooperatives.next = action.payload.currentCooperative;
         state.filters.fiscalYears.list = action.payload.fiscalYears;
         state.filters.fiscalYears.next = action.payload.currentFiscalYear;
+        state.filters.fiscalYears.current = action.payload.currentFiscalYear;
         state.loading = false;
       })
       .addCase(fetchGeneralData.rejected, (state, action) => {
@@ -283,11 +330,37 @@ export const generalPageSlice = createSlice({
         state.loading = false;
         state.error = { messages: [String(action.error.message)] };
       });
+
+    builder
+      .addCase(refreshGeneralData.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(refreshGeneralData.fulfilled, (state, action) => {
+        const {
+          currentFiscalYear,
+          cooperatives,
+          currentCooperative,
+          fiscalYears,
+        } = action.payload;
+
+        state.filters.cooperatives.list = cooperatives;
+        state.filters.cooperatives.current = currentCooperative;
+        state.filters.fiscalYears.list = fiscalYears;
+        state.filters.fiscalYears.current = currentFiscalYear;
+        state.loading = false;
+      })
+      .addCase(refreshGeneralData.rejected, (state, action) => {
+        state.loading = false;
+        state.error = { messages: [String(action.error.message)] };
+      });
   },
 });
 
 export default generalPageSlice.reducer;
 export const {
+  resetGeneralFiscalYear,
+  setCooperativesList,
   setCurrentCooperative,
   setCurrentFiscalYear,
   setNextCooperative,

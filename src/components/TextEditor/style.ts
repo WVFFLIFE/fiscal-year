@@ -3,6 +3,13 @@ import { makeStyles } from '@mui/styles';
 export const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
+    '& *': {
+      scrollbarWidth: 'none',
+    },
+    '&::-webkit-scrollbar': {
+      height: 0,
+      background: 'transparent',
+    },
   },
   editorWrapper: {
     marginTop: 10,
@@ -19,12 +26,24 @@ export const useStyles = makeStyles((theme) => ({
     },
     wordBreak: 'break-word',
   },
+  editorWrapperSingleline: {
+    overflowX: 'auto',
+  },
   focused: {
     outline: 0,
     borderColor: theme.color.blue2,
   },
+  exceeded: {
+    borderColor: theme.color.red,
+  },
   disabled: {
     outline: 0,
     borderColor: '#E6EAEF',
+  },
+  singleline: {
+    '& .public-DraftStyleDefault-block': {
+      overflow: 'hidden',
+      whiteSpace: 'pre',
+    },
   },
 }));
