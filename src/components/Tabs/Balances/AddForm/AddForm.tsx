@@ -2,6 +2,10 @@ import useAddFormData from './useAddFormData';
 import { useTranslation } from 'react-i18next';
 import _has from 'lodash/has';
 
+import NumberFormat, {
+  NumberFormatValues,
+  SourceInfo,
+} from 'react-number-format';
 import Box from '@mui/material/Box';
 import { InputLabel, CancelButton, ApplyButton } from 'components/Styled';
 import Input from 'components/Input';
@@ -55,20 +59,21 @@ const AddForm: React.FC<AddFormProps> = ({ onClose }) => {
           {t('#tab.balances.addnewproduct.deficit')}
           <sup className={classes.required}>*</sup>
         </InputLabel>
-        <Input
-          placeholder={t('#tab.balances.addnewproduct.enterdeficit')}
+        <NumberFormat
+          className={clsx(classes.numberInput, {
+            [classes.validationError]: _has(
+              formState.validation,
+              'productName'
+            ),
+          })}
+          decimalSeparator=","
+          decimalScale={2}
           name="deficit"
-          value={formState.deficit}
           onChange={handleChangeDeficit}
           onFocus={initValidation}
-          classes={{
-            root: clsx({
-              [classes.validationError]: _has(
-                formState.validation,
-                'productName'
-              ),
-            }),
-          }}
+          placeholder={t('#tab.balances.addnewproduct.enterdeficit')}
+          thousandSeparator=" "
+          value={formState.deficit}
         />
       </Box>
       <Box

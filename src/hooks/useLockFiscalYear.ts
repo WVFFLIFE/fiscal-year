@@ -3,18 +3,20 @@ import { useTranslation } from 'react-i18next';
 import useStateSelector from './useStateSelector';
 import useAppDispatch from './useAppDispatch';
 import { selectFiscalYear } from 'selectors/generalPageSelectors';
-import { fetchGeneralFiscalYear } from 'features/generalPageSlice';
+import {
+  refreshGeneralData,
+  fetchGeneralFiscalYear,
+} from 'features/generalPageSlice';
 
 import { Services } from 'services/s';
 import {
   LockFiscalYearResponseCode,
   UnlockFiscalYearResponseCode,
-  CopyFiscalYearResponseCode,
 } from 'enums/responses';
 
 const FiscalYearService = new Services.FiscalYear();
 
-type EntityType = 'lock' | 'unlock' | 'copy' | null;
+type EntityType = 'lock' | 'unlock' | null;
 
 interface LockFiscalYearStateModel {
   loading: boolean;
@@ -58,13 +60,6 @@ const useLockFiscalYear = () => {
     });
   };
 
-  const handleOpenCopyConfirmationWindow = () => {
-    setConfirmationWindowState({
-      open: true,
-      type: 'copy',
-    });
-  };
-
   const handleCloseConfirmationWindow = () => {
     setConfirmationWindowState((prevState) => ({
       ...prevState,
@@ -86,7 +81,6 @@ const useLockFiscalYear = () => {
           ...prevState,
           loading: true,
         }));
-
         const res = await FiscalYearService.lock(fiscalYear.id);
 
         if (res.IsSuccess) {
@@ -95,7 +89,8 @@ const useLockFiscalYear = () => {
             loading: false,
           }));
           handleCloseConfirmationWindow();
-          dispatch(fetchGeneralFiscalYear(fiscalYear.id));
+          await dispatch(refreshGeneralData());
+          await dispatch(fetchGeneralFiscalYear(fiscalYear.id));
         } else {
           handleCloseConfirmationWindow();
 
@@ -116,7 +111,7 @@ const useLockFiscalYear = () => {
         }));
       }
     }
-  }, [fiscalYear?.id]);
+  }, [fiscalYear]);
 
   const unlockFiscalYear = useCallback(async () => {
     if (fiscalYear?.id) {
@@ -135,7 +130,8 @@ const useLockFiscalYear = () => {
           }));
           handleCloseConfirmationWindow();
 
-          dispatch(fetchGeneralFiscalYear(fiscalYear.id));
+          await dispatch(refreshGeneralData());
+          await dispatch(fetchGeneralFiscalYear(fiscalYear.id));
         } else {
           handleCloseConfirmationWindow();
 
@@ -155,49 +151,7 @@ const useLockFiscalYear = () => {
         }));
       }
     }
-  }, [fiscalYear?.id]);
-
-  const copyFiscalYear = useCallback(async () => {
-    if (fiscalYear?.id) {
-      try {
-        setLockFiscalYearState((prevState) => ({
-          ...prevState,
-          loading: true,
-        }));
-
-        const res = await FiscalYearService.copy(fiscalYear.id);
-
-        if (res.IsSuccess) {
-          setLockFiscalYearState((prevState) => ({
-            ...prevState,
-            loading: false,
-          }));
-          handleCloseConfirmationWindow();
-
-          dispatch(fetchGeneralFiscalYear(fiscalYear.id));
-        } else {
-          handleCloseConfirmationWindow();
-
-          throw new Error(
-            res.ResponseCode ===
-            CopyFiscalYearResponseCode.AmbiguityFiscalYearNotFound
-              ? t('#error.fiscalyear.copy.ambiguityfiscalyearnotfound')
-              : res.ResponseCode ===
-                CopyFiscalYearResponseCode.PreviousFiscalYearNotFound
-              ? t('#error.fiscalyear.copy.previousfiscalyearnotfound')
-              : res.Message
-          );
-        }
-      } catch (err) {
-        console.error(err);
-        setLockFiscalYearState((prevState) => ({
-          ...prevState,
-          loading: false,
-          error: { type: null, message: String(err) },
-        }));
-      }
-    }
-  }, [fiscalYear?.id]);
+  }, [fiscalYear]);
 
   const handleInitError = () => {
     setLockFiscalYearState((prevState) => ({
@@ -211,11 +165,9 @@ const useLockFiscalYear = () => {
     confirmationWindowState,
     handleOpenLockConfirmationWindow,
     handleOpenUnlockConfirmationWindow,
-    handleOpenCopyConfirmationWindow,
     handleCloseConfirmationWindow,
     lockFiscalYear,
     unlockFiscalYear,
-    copyFiscalYear,
     handleInitError,
     handleInitConfirmationWindowType,
     isClosed: !!fiscalYear?.isClosed,

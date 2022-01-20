@@ -16,7 +16,7 @@ interface ConfirmationWindowProps extends DialogProps {
   title?: string;
   Icon?: ReactNode;
   description?: string;
-  CancelBtnProps: BtnProps;
+  CancelBtnProps?: BtnProps;
   ApplyBtnProps: BtnProps;
 }
 
@@ -47,13 +47,15 @@ const ConfirmationWindow: React.FC<ConfirmationWindowProps> = ({
         {Icon}
         {description && <p className={classes.description}>{description}</p>}
         <div className={classes.btnsWrapper}>
-          <CancelButton
-            className={classes.btnOffset}
-            onClick={handleClose}
-            disabled={CancelBtnProps.disabled}
-          >
-            {CancelBtnProps.label}
-          </CancelButton>
+          {CancelBtnProps && (
+            <CancelButton
+              className={classes.btnOffset}
+              onClick={handleClose}
+              disabled={CancelBtnProps.disabled}
+            >
+              {CancelBtnProps.label}
+            </CancelButton>
+          )}
           <ApplyButton
             onClick={ApplyBtnProps.onClick}
             disabled={ApplyBtnProps.disabled}

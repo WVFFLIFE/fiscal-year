@@ -35,7 +35,7 @@ const BalancesTableRow = <T extends object>({
     handleChangeInputData,
     handleActivateEditMode,
     handleResetEditMode,
-    handleSave,
+    handleSaveCurrent,
   } = useBalancesTableRowData(data, column);
 
   const text = data[column.field];
@@ -69,7 +69,7 @@ const BalancesTableRow = <T extends object>({
             active={activeEditMode}
             onActivateEditMode={handleActivateEditMode}
             onResetEditMode={handleResetEditMode}
-            onSave={handleSave}
+            onSave={handleSaveCurrent}
             disabled={disabled}
             isValid={isValid}
           />

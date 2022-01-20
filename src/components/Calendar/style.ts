@@ -17,7 +17,7 @@ export const useStyles = makeStyles((theme) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    width: 30,
+    width: theme.size.calendarWidth / 7,
     height: 24,
     borderRadius: 2,
     '&:focus': {

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import ProgressBar from 'components/ProgressBar';
 import { ActionButton } from 'components/Styled';
@@ -33,6 +34,8 @@ const Preview: React.FC<PreviewProps> = ({
   overviewTitle,
 }) => {
   const classes = useStyles();
+  const { t } = useTranslation();
+
   const [showFullImage, setShowFullImage] = useState(false);
 
   const handleOpenFullImageModal = () => {
@@ -45,11 +48,11 @@ const Preview: React.FC<PreviewProps> = ({
 
   if (loading || uploading || deleting) {
     const text = loading
-      ? 'Loading...'
+      ? t('#imagepreview.loading')
       : uploading
-      ? 'Uploading...'
+      ? t('#imagepreview.loading')
       : deleting
-      ? 'Deleting...'
+      ? t('#imagepreview.deleting')
       : null;
     return (
       <div className={clsx(classes.progressRoot, className)}>

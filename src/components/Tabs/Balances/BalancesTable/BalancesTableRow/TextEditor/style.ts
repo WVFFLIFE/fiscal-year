@@ -2,6 +2,7 @@ import { makeStyles } from '@mui/styles';
 
 export const useStyles = makeStyles((theme) => ({
   numberInput: {
+    display: 'block',
     padding: '0px 20px',
     height: 24,
     fontSize: 14,

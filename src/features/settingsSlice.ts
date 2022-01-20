@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 
+import { Language } from 'enums/responses';
+
 import Services from 'services';
 
 export const fetchSettings = createAsyncThunk(
@@ -47,7 +49,7 @@ interface SettingsState {
    * 1033 - English;
    * 1034 - Finnish
    */
-  languageCode: number;
+  languageCode: Language;
 }
 
 const initialState: SettingsState = {

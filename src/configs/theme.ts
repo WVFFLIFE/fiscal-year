@@ -78,7 +78,7 @@ const themeInstance = createTheme({
   size: {
     sidebarWidth: 80,
     pickerHeight: 40,
-    calendarWidth: 210,
+    calendarWidth: 255,
   },
   spacing: 5,
 });

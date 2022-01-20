@@ -72,17 +72,8 @@ const useAddFormData = (onClose: () => void) => {
     []
   );
 
-  const handleChangeDeficit = (e: ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value
-      .replace(/[^0-9,]/g, '')
-      .replace(/[,](?=.*[,])/g, '')
-      .replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-
-    const [a, b] = value.split(',');
-
-    if (b?.length > 2) {
-      value = `${a},${b.substr(0, 2)}`;
-    }
+  const handleChangeDeficit = (event: ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target;
 
     setFormState((prevState) => ({
       ...prevState,

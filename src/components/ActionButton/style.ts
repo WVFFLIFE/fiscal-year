@@ -18,6 +18,10 @@ export const useStyles = makeStyles((theme) => ({
     paddingTop: 4,
     paddingBottom: 4,
   },
+  large: {
+    paddingTop: 12,
+    paddingBottom: 12,
+  },
   darkBlue: {
     background: theme.color.darkBlue,
     color: '#fff',

@@ -31,8 +31,8 @@ const calendarYearOptions = buildCalendarYearOptions(
 );
 
 const quickFilterOptions: QuickFilterOption[] = [
-  { id: 'open_fy', label: 'Open FY' },
-  { id: 'open_fc', label: 'Open FC' },
+  { id: 'open_fy', label: '#control.quickfilter.openfy' },
+  { id: 'open_fc', label: '#control.quickfilter.openfc' },
 ];
 
 interface SummaryPageProps {
@@ -67,15 +67,17 @@ const SummaryPage: FC<SummaryPageProps> = ({ commonCooperatives }) => {
     });
   }, [state.extendedCooperatives, state.selected.quickFilter]);
 
-  const isDisabledCalendarYearPicker = !!!state.selected.cooperatives.length;
-  const isSelectedCalendarYear = !!state.selected.calendarYear;
-  const isEmptyFilter = isDisabledCalendarYearPicker || !isSelectedCalendarYear;
+  const areCooperativesSelected = !!state.selected.cooperatives.length;
+  const isDisabledCalendarYearPicker = !areCooperativesSelected;
+  const isCalendarYearSelected = !!state.selected.calendarYear;
+  const isEmptyFilter = isDisabledCalendarYearPicker || !isCalendarYearSelected;
   const show = !isEmptyFilter;
+  const isDisabledQuickFilter = !show && !state.extendedCooperatives.length;
 
-  const hint = isDisabledCalendarYearPicker
+  const hint = !areCooperativesSelected
     ? '#info.selectcooperative'
-    : !isSelectedCalendarYear
-    ? 'Please select calendar year'
+    : !isCalendarYearSelected
+    ? '#info.selectcalendaryear'
     : '';
 
   return (
@@ -111,7 +113,7 @@ const SummaryPage: FC<SummaryPageProps> = ({ commonCooperatives }) => {
             active={state.selected.quickFilter}
             onChange={handleChangeActiveQuickFilter}
             options={quickFilterOptions}
-            disabled={!show && !state.extendedCooperatives.length}
+            disabled={isDisabledQuickFilter}
           />
         </Box>
         <Box display="flex" flex={1} justifyContent="flex-end">
@@ -129,8 +131,8 @@ const SummaryPage: FC<SummaryPageProps> = ({ commonCooperatives }) => {
         </Box>
       </FiltersWrapper>
       {isEmptyFilter && <InfoBox>{t(hint)}</InfoBox>}
-      {show ? (
-        state.extendedCooperatives.length ? (
+      {show &&
+        (state.extendedCooperatives.length ? (
           <Container className={classes.offsetTop}>
             {state.current.cooperatives.length &&
               state.current.calendarYear && (
@@ -150,8 +152,7 @@ const SummaryPage: FC<SummaryPageProps> = ({ commonCooperatives }) => {
           </Container>
         ) : (
           <InfoBox>{t('#info.nocooperatives')}</InfoBox>
-        )
-      ) : null}
+        ))}
       <Backdrop loading={state.loading} />
       <DialogError error={state.error} initError={handleInitError} />
     </>

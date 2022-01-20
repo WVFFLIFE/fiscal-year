@@ -46,7 +46,13 @@ export const useStyles = makeStyles((theme) => ({
     },
   },
   disabled: {
-    background: 'transparent',
+    '&:hover': {
+      background: 'transparent',
+
+      '& $actions': {
+        opacity: 0,
+      },
+    },
   },
   warningIcon: {
     fontSize: 48,

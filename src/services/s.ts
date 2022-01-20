@@ -10,6 +10,7 @@ import {
   UnlockFiscalYearResponseCode,
   ValidateFiscalYearResponseCode,
   CopyFiscalYearResponseCode,
+  BaseFolderStatusCode,
 } from 'enums/responses';
 
 export namespace Services {
@@ -231,6 +232,23 @@ export namespace Services {
           Content: string;
         }
       }
+    }
+
+    export namespace Documents {
+      export type BaseFolderStatus = BaseResponse &
+        (
+          | {
+              CreationStatus: Exclude<
+                BaseFolderStatusCode,
+                BaseFolderStatusCode.Error
+              >;
+              CreationMessage: null;
+            }
+          | {
+              CreationStatus: BaseFolderStatusCode.Error;
+              CreationMessage: string;
+            }
+        );
     }
   }
 
@@ -528,6 +546,20 @@ export namespace Services {
       reports: Model.AnnualReports.Get.Request
     ): Promise<BaseResponse> => {
       return await this.executeTypeRequest('uds_FiscalYearReports', 2, reports);
+    };
+  }
+  export class Documents extends CRMConnector {
+    createBaseFolder = async (fiscalYearId: string): Promise<BaseResponse> => {
+      return await this.executeRequest('uds_FiscalYearCreateBaseFolder', {
+        FiscalYearId: fiscalYearId,
+      });
+    };
+    getBaseFolderStatus = async (
+      fiscalYearId: string
+    ): Promise<Model.Documents.BaseFolderStatus> => {
+      return await this.executeRequest('uds_FiscalYearCreateBaseFolderStatus', {
+        FiscalYearId: fiscalYearId,
+      });
     };
   }
 }

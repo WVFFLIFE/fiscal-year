@@ -20,3 +20,14 @@ export enum CopyFiscalYearResponseCode {
   PreviousFiscalYearNotFound,
   AmbiguityFiscalYearNotFound,
 }
+
+export enum BaseFolderStatusCode {
+  Unknown,
+  InProgress,
+  Done,
+  Error,
+}
+export enum Language {
+  English = 1033,
+  Finnish = 1034,
+}

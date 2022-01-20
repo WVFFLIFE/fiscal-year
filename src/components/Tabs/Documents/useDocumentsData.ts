@@ -81,7 +81,7 @@ const useDocumentsData = () => {
   }));
   const [state, setState] = useState<State>({
     breadcrumbsList: [],
-    loading: false,
+    loading: true,
     publishing: false,
     error: null,
     quickFilter: null,

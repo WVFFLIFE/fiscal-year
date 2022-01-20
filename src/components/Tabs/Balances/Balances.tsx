@@ -166,7 +166,7 @@ const Balances: FC = () => {
         },
         {
           id: `SpecFinCalcSurplusDeficitPreviousFY${product.index}`,
-          label: '#tab.balances.vatcalculation.deficit',
+          label: '#tab.balances.specialfinancialcalculation.deficit',
           field: 'surplusDeficitPreviousFY',
           editable: true,
           type: 'number',

@@ -6,7 +6,11 @@ import {
   memo,
   forwardRef,
 } from 'react';
-import { Locale } from 'date-fns';
+import useStateSelector from 'hooks/useStateSelector';
+import { selectLanguageCode } from 'selectors/settingsSelectors';
+import { Language } from 'enums/responses';
+
+import { enGB, fi } from 'date-fns/locale';
 import { startOfDay } from 'utils/dates';
 
 import Popover from '@mui/material/Popover';
@@ -22,7 +26,6 @@ export interface ClassNames {
 export interface DatePickerProps {
   open?: boolean;
   date: Date | null;
-  locale?: Locale;
   min?: Date;
   max?: Date;
   disabled?: boolean;
@@ -37,7 +40,6 @@ const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
     {
       open: openDefault = false,
       date,
-      locale,
       classes: propsClasses,
       min,
       max,
@@ -49,6 +51,9 @@ const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
     inputRef
   ) => {
     const anchorEl = useRef<HTMLDivElement>(null);
+
+    const languageCode = useStateSelector(selectLanguageCode);
+
     const [open, setOpen] = useState(false);
 
     useEffect(() => {
@@ -98,7 +103,7 @@ const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
         >
           <Body
             date={date}
-            locale={locale}
+            locale={languageCode === Language.English ? enGB : fi}
             onChange={handleChangeDate}
             onClose={handleClose}
           />

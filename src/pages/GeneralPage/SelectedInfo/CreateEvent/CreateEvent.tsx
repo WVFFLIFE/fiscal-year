@@ -4,10 +4,7 @@ import useToggleSwitch from 'hooks/useToggleSwitch';
 
 import useStateSelector from 'hooks/useStateSelector';
 
-import {
-  selectEvents,
-  selectIsClosedField,
-} from 'selectors/generalPageSelectors';
+import { selectEvents } from 'selectors/generalPageSelectors';
 
 import ActionButton from 'components/ActionButton';
 import Menu from '@mui/material/Menu';
@@ -23,14 +20,13 @@ const CreateEvent = () => {
 
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  const { events, isClosed } = useStateSelector((state) => ({
+  const { events } = useStateSelector((state) => ({
     events: selectEvents(state),
-    isClosed: selectIsClosedField(state),
   }));
 
   const [openMenu, toggleMenuVisibility] = useToggleSwitch();
 
-  const isDisabledOpenBtn = !!!events || isClosed;
+  const isDisabledOpenBtn = !!!events;
 
   return (
     <>

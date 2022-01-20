@@ -82,8 +82,8 @@ const useBalancesTableRowData = <T extends object>(
   }, [dispatch, column.id]);
 
   const handleResetEditMode = useCallback(() => {
-    dispatch(setActiveRowId(null));
     setTouched(false);
+    dispatch(setActiveRowId(null));
   }, [dispatch]);
 
   const resetPrevRowId = () => {
@@ -120,6 +120,20 @@ const useBalancesTableRowData = <T extends object>(
     setTouched(false);
   };
 
+  const handleSavePrev = async () => {
+    const value = isNumericType ? toNumber(inputData) : inputData;
+
+    const untouch = () => setTouched(false);
+
+    await onSave(value, untouch);
+  };
+
+  const handleSaveCurrent = async () => {
+    const value = isNumericType ? toNumber(inputData) : inputData;
+
+    await onSave(value, handleResetEditMode);
+  };
+
   useEffect(() => {
     if (activeRowId === column.id && !activeEditMode) {
       setActiveEditMode(true);
@@ -143,15 +157,14 @@ const useBalancesTableRowData = <T extends object>(
   useEffect(() => {
     if (touched) {
       unsavedChangesTracker.addSaveAction(async () => {
-        const value = isNumericType ? toNumber(inputData) : inputData;
-        await onSave(value);
+        await handleSavePrev();
 
         return true;
       });
     } else {
       unsavedChangesTracker.resetSaveAction();
     }
-  }, [touched, inputData, isNumericType]);
+  }, [touched, inputData]);
 
   const isValid = isNumericType ? isValidNumber(inputData) : !!inputData;
 
@@ -161,7 +174,7 @@ const useBalancesTableRowData = <T extends object>(
     handleActivateEditMode,
     handleResetEditMode,
     handleChangeInputData,
-    handleSave,
+    handleSaveCurrent,
     isValid,
   };
 };

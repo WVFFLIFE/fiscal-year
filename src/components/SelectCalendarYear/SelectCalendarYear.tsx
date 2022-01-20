@@ -6,6 +6,7 @@ import {
   useMemo,
   ChangeEvent,
 } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import format from 'date-fns/format';
 import isSameDay from 'date-fns/isSameDay';
@@ -120,6 +121,8 @@ const SelectCalendarYear: React.FC<SelectCalendarYearProps> = ({
   onChange,
   disabled,
 }) => {
+  const { t } = useTranslation();
+
   const renderValue = () => {
     return (
       value &&
@@ -143,7 +146,7 @@ const SelectCalendarYear: React.FC<SelectCalendarYearProps> = ({
   return (
     <Picker
       disabled={disabled}
-      placeholder={`- Select calendar year -`}
+      placeholder={`- ${t('#control.calendaryearpicker.placeholder')} -`}
       renderValue={renderValue}
       renderBody={renderBody}
     />

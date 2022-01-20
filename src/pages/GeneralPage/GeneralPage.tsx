@@ -36,6 +36,10 @@ const GeneralPage: React.FC = () => {
 
   const { filters, loading, error } = generalPageData;
 
+  const isDisabledApplyBtn =
+    !!!filters.fiscalYears.next ||
+    filters.fiscalYears.next.Id === filters.fiscalYears.current?.Id;
+
   return (
     <>
       <FiltersWrapper>
@@ -56,10 +60,7 @@ const GeneralPage: React.FC = () => {
           />
         </Box>
         <Box padding={4} paddingX={2}>
-          <ApplyButton
-            disabled={!!!filters.fiscalYears.next}
-            onClick={handleApplyClick}
-          >
+          <ApplyButton disabled={isDisabledApplyBtn} onClick={handleApplyClick}>
             {t('#button.apply')}
           </ApplyButton>
         </Box>

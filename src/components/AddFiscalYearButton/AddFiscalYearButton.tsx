@@ -3,7 +3,7 @@ import useToggleSwitch from 'hooks/useToggleSwitch';
 import { useTranslation } from 'react-i18next';
 
 import { ButtonProps } from '@mui/material/Button';
-import Button from 'components/Button';
+import ActionButton from 'components/ActionButton';
 import { PlusIcon, ArrowIcon, TemplateIcon, CopyIcon } from 'components/Icons';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -46,16 +46,12 @@ const AddFiscalYearButton: React.FC<ButtonProps> = (props) => {
 
   return (
     <>
-      <Button
+      <ActionButton
         {...props}
+        size="large"
+        palette="darkBlue"
         onClick={handleOpenMenu}
-        className={clsx(classes.addBtn, props.className)}
-        classes={{
-          startIcon: classes.btnIcon,
-          endIcon: classes.btnIcon,
-          ...props.classes,
-        }}
-        label={t('#button.addfy')}
+        className={props.className}
         startIcon={<PlusIcon />}
         endIcon={
           <ArrowIcon
@@ -64,7 +60,9 @@ const AddFiscalYearButton: React.FC<ButtonProps> = (props) => {
             })}
           />
         }
-      />
+      >
+        {t('#button.addfy')}
+      </ActionButton>
       <Menu
         open={!!anchorEl}
         onClose={handleCloseMenu}

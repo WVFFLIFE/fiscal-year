@@ -28,6 +28,7 @@ const ActionButton = forwardRef<HTMLButtonElement, DefaultButtonProps>(
         })}
         classes={{
           sizeSmall: classes.small,
+          sizeLarge: classes.large,
           startIcon: classes.startIcon,
           endIcon: classes.endIcon,
           ...rest.classes,

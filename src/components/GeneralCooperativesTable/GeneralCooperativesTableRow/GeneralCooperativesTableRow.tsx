@@ -84,7 +84,7 @@ const GeneralCooperativesTableRow: React.FC<
       className={clsx({
         [classes.rowBorder]: isEmptyDate(cooperative),
       })}
-      hover
+      hover={!!!cooperative.IsFiscalYearClosed}
       onMouseEnter={cooperative.IsFiscalYearClosed ? undefined : handleHoverRow}
       onMouseLeave={
         cooperative.IsFiscalYearClosed ? undefined : handleHoverRowOut

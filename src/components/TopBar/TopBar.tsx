@@ -1,20 +1,15 @@
-import { useMemo, memo, FC } from 'react';
+import { memo, FC } from 'react';
 import useLockFiscalYear from 'hooks/useLockFiscalYear';
 import { useTranslation } from 'react-i18next';
 
 import ConfirmationWindow from 'components/ConfirmationWindow';
-import Button from 'components/Button';
 import Error from 'components/Error';
+import ActionButton from 'components/ActionButton';
 import AddFiscalYearButton from 'components/AddFiscalYearButton';
+import CopyFiscalYear from 'components/CopyFiscalYear';
 import Title from 'components/Title';
 import Box from '@mui/material/Box';
-import {
-  LockIcon,
-  UnlockIcon,
-  CopyIcon,
-  RoundWarningIcon,
-  TriangleWarningIcon,
-} from 'components/Icons';
+import { LockIcon, UnlockIcon, RoundWarningIcon } from 'components/Icons';
 
 import { useStyles } from './style';
 
@@ -30,20 +25,11 @@ const TopBar: FC = () => {
     lockFiscalYear,
     unlockFiscalYear,
     handleInitError,
-    copyFiscalYear,
     handleOpenLockConfirmationWindow,
     handleOpenUnlockConfirmationWindow,
-    handleOpenCopyConfirmationWindow,
     handleCloseConfirmationWindow,
     handleInitConfirmationWindowType,
   } = useLockFiscalYear();
-
-  const cls = useMemo(
-    () => ({
-      startIcon: classes.icon,
-    }),
-    [classes]
-  );
 
   return (
     <>
@@ -58,29 +44,26 @@ const TopBar: FC = () => {
         <Title>{t('#page.title')}</Title>
         {showFYBtns && (
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Button
+            <ActionButton
               size="large"
               className={classes.offsetRight}
-              classes={cls}
-              label={t(
-                isClosed ? '#common.unlockfiscalyear' : '#common.lockfiscalyear'
-              )}
               startIcon={isClosed ? <UnlockIcon /> : <LockIcon />}
               onClick={
                 isClosed
                   ? handleOpenUnlockConfirmationWindow
                   : handleOpenLockConfirmationWindow
               }
-            />
-            <Button
-              className={classes.offsetRight}
-              classes={cls}
-              label={t('#button.copyfy')}
-              startIcon={<CopyIcon />}
-              onClick={handleOpenCopyConfirmationWindow}
-              disabled={isClosed}
-            />
-            <AddFiscalYearButton />
+            >
+              {t(
+                isClosed ? '#common.unlockfiscalyear' : '#common.lockfiscalyear'
+              )}
+            </ActionButton>
+            <Box marginRight="20px">
+              <CopyFiscalYear />
+            </Box>
+            <Box>
+              <AddFiscalYearButton />
+            </Box>
           </Box>
         )}
       </Box>
@@ -94,8 +77,6 @@ const TopBar: FC = () => {
               ? t('#common.unlockfiscalyear')
               : confirmationWindowState.type === 'lock'
               ? t('#common.lockfiscalyear')
-              : confirmationWindowState.type === 'copy'
-              ? t('#common.copyfiscalyear')
               : 'Error'
             : 'Error'
         }
@@ -113,8 +94,6 @@ const TopBar: FC = () => {
             ? t('#common.unlockfiscalyear')
             : confirmationWindowState.type === 'lock'
             ? t('#common.lockfiscalyear')
-            : confirmationWindowState.type === 'copy'
-            ? t('#common.copyfiscalyear')
             : undefined
         }
         description={
@@ -122,17 +101,9 @@ const TopBar: FC = () => {
             ? t('#confirmation.unlock.description')
             : confirmationWindowState.type === 'lock'
             ? t('#confirmation.lock.description')
-            : confirmationWindowState.type === 'copy'
-            ? t('#confirmation.copy.description')
             : undefined
         }
-        Icon={
-          confirmationWindowState.type === 'copy' ? (
-            <TriangleWarningIcon className={classes.yellowConfirmationIcon} />
-          ) : (
-            <RoundWarningIcon className={classes.redConfirmationIcon} />
-          )
-        }
+        Icon={<RoundWarningIcon className={classes.redConfirmationIcon} />}
         CancelBtnProps={{
           label: t('#button.cancel'),
         }}
@@ -142,16 +113,12 @@ const TopBar: FC = () => {
               ? t('#button.unlock')
               : confirmationWindowState.type === 'lock'
               ? t('#button.lock')
-              : confirmationWindowState.type === 'copy'
-              ? t('#button.copy')
               : undefined,
           onClick:
             confirmationWindowState.type === 'unlock'
               ? unlockFiscalYear
               : confirmationWindowState.type === 'lock'
               ? lockFiscalYear
-              : confirmationWindowState.type === 'copy'
-              ? copyFiscalYear
               : undefined,
           loading: lockFiscalYearState.loading,
           disabled: lockFiscalYearState.loading,

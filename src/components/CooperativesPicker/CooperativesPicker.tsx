@@ -197,13 +197,13 @@ const Body = <T extends CommonCooperativeModel>({
         >
           {activeQuickFilter === 'all' ? (
             <span style={{ fontSize: 14, fontWeight: 300 }}>
-              You can select up to 5 items
+              {t('#control.cooperativepicker.selectupto')}
             </span>
           ) : (
             <CheckboxControl
               checked={selectedAll}
               onChange={handleToggleSelectAll}
-              label="Select All"
+              label={t('#common.selectall')}
               indeterminate={!!currentCooperative.length && !selectedAll}
             />
           )}
@@ -215,7 +215,7 @@ const Body = <T extends CommonCooperativeModel>({
             }}
             size="small"
             startIcon={<CloseIcon />}
-            label={'Clear filters'}
+            label={t('#common.clearfilters')}
           />
         </Box>
       )}

@@ -1,10 +1,20 @@
 import { createDraftSafeSelector } from '@reduxjs/toolkit';
 import { RootState } from 'store';
 
-export const selectFiscalYearsList = (state: RootState) =>
-  state.generalPage.filters.fiscalYears.list;
+import hasPrevFiscalYear from 'utils/hasPrevFiscalYear';
+
+export const selectFilters = (state: RootState) => state.generalPage.filters;
+
 export const selectFiscalYear = (state: RootState) =>
   state.generalPage.generalFiscalYear;
+export const selectFiscalYearsList = createDraftSafeSelector(
+  selectFilters,
+  (filters) => filters.fiscalYears.list
+);
+export const selectNextFiscalYear = createDraftSafeSelector(
+  selectFilters,
+  (filters) => filters.fiscalYears.next
+);
 export const selectFiscalYearId = createDraftSafeSelector(
   selectFiscalYear,
   (fiscalYear) => fiscalYear?.id || null
@@ -63,4 +73,10 @@ export const selectRunningNumberSettings = createDraftSafeSelector(
 export const selectEvents = createDraftSafeSelector(
   selectFiscalYear,
   (fiscalYear) => fiscalYear?.events || null
+);
+export const selectHasPreviousFiscalYear = createDraftSafeSelector(
+  selectFiscalYearsList,
+  selectNextFiscalYear,
+  (fiscalYearsList, nextFiscalYear) =>
+    nextFiscalYear ? hasPrevFiscalYear(nextFiscalYear, fiscalYearsList) : false
 );

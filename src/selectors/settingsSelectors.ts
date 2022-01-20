@@ -23,3 +23,7 @@ export const selectCommentsSettings = createDraftSafeSelector(
   selectSettings,
   (settings) => settings.comments
 );
+export const selectLanguageCode = createDraftSafeSelector(
+  selectSettings,
+  (settings) => settings.languageCode
+);

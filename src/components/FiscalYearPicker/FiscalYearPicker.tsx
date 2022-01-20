@@ -39,6 +39,7 @@ const Body: React.FC<BodyProps> = ({
   onClosePicker,
 }) => {
   const classes = useBodyStyles();
+  const { t } = useTranslation();
 
   const searchRef = useRef<HTMLInputElement>(null);
 
@@ -105,7 +106,9 @@ const Body: React.FC<BodyProps> = ({
               <span
                 className={classes.label}
               >{`Tilikausi ${start} - ${end}`}</span>
-              <span>{fiscalYear.IsClosed ? 'Closed' : 'Open'}</span>
+              <span>
+                {t(fiscalYear.IsClosed ? '#common.closed' : '#common.open')}
+              </span>
             </MenuItem>
           );
         })}

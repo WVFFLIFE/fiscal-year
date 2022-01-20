@@ -6,18 +6,6 @@ export const useStyles = makeStyles((theme) => ({
       fontSize: 12,
     },
   },
-  addBtn: {
-    background: theme.color.darkBlue,
-    color: '#fff',
-    '&:hover': {
-      color: theme.color.darkBlue,
-    },
-    '&.Mui-disabled': {
-      background: theme.color.greyBorder,
-      color: '#fff',
-      opacity: 1,
-    },
-  },
   list: {
     background: 'rgba(248, 248, 248, 1)',
     borderRadius: 0,
