@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 import { ErrorOutlineIcon } from 'components/Icons';
 
 import { useStyles } from './style';
@@ -7,12 +9,13 @@ interface ErrorViewProps {
   messages: string[];
 }
 
-const ErrorView: React.FC<ErrorViewProps> = ({ messages, title = 'Error' }) => {
+const ErrorView: React.FC<ErrorViewProps> = ({ messages, title }) => {
   const classes = useStyles();
+  const { t } = useTranslation();
 
   return (
     <div className={classes.root}>
-      <h3 className={classes.title}>{title}</h3>
+      <h3 className={classes.title}>{title || t('#common.error')}</h3>
       <ErrorOutlineIcon className={classes.errorIcon} />
       <ul className={classes.box}>
         {messages.map((message, idx) => (

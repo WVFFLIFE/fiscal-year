@@ -1,8 +1,8 @@
-import { useState, forwardRef } from 'react';
+import { useState, forwardRef, KeyboardEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import useEditor, { convertStateToData } from 'hooks/useEditor';
 import useStateSelector from 'hooks/useStateSelector';
-import { EditorState } from 'draft-js';
+import { EditorState, getDefaultKeyBinding } from 'draft-js';
 
 import { selectCommentsSettings } from 'selectors/settingsSelectors';
 
@@ -81,6 +81,17 @@ const AddNewComment = forwardRef<HTMLDivElement, AddNewCommentProps>(
       setLoading(false);
     };
 
+    const handleKeyPress = (event: KeyboardEvent<HTMLDivElement>) => {
+      const { key } = event;
+
+      if (key === 'Enter' && event.ctrlKey) {
+        handleAddComment();
+        return null;
+      }
+
+      return getDefaultKeyBinding(event);
+    };
+
     const isCharactersLimitExceeded =
       editorState.getCurrentContent().getPlainText().length >
       commentsSettings.commentMaxLength;
@@ -88,11 +99,12 @@ const AddNewComment = forwardRef<HTMLDivElement, AddNewCommentProps>(
       loading || !hasText(editorState) || isCharactersLimitExceeded;
 
     return (
-      <div className={className} ref={ref}>
+      <div className={className} ref={ref} onKeyPress={handleKeyPress}>
         <CommentSection
           editorState={editorState}
           onChangeEditorState={setEditorState}
           placeholder={t('#comment.typeyourcomment')}
+          keyBindingFn={handleKeyPress}
         />
         <div className={classes.btnsRow}>
           {withCancelBtn && onCancel && (

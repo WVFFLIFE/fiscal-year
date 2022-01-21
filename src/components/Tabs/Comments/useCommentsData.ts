@@ -1,11 +1,22 @@
 import { useState, useEffect, useRef } from 'react';
-
+import useAppDispatch from 'hooks/useAppDispatch';
 import useSelectFiscalYear from 'hooks/useSelectFiscalYear';
+
+import {
+  setUnreadComments,
+  fetchUnreadCommentsSize,
+} from 'features/commentsSlice';
 
 import { ErrorModel } from 'models';
 import { Services, Comment } from 'services/s';
 
 const CommentsService = new Services.Comments();
+
+function countUnreadComments(comments: Comment[]) {
+  return comments.reduce((acc, next) => {
+    return next.IsRead ? acc : acc++;
+  }, 0);
+}
 
 interface RequestStateModel {
   comments: Comment[];
@@ -17,6 +28,8 @@ interface RequestStateModel {
 const useCommentsData = () => {
   const firstMount = useRef(true);
   const fiscalYear = useSelectFiscalYear();
+  const dispatch = useAppDispatch();
+
   const [requestState, setRequestState] = useState<RequestStateModel>({
     comments: [],
     loading: false,
@@ -37,6 +50,7 @@ const useCommentsData = () => {
       const res = await CommentsService.get(fiscalYearId);
 
       if (res.IsSuccess) {
+        dispatch(setUnreadComments(countUnreadComments(res.Comments)));
         setRequestState((prevState) => ({
           ...prevState,
           comments: res.Comments,
@@ -70,7 +84,8 @@ const useCommentsData = () => {
       });
 
       if (res.IsSuccess) {
-        fetchCommentsList(fiscalYear.id, 'update');
+        dispatch(fetchUnreadCommentsSize(fiscalYear.id));
+        await fetchCommentsList(fiscalYear.id, 'update');
         return true;
       }
 
@@ -121,6 +136,7 @@ const useCommentsData = () => {
 
       if (res.IsSuccess) {
         fetchCommentsList(fiscalYear.id, 'update');
+        dispatch(fetchUnreadCommentsSize(fiscalYear.id));
         return true;
       }
 
@@ -142,6 +158,7 @@ const useCommentsData = () => {
 
       if (res.IsSuccess) {
         fetchCommentsList(fiscalYear.id, 'update');
+        dispatch(fetchUnreadCommentsSize(fiscalYear.id));
         return true;
       }
 

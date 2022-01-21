@@ -1,9 +1,13 @@
 import { useState, useEffect, SyntheticEvent, FC, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import useStateSelector from 'hooks/useStateSelector';
 import useSelectFiscalYear from 'hooks/useSelectFiscalYear';
 import useAppDispatch from 'hooks/useAppDispatch';
 import useToggleSwitch from 'hooks/useToggleSwitch';
+import useInterval from 'hooks/useInteval';
+
 import { setSearchTerm } from 'features/generalPageSlice';
+import { fetchUnreadCommentsSize } from 'features/commentsSlice';
 
 import { tabsList } from 'configs/tabs';
 import unsavedChangesTracker from 'utils/unsavedChangesTracker';
@@ -21,6 +25,7 @@ import Parties from './Parties';
 import Liabilities from './Liabilities';
 import Comments from './Comments';
 import UnsavedChanges from './UnsavedChanges';
+import { RedBubleIcon } from 'components/Icons';
 
 import { useStyles } from './style';
 
@@ -29,15 +34,31 @@ const Tabs: FC = () => {
   const { t } = useTranslation();
 
   const fiscalYear = useSelectFiscalYear();
+  const unreadCommentsCounter: number = useStateSelector(
+    (state) => state.comments.unread
+  );
   const dispatch = useAppDispatch();
 
   const [selectedTab, setSelectedTab] = useState<string>('general');
   const [unsavedChangesDialogOpen, toggleUnsavedChangesDialogVisibility] =
     useToggleSwitch();
 
+  const isCommentTab = selectedTab === 'comments';
+
   useEffect(() => {
     unsavedChangesTracker.resetSaveAction();
   }, [fiscalYear]);
+
+  useInterval(
+    (reset) => {
+      if (fiscalYear?.id && !isCommentTab) {
+        dispatch(fetchUnreadCommentsSize(fiscalYear.id));
+      } else {
+        reset();
+      }
+    },
+    [fiscalYear, selectedTab]
+  );
 
   const handleChangeSelectedTab = (event: SyntheticEvent, newValue: string) => {
     const changeSelectedTab = () => {
@@ -78,9 +99,23 @@ const Tabs: FC = () => {
         classes={tabsClasses}
       >
         {tabsList.map((tabItem) => {
+          const showCommentsIcon =
+            tabItem.value === 'comments' && unreadCommentsCounter > 0;
+          const count =
+            unreadCommentsCounter > 9 ? '9+' : unreadCommentsCounter;
+
           return (
             <MuiTab
               key={tabItem.value}
+              icon={
+                showCommentsIcon ? (
+                  <RedBubleIcon
+                    textClassName={classes.counterText}
+                    count={String(count)}
+                  />
+                ) : undefined
+              }
+              iconPosition="end"
               value={tabItem.value}
               className={classes.tab}
               classes={tabClasses}

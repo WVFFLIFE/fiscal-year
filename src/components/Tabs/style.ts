@@ -8,12 +8,18 @@ export const useStyles = makeStyles((theme) => ({
     background: theme.color.greyLight1,
   },
   tab: {
+    minHeight: 48,
+
     fontSize: 14,
     fontFamily: 'Proxima Nova',
     fontWeight: 700,
     lineHeight: '17px',
     color: theme.color.darkBlue,
     textTransform: 'capitalize',
+
+    '& .MuiTab-iconWrapper': {
+      marginLeft: 7,
+    },
   },
   selected: {
     '&.Mui-selected': {
@@ -32,5 +38,10 @@ export const useStyles = makeStyles((theme) => ({
   },
   loader: {
     color: theme.color.darkBlue,
+  },
+  counterText: {
+    fontSize: 11,
+    fontFamily: 'Proxima Nova',
+    fontWeight: 700,
   },
 }));

@@ -1,4 +1,5 @@
-import { EditorState } from 'draft-js';
+import { KeyboardEvent } from 'react';
+import { EditorState, DraftEditorCommand } from 'draft-js';
 import useStateSelector from 'hooks/useStateSelector';
 
 import { selectCommentsSettings } from 'selectors/settingsSelectors';
@@ -11,6 +12,7 @@ import { useStyles } from './style';
 interface CommentSectionProps {
   editorState: EditorState;
   onChangeEditorState: (editorState: EditorState) => void;
+  keyBindingFn?: (event: KeyboardEvent<any>) => DraftEditorCommand | null;
   placeholder?: string;
   avatarSrc?: string;
 }
@@ -18,6 +20,7 @@ interface CommentSectionProps {
 const CommentSection: React.FC<CommentSectionProps> = ({
   editorState,
   onChangeEditorState,
+  keyBindingFn,
   placeholder,
   avatarSrc,
 }) => {
@@ -33,6 +36,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({
       <TextEditor
         placeholder={placeholder}
         editorState={editorState}
+        keyBindingFn={keyBindingFn}
         onChangeEditorState={onChangeEditorState}
         maxCharactersLength={commentsSettings.commentMaxLength}
       />

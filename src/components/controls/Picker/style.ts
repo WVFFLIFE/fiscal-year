@@ -5,7 +5,6 @@ export const PickerInput = styled(Button)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'flex-start',
-  minWidth: 250,
   width: '100%',
   height: theme.size.pickerHeight,
   padding: `${theme.spacing(2)} ${theme.spacing(4)}`,

@@ -31,3 +31,9 @@ export enum Language {
   English = 1033,
   Finnish = 1034,
 }
+export enum AnnualReportSaveToDocumentsErrorResponseCode {
+  OK,
+  SaveConfigurationNotFound,
+  FolderNotCreated,
+  FolderNotFound,
+}

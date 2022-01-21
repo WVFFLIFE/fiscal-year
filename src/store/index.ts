@@ -4,6 +4,7 @@ import appReducer from 'features/appSlice';
 import generalPageReducer from 'features/generalPageSlice';
 import balanceReducer from 'features/balanceSlice';
 import settingsReducer from 'features/settingsSlice';
+import commentsReducer from 'features/commentsSlice';
 
 import _pick from 'lodash/pick';
 
@@ -48,6 +49,7 @@ const store = configureStore({
     generalPage: generalPageReducer,
     balance: balanceReducer,
     settings: settingsReducer,
+    comments: commentsReducer,
   },
 });
 

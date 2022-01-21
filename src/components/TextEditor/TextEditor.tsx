@@ -1,7 +1,20 @@
-import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
+import {
+  useState,
+  useRef,
+  useCallback,
+  useEffect,
+  useMemo,
+  KeyboardEvent,
+} from 'react';
 import { findDOMNode } from 'react-dom';
 
-import { Editor, EditorState, RichUtils, Modifier } from 'draft-js';
+import {
+  Editor,
+  EditorState,
+  RichUtils,
+  Modifier,
+  DraftEditorCommand,
+} from 'draft-js';
 import 'draft-js/dist/Draft.css';
 
 import ControlsPanel, { Control } from './ControlsPanel';
@@ -45,6 +58,7 @@ interface TextEditorProps {
   maxCharactersLength?: number;
   placeholder?: string;
   singleline?: boolean;
+  keyBindingFn?: (event: KeyboardEvent) => DraftEditorCommand | null;
   onChangeEditorState(editorState: EditorState): void;
 }
 
@@ -60,6 +74,7 @@ const TextEditor: React.FC<TextEditorProps> = ({
   maxCharactersLength,
   placeholder,
   singleline,
+  keyBindingFn,
   onChangeEditorState,
 }) => {
   const classes = useStyles();
@@ -339,6 +354,7 @@ const TextEditor: React.FC<TextEditorProps> = ({
           onBlur={onBlur}
           placeholder={placeholder}
           // handleBeforeInput={_handleBeforeInput}
+          keyBindingFn={keyBindingFn}
           handlePastedText={_handlePastedText}
           handleReturn={singleline ? () => 'handled' : undefined}
         />

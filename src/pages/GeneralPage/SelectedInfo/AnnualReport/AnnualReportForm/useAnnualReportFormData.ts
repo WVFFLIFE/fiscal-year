@@ -5,6 +5,7 @@ import useSelectFiscalYear from 'hooks/useSelectFiscalYear';
 import useSuccessDialogState from 'hooks/useSuccessDialogState';
 
 import { ErrorModel } from 'models';
+import { AnnualReportSaveToDocumentsErrorResponseCode as ResponseCode } from 'enums/responses';
 import { GroupsModel } from 'configs/general';
 
 import { Services } from 'services/s';
@@ -69,10 +70,13 @@ const useAnnualReportFormData = () => {
     (event: ChangeEvent<HTMLInputElement>) => {
       const { checked } = event.target;
       setState((prevState) => {
+        const hasChecked = Object.values(prevState.selectedGroups).some(
+          Boolean
+        );
         const mapedGroups = (
           Object.keys(prevState.selectedGroups) as Array<keyof GroupsModel>
         ).reduce((acc, next) => {
-          acc[next] = checked;
+          acc[next] = hasChecked ? false : checked;
           return acc;
         }, {} as GroupsModel);
         return {
@@ -179,14 +183,25 @@ const useAnnualReportFormData = () => {
 
         successDialog.open();
       } else {
-        throw new Error(t('#dialog.annualreport.savetodocuments.error'));
+        const getError = () => {
+          switch (res.ResponseCode) {
+            case ResponseCode.SaveConfigurationNotFound:
+              return 'Save configuration not found';
+            case ResponseCode.FolderNotCreated:
+            case ResponseCode.FolderNotFound:
+              return t('#dialog.annualreport.savetodocuments.nofolder.error');
+            default:
+              return res.Message;
+          }
+        };
+        throw new Error(getError());
       }
     } catch (err) {
       console.error(err);
 
       setState((prevState) => ({
         ...prevState,
-        error: { messages: [String(err)] },
+        error: { messages: [(err as Error).message] },
         saving: false,
       }));
     }

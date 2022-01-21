@@ -4,6 +4,7 @@ import useAppDispatch from 'hooks/useAppDispatch';
 import useStateSelector from 'hooks/useStateSelector';
 
 import { fetchSettings } from 'features/settingsSlice';
+import { selectLanguageCode } from 'selectors/settingsSelectors';
 
 import { getLangString } from 'utils';
 
@@ -14,7 +15,7 @@ const App = () => {
   const { i18n } = useTranslation();
   const dispatch = useAppDispatch();
 
-  const languageCode = useStateSelector((state) => state.settings.languageCode);
+  const languageCode = useStateSelector(selectLanguageCode);
 
   useEffect(() => {
     dispatch(fetchSettings());

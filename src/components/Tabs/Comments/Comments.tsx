@@ -10,9 +10,17 @@ import { Scroll } from 'components/Styled';
 
 import { useStyles } from './style';
 
+interface Req {
+  parentId?: string | null;
+  text: string;
+  formatted: string;
+}
+
 const Comments = () => {
   const classes = useStyles();
   const { t } = useTranslation();
+
+  const wasScrolled = useRef(false);
   const parentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -29,6 +37,25 @@ const Comments = () => {
     deleteComment,
     markAsRead,
   } = useCommentsData();
+
+  const scrollToBottom = () => {
+    if (parentRef.current) {
+      parentRef.current.scroll({ top: parentRef.current.scrollHeight });
+    }
+  };
+
+  const handleAddComment = async (req: Req) => {
+    let res = await addComment(req);
+    scrollToBottom();
+    return res;
+  };
+
+  useEffect(() => {
+    if (requestState.comments.length && !wasScrolled.current) {
+      wasScrolled.current = true;
+      scrollToBottom();
+    }
+  }, [requestState.comments]);
 
   return (
     <SuspenceFacade
@@ -48,14 +75,14 @@ const Comments = () => {
                 className={classes.comment}
                 comment={comment}
                 onUpdate={updateComment}
-                onReply={addComment}
+                onReply={handleAddComment}
                 onDelete={deleteComment}
                 onMarkAsRead={markAsRead}
               />
             ))}
           </Scroll>
           <div className={classes.divider}></div>
-          <AddNewComment onAddComment={addComment} />
+          <AddNewComment onAddComment={handleAddComment} />
         </div>
       </div>
       <Backdrop loading={requestState.update} />

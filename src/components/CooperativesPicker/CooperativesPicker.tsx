@@ -23,6 +23,7 @@ import { Box } from '@mui/material';
 import { ApplyButton, CancelButton } from 'components/Styled';
 import { CloseIcon } from 'components/Icons';
 
+import clsx from 'clsx';
 import { useStyles, useBodyStyles } from './style';
 
 function sortCooperatives<T extends CommonCooperativeModel>(coops: T[]) {
@@ -30,6 +31,7 @@ function sortCooperatives<T extends CommonCooperativeModel>(coops: T[]) {
 }
 
 interface CooperativesPickerProps<T extends CommonCooperativeModel> {
+  className?: string;
   disabled?: boolean;
   multiple?: boolean;
   cooperatives: T[];
@@ -266,6 +268,7 @@ function isAllMyOwn(
 }
 
 const CooperativesPicker = <T extends CommonCooperativeModel>({
+  className,
   disabled = false,
   multiple = false,
   cooperatives,
@@ -304,7 +307,7 @@ const CooperativesPicker = <T extends CommonCooperativeModel>({
 
   return (
     <Picker
-      className={classes.picker}
+      className={clsx(classes.picker, className)}
       disabled={disabled}
       placeholder={`- ${t('#control.cooperativepicker.placeholder')} -`}
       renderValue={renderValue}

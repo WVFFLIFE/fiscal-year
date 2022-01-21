@@ -11,6 +11,7 @@ import {
   ValidateFiscalYearResponseCode,
   CopyFiscalYearResponseCode,
   BaseFolderStatusCode,
+  AnnualReportSaveToDocumentsErrorResponseCode,
 } from 'enums/responses';
 
 export namespace Services {
@@ -200,6 +201,12 @@ export namespace Services {
           DescriptionFormatted: string;
         }
       }
+
+      export namespace UnreadCount {
+        export interface Response extends BaseResponse {
+          UnreadCount: number;
+        }
+      }
     }
 
     export namespace AnnualReports {
@@ -231,6 +238,10 @@ export namespace Services {
           ArchieveName: string;
           Content: string;
         }
+      }
+      export namespace SaveToDocuments {
+        export interface Response
+          extends Model.ResponseWithCode<AnnualReportSaveToDocumentsErrorResponseCode> {}
       }
     }
 
@@ -519,6 +530,15 @@ export namespace Services {
         CommentId: commentId,
       });
     };
+
+    getUnreadCount = async (
+      fiscalYearId: string
+    ): Promise<Model.Comments.UnreadCount.Response> => {
+      return await this.executeRequest('uds_CommentGetUnreadCount', {
+        EntityId: fiscalYearId,
+        EntityName: 'uds_fiscalyear',
+      });
+    };
   }
   export class AnnualReports extends CRMConnector {
     async get(
@@ -544,7 +564,7 @@ export namespace Services {
     }
     save = async (
       reports: Model.AnnualReports.Get.Request
-    ): Promise<BaseResponse> => {
+    ): Promise<Model.AnnualReports.SaveToDocuments.Response> => {
       return await this.executeTypeRequest('uds_FiscalYearReports', 2, reports);
     };
   }

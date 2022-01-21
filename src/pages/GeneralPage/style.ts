@@ -12,4 +12,7 @@ export const useStyles = makeStyles((theme) => ({
   refreshIcon: {
     fontSize: 12,
   },
+  cooperativePicker: {
+    width: 350,
+  },
 }));

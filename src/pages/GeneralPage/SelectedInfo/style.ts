@@ -10,17 +10,23 @@ export const useStyles = makeStyles((theme) => ({
   leftSide: {
     display: 'flex',
     alignItems: 'center',
+  },
+  link: {
+    display: 'flex',
+    alignItems: 'center',
 
     fontSize: 20,
     fontFamily: 'Proxima Nova',
     fontWeight: 600,
     color: '#000',
+    textDecoration: 'none',
   },
   rightSide: {
     display: 'flex',
     alignItems: 'center',
   },
   divider: {
+    display: 'block',
     width: 1.5,
     height: 20,
     margin: '0 10px',

@@ -47,3 +47,4 @@ export { default as InfoIcon } from './InfoIcon';
 export { default as UserIcon } from './UserIcon';
 export { default as ReportIcon } from './ReportIcon';
 export { default as CaretRightIcon } from './CaretRightIcon';
+export { default as RedBubleIcon } from './RedBuble';

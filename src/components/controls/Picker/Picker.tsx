@@ -58,10 +58,11 @@ const Picker: React.FC<PickerProps> = ({
       >
         <div className={classes.inputWrapper}>
           <span
-            className={clsx(classes.text, {
+            className={clsx('truncated-text', classes.text, {
               [classes.value]: !!value,
               [classes.placeholder]: !!!value,
             })}
+            title={typeof value === 'string' ? value : undefined}
           >
             {value || placeholder}
           </span>

@@ -81,10 +81,8 @@ const Comment: FC<CommentProps> = ({
   } = useCommentData(comment, onUpdate, onDelete, onMarkAsRead);
 
   useEffect(() => {
-    if (replyMode) {
-      if (addNewCommentRef.current) {
-        addNewCommentRef.current.scrollIntoView();
-      }
+    if (replyMode && addNewCommentRef.current) {
+      addNewCommentRef.current.scrollIntoView({ block: 'center' });
     }
   }, [replyMode]);
 

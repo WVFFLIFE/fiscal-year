@@ -80,3 +80,7 @@ export const selectHasPreviousFiscalYear = createDraftSafeSelector(
   (fiscalYearsList, nextFiscalYear) =>
     nextFiscalYear ? hasPrevFiscalYear(nextFiscalYear, fiscalYearsList) : false
 );
+export const selectCooperativeLink = createDraftSafeSelector(
+  selectFiscalYear,
+  (fiscalYear) => fiscalYear?.general.cooperativeLink || undefined
+);

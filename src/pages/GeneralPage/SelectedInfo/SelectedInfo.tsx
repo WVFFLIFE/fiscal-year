@@ -2,6 +2,8 @@ import { memo } from 'react';
 import { FiscalYearModel, CommonCooperativeModel } from 'models';
 import useToggleSwitch from 'hooks/useToggleSwitch';
 import { useTranslation } from 'react-i18next';
+import useStateSelector from 'hooks/useStateSelector';
+import { selectCooperativeLink } from 'selectors/generalPageSelectors';
 import { defaultFormat } from 'utils/dates';
 import unsavedChangesTracker from 'utils/unsavedChangesTracker';
 
@@ -28,6 +30,8 @@ const SelectedInfo: React.FC<SelectedInfoProps> = ({
   const classes = useStyles();
   const { t } = useTranslation();
 
+  const cooperativeLink = useStateSelector(selectCooperativeLink);
+
   const [unsavedChangesDialogOpen, toggleUnsavedChangesDialogVisibility] =
     useToggleSwitch();
 
@@ -49,9 +53,16 @@ const SelectedInfo: React.FC<SelectedInfoProps> = ({
         <IconButton className={classes.iconBtn} onClick={handleClickBackBtn}>
           <ListBulletsIcon className={classes.icon} />
         </IconButton>
-        {selectedCooperative.Name}
-        <span className={classes.divider}></span>
-        {t('#common.fiscalyear')} {start} - {end}
+        <a
+          className={classes.link}
+          href={cooperativeLink}
+          target="_blank"
+          rel="noreferrer"
+        >
+          {selectedCooperative.Name}
+          <span className={classes.divider}></span>
+          {t('#common.fiscalyear')} {start} - {end}
+        </a>
       </div>
       <div className={classes.rightSide}>
         <Box marginRight="20px">

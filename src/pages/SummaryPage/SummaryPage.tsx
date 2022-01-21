@@ -71,8 +71,8 @@ const SummaryPage: FC<SummaryPageProps> = ({ commonCooperatives }) => {
   const isDisabledCalendarYearPicker = !areCooperativesSelected;
   const isCalendarYearSelected = !!state.selected.calendarYear;
   const isEmptyFilter = isDisabledCalendarYearPicker || !isCalendarYearSelected;
-  const show = !isEmptyFilter;
-  const isDisabledQuickFilter = !show && !state.extendedCooperatives.length;
+  const isDisabledQuickFilter =
+    !!isEmptyFilter && !state.extendedCooperatives.length;
 
   const hint = !areCooperativesSelected
     ? '#info.selectcooperative'
@@ -85,6 +85,7 @@ const SummaryPage: FC<SummaryPageProps> = ({ commonCooperatives }) => {
       <FiltersWrapper>
         <Box padding={4} paddingX={2}>
           <CooperativesPicker
+            className={classes.cooperativesPicker}
             multiple
             cooperatives={commonCooperatives}
             selectedCooperatives={state.selected.cooperatives}
@@ -131,7 +132,7 @@ const SummaryPage: FC<SummaryPageProps> = ({ commonCooperatives }) => {
         </Box>
       </FiltersWrapper>
       {isEmptyFilter && <InfoBox>{t(hint)}</InfoBox>}
-      {show &&
+      {!isEmptyFilter &&
         (state.extendedCooperatives.length ? (
           <Container className={classes.offsetTop}>
             {state.current.cooperatives.length &&
@@ -150,9 +151,9 @@ const SummaryPage: FC<SummaryPageProps> = ({ commonCooperatives }) => {
               fetchExtendedCooperativesList={handleRefreshCooperatives}
             />
           </Container>
-        ) : (
+        ) : state.fetched ? (
           <InfoBox>{t('#info.nocooperatives')}</InfoBox>
-        ))}
+        ) : null)}
       <Backdrop loading={state.loading} />
       <DialogError error={state.error} initError={handleInitError} />
     </>

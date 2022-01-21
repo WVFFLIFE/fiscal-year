@@ -39,5 +39,5 @@ export const useBodyStyles = makeStyles(() => ({
 }));
 
 export const useStyles = makeStyles(() => ({
-  picker: { minWidth: 350 },
+  picker: { width: 300 },
 }));

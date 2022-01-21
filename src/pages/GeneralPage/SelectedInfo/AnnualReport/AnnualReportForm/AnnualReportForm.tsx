@@ -27,8 +27,8 @@ const Divider = () => {
   return (
     <Box
       sx={{
-        marginLeft: '15px',
-        marginRight: '15px',
+        marginLeft: '12px',
+        marginRight: '12px',
       }}
     >
       <CaretRightIcon

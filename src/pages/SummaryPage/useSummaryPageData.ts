@@ -21,6 +21,7 @@ interface SelectedModel {
 }
 
 interface StateModel {
+  fetched: boolean;
   extendedCooperatives: ExtendedCooperativeModel[];
   loading: boolean;
   error: ErrorModel | null;
@@ -35,6 +36,7 @@ interface StateModel {
 const useSummaryPageData = () => {
   const dispatch = useDispatch();
   const [state, setState] = useState<StateModel>({
+    fetched: false,
     extendedCooperatives: [],
     loading: false,
     error: null,
@@ -77,6 +79,7 @@ const useSummaryPageData = () => {
             cooperatives: [...selectedCooperatives],
             calendarYear: { ...selectedCalendarYear },
           },
+          fetched: true,
           loading: false,
           extendedCooperatives: res.Cooperatives,
         }));

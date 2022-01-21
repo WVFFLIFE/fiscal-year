@@ -26,12 +26,12 @@ const GeneralPage: React.FC = () => {
   const {
     generalPageData,
     backwardToSummaryPage,
-    handleRefreshData,
-    handleInitError,
+    handleApplyClick,
     handleChangeFiscalYear,
     handleChangeSearchTerm,
     handleChangeSelectedCooperatives,
-    handleApplyClick,
+    handleInitError,
+    handleRefreshData,
   } = useGeneralPageData();
 
   const { filters, loading, error } = generalPageData;
@@ -40,15 +40,18 @@ const GeneralPage: React.FC = () => {
     !!!filters.fiscalYears.next ||
     filters.fiscalYears.next.Id === filters.fiscalYears.current?.Id;
 
+  const selectedCooperatives = filters.cooperatives.next
+    ? [filters.cooperatives.next]
+    : [];
+
   return (
     <>
       <FiltersWrapper>
         <Box padding={4} paddingX={2}>
           <CooperativesPicker
+            className={classes.cooperativePicker}
             cooperatives={filters.cooperatives.list}
-            selectedCooperatives={
-              filters.cooperatives.next ? [filters.cooperatives.next] : []
-            }
+            selectedCooperatives={selectedCooperatives}
             onSelectCooperatives={handleChangeSelectedCooperatives}
           />
         </Box>
