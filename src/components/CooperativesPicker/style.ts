@@ -2,8 +2,18 @@ import { makeStyles } from '@mui/styles';
 
 export const useBodyStyles = makeStyles(() => ({
   wrapper: {
+    width: 'auto',
+    minWidth: 450,
     padding: 12,
     background: 'rgba(248, 248, 248, 1)',
+  },
+  controlsWrapper: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 15,
+    paddingLeft: 16,
+    paddingRight: 16,
   },
   offset: {
     marginBottom: 20,
@@ -35,6 +45,9 @@ export const useBodyStyles = makeStyles(() => ({
   },
   list: {
     marginBottom: 40,
+  },
+  topOffset: {
+    marginTop: 20,
   },
 }));
 

@@ -1,5 +1,8 @@
 import useUploadFormData from './useUploadFormData';
+import { useTranslation } from 'react-i18next';
 import { SelectedAttributesModel, FolderModel } from 'models';
+
+import { getAttributeTitle } from '../utils';
 
 import FolderPicker from 'components/FolderPicker';
 import CheckboxControl from 'components/CheckboxControl';
@@ -35,6 +38,7 @@ const UploadForm: React.FC<UploadFormProps> = ({
   onClose,
 }) => {
   const classes = useStyles();
+  const { t } = useTranslation();
 
   const {
     attributes,
@@ -63,19 +67,25 @@ const UploadForm: React.FC<UploadFormProps> = ({
   const disabledDeployBtn =
     !selectedFiles.length || uploadFlag || !selectedFolder;
 
+  const handleClose = () => {
+    onClose();
+  };
+
   return (
     <>
       <div>
-        <h3 className={classes.title}>Upload file</h3>
+        <h3 className={classes.title}>{t('#tab.documents.upload.title')}</h3>
         <p className={classes.description}>
-          Select an existing folder or create a new one if needed
+          {t('#tab.documents.upload.description')}
         </p>
         {loading ? (
           <CircularProgress className={classes.loader} />
         ) : (
           <>
             <Box marginBottom="10px">
-              <InputLabel>Parent Folder Name</InputLabel>
+              <InputLabel>
+                {t('#tab.documents.upload.parentfoldername')}
+              </InputLabel>
               <FolderPicker
                 rootFolder={rootFolder}
                 selectedFolder={selectedFolder}
@@ -96,16 +106,20 @@ const UploadForm: React.FC<UploadFormProps> = ({
                 startIcon: classes.addIcon,
               }}
               size="small"
-              label="Add new folder"
+              label={t('#tab.documents.upload.addnewfolder')}
               startIcon={<PlusIcon />}
             />
             {newFolder.show ? (
               <Box>
-                <InputLabel>New Folder Name</InputLabel>
+                <InputLabel>
+                  {t('#tab.documents.upload.newfoldername')}
+                </InputLabel>
                 <Box display="flex" alignItems="center">
                   <Input
                     autoFocus
-                    placeholder="Enter name for new folder"
+                    placeholder={t(
+                      '#tab.documents.upload.enternameforanewfolder'
+                    )}
                     className={classes.input}
                     value={newFolder.name}
                     onChange={handleChangeNewFolderName}
@@ -127,7 +141,7 @@ const UploadForm: React.FC<UploadFormProps> = ({
               onRemove={handleRemoveFile}
             />
             <CheckboxControl
-              label={'Overwrite file'}
+              label={t('#tab.documents.upload.overwritefile')}
               checked={overwrite}
               onChange={handleChangeOverwriteCheckbox}
             />
@@ -141,11 +155,13 @@ const UploadForm: React.FC<UploadFormProps> = ({
               {attributes.map((attribute) => {
                 const disabled =
                   attribute.InternalName === 'Viewing_x0020_rights';
+                const title = getAttributeTitle(attribute.InternalName);
 
                 return (
-                  <Box key={attribute.DisplayName} flexBasis="calc(50% - 10px)">
+                  <Box key={attribute.DisplayName} flexBasis="calc(50% - 20px)">
                     <CheckboxGroup
                       name={attribute.InternalName}
+                      title={t(title) as string}
                       attribute={attribute}
                       selected={
                         selectedAttributes[
@@ -160,7 +176,9 @@ const UploadForm: React.FC<UploadFormProps> = ({
               })}
             </Box>
             <Box display="flex" alignItems="center" justifyContent="flex-end">
-              <CancelButton onClick={() => onClose()}>Cancel</CancelButton>
+              <CancelButton onClick={handleClose}>
+                {t('#button.cancel')}
+              </CancelButton>
               <ApplyButton
                 className={classes.uploadBtn}
                 disableRipple={uploadFlag}
@@ -175,7 +193,7 @@ const UploadForm: React.FC<UploadFormProps> = ({
                   ) : undefined
                 }
               >
-                Upload
+                {t('#button.upload')}
               </ApplyButton>
             </Box>
           </>

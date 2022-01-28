@@ -1,4 +1,5 @@
 import useFolderEditorData from './useFolderEditorData';
+import { useTranslation } from 'react-i18next';
 import { FolderModel } from 'models';
 
 import CircularProgress from '@mui/material/CircularProgress';
@@ -21,6 +22,8 @@ const FolderEditor: React.FC<FolderEditorProps> = ({
   onClose,
 }) => {
   const classes = useStyles();
+  const { t } = useTranslation();
+
   const { folderName, handleChangeFolderName, error, initError, save, saving } =
     useFolderEditorData(selectedFolder, fetchFolders, onClose);
 
@@ -28,13 +31,15 @@ const FolderEditor: React.FC<FolderEditorProps> = ({
 
   return (
     <div>
-      <h3 className={classes.title}>Edit Folder name</h3>
+      <h3 className={classes.title}>{t('#tab.documents.editfoldername')}</h3>
       <Box marginBottom="30px">
-        <InputLabel>Folder Name</InputLabel>
+        <InputLabel>{t('#tab.documents.foldername')}</InputLabel>
         <Input value={folderName} onChange={handleChangeFolderName} />
       </Box>
       <Box display="flex" alignItems="center" justifyContent="flex-end">
-        <CancelButton onClick={() => onClose()}>Cancel</CancelButton>
+        <CancelButton onClick={() => onClose()}>
+          {t('#button.cancel')}
+        </CancelButton>
         <ApplyButton
           className={classes.uploadBtn}
           disableRipple={saving}
@@ -46,7 +51,7 @@ const FolderEditor: React.FC<FolderEditorProps> = ({
             ) : undefined
           }
         >
-          Save
+          {t('#button.save')}
         </ApplyButton>
       </Box>
       <DialogError error={error} initError={initError} />

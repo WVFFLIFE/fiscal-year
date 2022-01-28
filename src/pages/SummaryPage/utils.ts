@@ -1,4 +1,9 @@
-import { eachYearOfInterval, startOfYear, endOfYear } from 'date-fns';
+import {
+  eachYearOfInterval,
+  startOfYear,
+  endOfYear,
+  subYears,
+} from 'utils/dates';
 import { CalendarYearOption } from 'models';
 
 export function buildCalendarYearOptions(
@@ -11,4 +16,13 @@ export function buildCalendarYearOptions(
       start: startOfYear(date),
       end: endOfYear(date),
     }));
+}
+
+export function getDefaultCalendarYear(): CalendarYearOption {
+  const prevYear = subYears(new Date(), 1);
+
+  return {
+    start: startOfYear(prevYear),
+    end: endOfYear(prevYear),
+  };
 }

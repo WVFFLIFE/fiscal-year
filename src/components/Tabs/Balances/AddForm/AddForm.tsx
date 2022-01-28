@@ -2,10 +2,7 @@ import useAddFormData from './useAddFormData';
 import { useTranslation } from 'react-i18next';
 import _has from 'lodash/has';
 
-import NumberFormat, {
-  NumberFormatValues,
-  SourceInfo,
-} from 'react-number-format';
+import NumberFormat from 'react-number-format';
 import Box from '@mui/material/Box';
 import { InputLabel, CancelButton, ApplyButton } from 'components/Styled';
 import Input from 'components/Input';

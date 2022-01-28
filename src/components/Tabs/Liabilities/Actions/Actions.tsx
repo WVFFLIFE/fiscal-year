@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import ActionButton from 'components/ActionButton';
 import { PlusIcon, DeleteIcon, EyeIcon, EditIcon } from 'components/Icons';
@@ -23,6 +24,7 @@ const Actions: React.FC<ActionsProps> = ({
   onView,
 }) => {
   const classes = useStyles();
+  const { t } = useTranslation();
 
   const isAlone = selected.length === 1;
 
@@ -53,7 +55,7 @@ const Actions: React.FC<ActionsProps> = ({
         onClick={onCreate}
         disabled={disabled}
       >
-        Add Liability
+        {t('#tab.liabilities.add')}
       </ActionButton>
       <ActionButton
         className={classes.btnOffset}
@@ -61,7 +63,7 @@ const Actions: React.FC<ActionsProps> = ({
         startIcon={<DeleteIcon />}
         disabled={isDisabledDeleteBtn}
       >
-        Delete Liabilities
+        {t('#tab.liabilities.delete')}
       </ActionButton>
       <ActionButton
         className={classes.btnOffset}
@@ -69,7 +71,7 @@ const Actions: React.FC<ActionsProps> = ({
         startIcon={<EyeIcon />}
         disabled={isDisabledViewBtn}
       >
-        View Liability
+        {t('#tab.liabilities.view')}
       </ActionButton>
       <ActionButton
         onClick={handleEdit}
@@ -77,7 +79,7 @@ const Actions: React.FC<ActionsProps> = ({
         startIcon={<EditIcon />}
         disabled={disabledEditBtn}
       >
-        Edit Liability
+        {t('#tab.liabilities.edit')}
       </ActionButton>
     </div>
   );

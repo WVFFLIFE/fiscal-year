@@ -1,17 +1,24 @@
-import { useState, useCallback, useMemo } from 'react';
-import { batch, useDispatch } from 'react-redux';
+import { useState, useCallback, useMemo, useEffect } from 'react';
+import { batch } from 'react-redux';
+
+import useAppDispatch from 'hooks/useAppDispatch';
+import useStateSelector from 'hooks/useStateSelector';
+
 import {
   setDefaultCooperativeId,
   setDefaultFiscalYearId,
 } from 'features/appSlice';
+import { setSearchTerm } from 'features/generalPageSlice';
+import { selectSearchTerm } from 'selectors/generalPageSelectors';
 import {
   CommonCooperativeModel,
   ExtendedCooperativeModel,
   CalendarYearOption,
   ErrorModel,
 } from 'models';
-import { getIdsList } from 'utils';
+import { getIdsList, getMyOwnCooperatives } from 'utils';
 import { serverFormat, isSameDay } from 'utils/dates';
+import { getDefaultCalendarYear } from './utils';
 import Services from 'services';
 
 interface SelectedModel {
@@ -25,7 +32,6 @@ interface StateModel {
   extendedCooperatives: ExtendedCooperativeModel[];
   loading: boolean;
   error: ErrorModel | null;
-  showGrid: boolean;
   selected: SelectedModel;
   current: {
     cooperatives: CommonCooperativeModel[];
@@ -34,33 +40,42 @@ interface StateModel {
 }
 
 const useSummaryPageData = () => {
-  const dispatch = useDispatch();
-  const [state, setState] = useState<StateModel>({
-    fetched: false,
-    extendedCooperatives: [],
-    loading: false,
-    error: null,
-    showGrid: false,
-    selected: {
-      calendarYear: null,
-      cooperatives: [],
-      quickFilter: null,
-    },
-    current: {
-      calendarYear: null,
-      cooperatives: [],
-    },
+  const dispatch = useAppDispatch();
+  const { searchTerm, commonCooperatives } = useStateSelector((state) => ({
+    commonCooperatives: state.generalPage.filters.cooperatives.list,
+    searchTerm: selectSearchTerm(state),
+  }));
+  const [state, setState] = useState<StateModel>(() => {
+    const defaultCalendarYear = getDefaultCalendarYear();
+    return {
+      fetched: false,
+      extendedCooperatives: [],
+      loading: false,
+      error: null,
+      selected: {
+        calendarYear: defaultCalendarYear,
+        cooperatives: [],
+        quickFilter: null,
+      },
+      current: {
+        calendarYear: defaultCalendarYear,
+        cooperatives: [],
+      },
+    };
   });
 
   const fetchExtendedCooperativesList = async (
     selectedCooperatives: CommonCooperativeModel[],
-    selectedCalendarYear: CalendarYearOption
+    selectedCalendarYear: CalendarYearOption,
+    showLoader: boolean = true
   ) => {
     try {
-      setState((prevState) => ({
-        ...prevState,
-        loading: true,
-      }));
+      if (showLoader) {
+        setState((prevState) => ({
+          ...prevState,
+          loading: true,
+        }));
+      }
 
       const coopIds = selectedCooperatives.map((coop) => coop.Id);
       const startDate = serverFormat(selectedCalendarYear.start);
@@ -113,7 +128,8 @@ const useSummaryPageData = () => {
     if (state.current.cooperatives.length && state.current.calendarYear) {
       fetchExtendedCooperativesList(
         state.current.cooperatives,
-        state.current.calendarYear
+        state.current.calendarYear,
+        false
       );
     }
   };
@@ -174,42 +190,43 @@ const useSummaryPageData = () => {
     }));
   };
 
-  const isDisabledApplyButton = useMemo(() => {
-    if (!state.selected.cooperatives.length || !state.selected.calendarYear)
-      return true;
-    function checkCoopEquality() {
-      if (!state.current.cooperatives.length) return false;
-      const coopIds = getIdsList(state.selected.cooperatives);
+  const handleChangeSearchTerm = (searchTerm: string) => {
+    dispatch(setSearchTerm(searchTerm));
+  };
 
-      return (
-        coopIds.length === state.current.cooperatives.length &&
-        state.current.cooperatives.every((coop) => coopIds.includes(coop.Id))
-      );
+  useEffect(() => {
+    if (commonCooperatives.length) {
+      const myOwnCooperatives = getMyOwnCooperatives(commonCooperatives);
+
+      setState((prevState) => ({
+        ...prevState,
+        selected: {
+          ...prevState.selected,
+          cooperatives: myOwnCooperatives,
+        },
+        current: {
+          ...prevState.current,
+          cooperatives: myOwnCooperatives,
+        },
+      }));
     }
+  }, [commonCooperatives]);
 
-    function checkCalendarYearEquality() {
-      if (!state.current.calendarYear || !state.selected.calendarYear)
-        return false;
+  useEffect(() => {
+    handleLoadCooperatives();
+  }, [state.selected.cooperatives, state.selected.calendarYear]);
 
-      return (
-        isSameDay(
-          state.selected.calendarYear.start,
-          state.current.calendarYear.start
-        ) &&
-        isSameDay(
-          state.selected.calendarYear.end,
-          state.current.calendarYear.end
-        )
-      );
-    }
-
-    return checkCoopEquality() && checkCalendarYearEquality();
-  }, [state]);
+  useEffect(() => {
+    return () => {
+      dispatch(setSearchTerm(''));
+    };
+  }, [dispatch]);
 
   return {
     state,
-    isDisabledApplyButton,
+    searchTerm,
     handleInitError,
+    handleChangeSearchTerm,
     handleLoadCooperatives,
     handleRefreshCooperatives,
     handleSelectCooperative,

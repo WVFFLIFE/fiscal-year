@@ -42,9 +42,10 @@ export const useStyles = makeStyles((theme) => ({
   actions: {
     display: 'flex',
     alignItems: 'flex-start',
-    justifyContent: 'flex-end',
+    justifyContent: 'flex-start',
     maxWidth: '20%',
     width: '100%',
+    marginLeft: 20,
     opacity: 0,
   },
   active: {

@@ -1,4 +1,5 @@
 import useLiabilityViewFormData from './useLiabilityViewFormData';
+import { useTranslation } from 'react-i18next';
 
 import {
   getLiabilityGeneralTypeLabel,
@@ -28,6 +29,7 @@ const LiablityViewForm: React.FC<LiabilityViewFormProps> = ({
   onEdit,
 }) => {
   const classes = useStyles();
+  const { t } = useTranslation();
 
   const { requestState, handleInitError } = useLiabilityViewFormData(id);
 
@@ -55,7 +57,7 @@ const LiablityViewForm: React.FC<LiabilityViewFormProps> = ({
                 startIcon={<EditIcon />}
                 onClick={onEdit}
               >
-                Edit Liability
+                {t('#tab.liabilities.edit')}
               </ActionButton>
             )}
           </div>
@@ -64,28 +66,28 @@ const LiablityViewForm: React.FC<LiabilityViewFormProps> = ({
             <ul className={classes.column}>
               <li className={classes.listItem}>
                 <Field
-                  label="Liability Name"
+                  label={t('#tab.liabilities.liabilityname')}
                   data={_get(liability, 'Name', null)}
                   required
                 />
               </li>
               <li className={classes.listItem}>
                 <Field
-                  label="Organization"
+                  label={t('#tab.liabilities.organization')}
                   data={_get(liability, 'OrganizationName', null)}
                   required
                 />
               </li>
               <li className={classes.listItem}>
                 <Field
-                  label="Description"
+                  label={t('#tab.liabilities.description')}
                   data={_get(liability, 'Description', null)}
                 />
               </li>
               <li className={classes.listItem}>
                 <Field
                   required
-                  label="Liability Type"
+                  label={t('#tab.liabilities.liabilitytype')}
                   data={getLiabilityGeneralTypeLabel(
                     _get(liability, 'GeneralType', null)
                   )}
@@ -95,7 +97,7 @@ const LiablityViewForm: React.FC<LiabilityViewFormProps> = ({
               <li className={classes.listItem}>
                 <Field
                   required
-                  label="Liability Party"
+                  label={t('#tab.liabilities.liabilityparty')}
                   data={_get(liability, 'PartyName', null)}
                 />
               </li>
@@ -103,27 +105,27 @@ const LiablityViewForm: React.FC<LiabilityViewFormProps> = ({
             <ul className={classes.column}>
               <li className={classes.listItem}>
                 <Field
-                  label="Start date"
+                  label={t('#tab.liabilities.startdate')}
                   data={_get(liability, 'StartDate', null)}
                   type="date"
                 />
               </li>
               <li className={classes.listItem}>
                 <Field
-                  label="End date"
+                  label={t('#tab.liabilities.enddate')}
                   data={_get(liability, 'EndDate', null)}
                   type="date"
                 />
               </li>
               <li className={classes.listItem}>
                 <Field
-                  label="Document number"
+                  label={t('#tab.liabilities.documentnumber')}
                   data={_get(liability, 'DocumentNumber')}
                 />
               </li>
               <li className={classes.listItem}>
                 <Field
-                  label="Usage"
+                  label={t('#tab.liabilities.usage')}
                   data={getLiabilityUsageLabel(_get(liability, 'Usage', null))}
                   type="translate"
                 />
@@ -131,7 +133,7 @@ const LiablityViewForm: React.FC<LiabilityViewFormProps> = ({
               <li className={classes.listItem}>
                 <Field
                   required
-                  label="Product"
+                  label={t('#tab.liabilities.product')}
                   data={getLiabilityProductLabel(
                     _get(liability, 'Product', null)
                   )}
@@ -140,7 +142,7 @@ const LiablityViewForm: React.FC<LiabilityViewFormProps> = ({
               </li>
               <li className={classes.listItem}>
                 <Field
-                  label="Type"
+                  label={t('#tab.liabilities.type')}
                   data={getLiabilityTypeLabel(_get(liability, 'Type', null))}
                   type="translate"
                 />
@@ -148,15 +150,15 @@ const LiablityViewForm: React.FC<LiabilityViewFormProps> = ({
               <li className={classes.listItem}>
                 <Field
                   required
-                  label="Quantity"
+                  label={t('#tab.liabilities.quantity')}
                   data={_get(liability, 'Quantity', null)}
-                  type="float6"
+                  type="int"
                 />
               </li>
               <li className={classes.listItem}>
                 <Field
                   required
-                  label="Price item rate"
+                  label={t('#tab.liabilities.priceitemrate')}
                   data={_get(liability, 'PriceItemRate', null)}
                   type="money"
                 />

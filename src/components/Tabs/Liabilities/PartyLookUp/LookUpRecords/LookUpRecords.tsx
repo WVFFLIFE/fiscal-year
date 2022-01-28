@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import usePagination, { slice } from 'hooks/usePagination';
 import useLookupRecordsData from './useLookUpRecordsData';
 import { ActionColumn, SortModel } from 'models/TableModel';
@@ -29,6 +30,7 @@ interface LookUpRecordsProps {
 
 const LookUpRecords: React.FC<LookUpRecordsProps> = ({ onChange, onClose }) => {
   const classes = useStyles();
+  const { t } = useTranslation();
 
   const {
     requestState,
@@ -90,17 +92,17 @@ const LookUpRecords: React.FC<LookUpRecordsProps> = ({ onChange, onClose }) => {
   const cols: ActionColumn<Organization>[] = useMemo(
     () => [
       {
-        label: 'Name',
+        label: t('#tab.liabilities.field.name'),
         field: 'Name',
         sortable: true,
       },
       {
-        label: 'Location',
-        field: 'Location',
+        label: t('#tab.liabilities.field.bic'),
+        field: 'BusinessIdentityCode',
         sortable: true,
       },
     ],
-    []
+    [t]
   );
 
   const slicedOrganizations = useMemo(
@@ -110,7 +112,9 @@ const LookUpRecords: React.FC<LookUpRecordsProps> = ({ onChange, onClose }) => {
 
   return (
     <>
-      <p className={classes.description}>Enter your search criteria</p>
+      <p className={classes.description}>
+        {t('#tab.liabilities.enteryoursearchcriteria')}
+      </p>
       <Search
         className={classes.searchField}
         value={searchTerm}
@@ -140,14 +144,14 @@ const LookUpRecords: React.FC<LookUpRecordsProps> = ({ onChange, onClose }) => {
         />
         <div className={classes.btnsWrapper}>
           <ActionButton className={classes.btnOffset} onClick={onClose}>
-            Cancel
+            {t('#button.cancel')}
           </ActionButton>
           <ActionButton
             palette="darkBlue"
             disabled={!selectedOrganizations.length}
             onClick={handleAddRecord}
           >
-            Add
+            {t('#button.add')}
           </ActionButton>
         </div>
       </SuspenceFacade>

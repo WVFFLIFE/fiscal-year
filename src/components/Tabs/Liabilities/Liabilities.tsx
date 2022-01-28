@@ -80,7 +80,7 @@ const Liabilities = () => {
 
   const columns: ActionColumn<EnhancedLiability>[] = [
     {
-      label: '#tab.liabilities.table.liabilityname',
+      label: '#tab.liabilities.liabilityname',
       field: 'name',
       HeadCellProps: {
         className: classes.fixed,
@@ -92,73 +92,73 @@ const Liabilities = () => {
       },
     },
     {
-      label: '#tab.liabilities.table.liabilitytype',
+      label: '#tab.liabilities.liabilitytype',
       field: 'liabilityGeneralTypeLabel',
       type: 'translate',
       HeadCellProps: {
         style: { width: 200 },
       },
       BodyCellProps: {
-        className: classes.semibold,
+        className: classes.light,
       },
     },
     {
-      label: '#tab.liabilities.table.liabilityparty',
+      label: '#tab.liabilities.liabilityparty',
       field: 'partyName',
       HeadCellProps: {
         style: { width: 150 },
       },
       BodyCellProps: {
-        className: classes.semibold,
+        className: classes.light,
       },
     },
     {
       align: 'right',
-      label: '#tab.liabilities.table.startdate',
+      label: '#tab.liabilities.startdate',
       field: 'startDate',
       type: 'date',
       HeadCellProps: {
         style: { width: 120 },
       },
       BodyCellProps: {
-        className: classes.semibold,
+        className: classes.light,
       },
     },
     {
       align: 'right',
-      label: '#tab.liabilities.table.enddate',
+      label: '#tab.liabilities.enddate',
       field: 'endDate',
       type: 'date',
       HeadCellProps: {
         style: { width: 120 },
       },
       BodyCellProps: {
-        className: classes.semibold,
+        className: classes.light,
       },
     },
     {
-      label: '#tab.liabilities.table.documentnumber',
+      label: '#tab.liabilities.documentnumber',
       field: 'documentNumber',
       HeadCellProps: {
         style: { width: 200 },
       },
       BodyCellProps: {
-        className: classes.semibold,
+        className: classes.light,
       },
     },
     {
-      label: '#tab.liabilities.table.usage',
+      label: '#tab.liabilities.usage',
       field: 'liabilityUsageLabel',
       type: 'translate',
       HeadCellProps: {
         style: { width: 150 },
       },
       BodyCellProps: {
-        className: classes.semibold,
+        className: classes.light,
       },
     },
     {
-      label: '#tab.liabilities.table.product',
+      label: '#tab.liabilities.product',
       field: 'liabilityProductLabel',
       type: 'translate',
       HeadCellProps: {
@@ -169,7 +169,7 @@ const Liabilities = () => {
       },
     },
     {
-      label: '#tab.liabilities.table.type',
+      label: '#tab.liabilities.type',
       field: 'liabilityTypeLabel',
       type: 'translate',
       HeadCellProps: {
@@ -181,9 +181,9 @@ const Liabilities = () => {
     },
     {
       align: 'right',
-      label: '#tab.liabilities.table.quantity',
+      label: '#tab.liabilities.quantity',
       field: 'quantity',
-      type: 'float6',
+      type: 'int',
       HeadCellProps: {
         style: { width: 150 },
       },
@@ -193,7 +193,7 @@ const Liabilities = () => {
     },
     {
       align: 'right',
-      label: '#tab.liabilities.table.priceitemrate',
+      label: '#tab.liabilities.priceitemrate',
       field: 'priceItemRate',
       type: 'money',
       HeadCellProps: {
@@ -205,7 +205,7 @@ const Liabilities = () => {
     },
     {
       align: 'left',
-      label: '#tab.liabilities.table.action',
+      label: '#tab.liabilities.action',
       field: null,
       sortable: false,
       render: (data) => (
@@ -233,11 +233,13 @@ const Liabilities = () => {
     [classes]
   );
 
-  const CheckboxProps: CheckboxPropsModel<EnhancedLiability> = useMemo(
-    () => ({
+  const CheckboxProps: CheckboxPropsModel<EnhancedLiability> = useMemo(() => {
+    const selectedAll =
+      requestState.liabilities.length === requestState.selectedRows.length;
+    return {
       HeadProps: {
-        selectedAll:
-          requestState.liabilities.length === requestState.selectedRows.length,
+        selectedAll,
+        indeterminate: !!requestState.selectedRows.length && !selectedAll,
         onToggleSelectAll: handleToggleSelectAll,
         Cell: {
           className: classes.fixed,
@@ -258,15 +260,14 @@ const Liabilities = () => {
           };
         },
       },
-    }),
-    [
-      classes,
-      requestState.liabilities,
-      requestState.selectedRows,
-      handleToggleSelectAll,
-      handleToggleSelectRow,
-    ]
-  );
+    };
+  }, [
+    classes,
+    requestState.liabilities,
+    requestState.selectedRows,
+    handleToggleSelectAll,
+    handleToggleSelectRow,
+  ]);
 
   const slicedData = useMemo(
     () => slice(list, currentPage, rowsPerPage),
@@ -310,7 +311,7 @@ const Liabilities = () => {
       />
       <Dialog
         open={viewFormDialogState.isOpen}
-        title={'Liability information'}
+        title={t('#tab.liabilities.view.title')}
         handleClose={viewFormDialogState.close}
         TransitionProps={{
           onExited: viewFormDialogState.reset,
@@ -326,7 +327,7 @@ const Liabilities = () => {
       </Dialog>
       <Dialog
         open={openCreateForm}
-        title={'Add Liability'}
+        title={t('#tab.liabilities.add')}
         handleClose={toggleCreateFormVisibility}
       >
         <LiabilityForm
@@ -337,7 +338,7 @@ const Liabilities = () => {
       </Dialog>
       <Dialog
         open={editFormDialogState.isOpen}
-        title={'Edit Liability Information'}
+        title={t('#tab.liabilities.edit.title')}
         handleClose={editFormDialogState.close}
         TransitionProps={{
           onExited: editFormDialogState.reset,
@@ -355,8 +356,8 @@ const Liabilities = () => {
         maxWidth="sm"
         open={confirmationDeleteDialogState.isOpen}
         handleClose={confirmationDeleteDialogState.close}
-        title="Delete liability(ies)"
-        description="Are you sure you want to delete this liability(ies)?"
+        title={t('#tab.liabilities.confirmation.delete.title')}
+        description={t('#tab.liabilities.confirmation.delete.description')}
         Icon={<RoundQuestionIcon className={classes.questionIcon} />}
         TransitionProps={{
           onExited: confirmationDeleteDialogState.reset,

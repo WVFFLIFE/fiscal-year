@@ -241,3 +241,9 @@ export const Scroll = styled('div')(({ theme }) => ({
 export const BtnLoader = styled(CircularProgress)(() => ({
   color: 'inherit',
 }));
+
+export const BtnsWrapper = styled('div')(() => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'flex-end',
+}));

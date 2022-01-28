@@ -111,7 +111,9 @@ export function readFile(file: File): Promise<string> {
   });
 }
 
-export function toIntFormat(num: number | null | undefined) {
+export function toIntFormat(num: null | undefined): null;
+export function toIntFormat(num: number | string): string;
+export function toIntFormat(num: number | string | null | undefined) {
   if (!num) return null;
   return String(num)
     .replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
@@ -173,4 +175,8 @@ export function toIntStr(input: string) {
 
 export function floatStrToNumber(input: string) {
   return Number(input.replace(/,/g, '.').replace(/ /g, ''));
+}
+
+export function getMyOwnCooperatives(cooperatives: CommonCooperativeModel[]) {
+  return cooperatives.filter((cooperative) => cooperative.IsOwn);
 }

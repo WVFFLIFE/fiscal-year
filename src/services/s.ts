@@ -129,6 +129,7 @@ export namespace Services {
           Id: string;
           Name: string | null;
           Location: string | null;
+          BusinessIdentityCode: string | null;
         }
 
         export interface Response extends BaseResponse {

@@ -41,7 +41,7 @@ export const useStyles = makeStyles((theme) => ({
     margin: 0,
   },
   deficit: {
-    fontSize: 14,
+    fontSize: '1rem',
     fontFamily: 'Lato',
     fontWeight: 300,
     color: '#333',

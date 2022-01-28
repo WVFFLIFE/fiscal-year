@@ -11,7 +11,8 @@ import clsx from 'clsx';
 import { useStyles } from './style';
 
 interface ConsumptionTableRowProps {
-  active: boolean;
+  activeId: string | null;
+  prevId: string | null;
   data: number | null;
   field: string;
   label: string;
@@ -31,9 +32,10 @@ function toInputData(data: any) {
 }
 
 const ConsumptionTableRow: React.FC<ConsumptionTableRowProps> = ({
-  active,
+  activeId,
+  prevId,
   data,
-  field,
+  field: id,
   label,
   disabled,
   onSave,
@@ -41,14 +43,18 @@ const ConsumptionTableRow: React.FC<ConsumptionTableRowProps> = ({
 }) => {
   const classes = useStyles();
 
+  const active = activeId === id;
+
   const [fieldData, setFieldData] = useState(data ? String(data) : '');
   const [touched, setTouched] = useState(false);
+  const [activeEditMode, setActiveEditMode] = useState(false);
 
   const handleActivateEditMode = () => {
-    onSelectActiveRow(field);
+    onSelectActiveRow(id);
   };
 
   const handleResetEditMode = () => {
+    setTouched(false);
     onSelectActiveRow(null);
   };
 
@@ -61,13 +67,16 @@ const ConsumptionTableRow: React.FC<ConsumptionTableRowProps> = ({
     setTouched(true);
   };
 
-  const handleSave = useCallback(async () => {
-    await onSave({ [field]: +fieldData });
+  const handleSave = async () => {
+    await onSave({ [id]: +fieldData });
+    handleResetEditMode();
+  };
 
-    if (active) {
-      handleResetEditMode();
-    }
-  }, [active, field, fieldData]);
+  const handleSavePrev = async () => {
+    await onSave({ [id]: +fieldData });
+
+    setTouched(false);
+  };
 
   const handleCancelBtnClick = () => {
     setTouched(false);
@@ -75,28 +84,25 @@ const ConsumptionTableRow: React.FC<ConsumptionTableRowProps> = ({
   };
 
   useEffect(() => {
+    setActiveEditMode(activeId === id && !activeEditMode);
+  }, [activeId]);
+
+  useEffect(() => {
+    if (!activeEditMode && activeId && prevId === id && touched) {
+      handleSavePrev();
+    }
+  }, [activeEditMode]);
+
+  useEffect(() => {
     if (touched) {
       unsavedChangesTracker.addSaveAction(async () => {
-        await onSave({ [field]: +fieldData });
+        await handleSave();
         return true;
       });
     } else {
       unsavedChangesTracker.resetSaveAction();
     }
-  }, [touched, field, fieldData]);
-
-  useEffect(() => {
-    if (active) {
-      setFieldData(toInputData(data));
-    } else {
-      setFieldData('');
-
-      if (touched) {
-        setTouched(false);
-        handleSave();
-      }
-    }
-  }, [active, data]);
+  }, [touched, fieldData]);
 
   return (
     <Box

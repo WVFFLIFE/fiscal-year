@@ -17,7 +17,7 @@ import {
   setNextCooperative,
   setNextFiscalYear,
   resetError,
-  resetGeneralFiscalYear,
+  resetFilters,
   refreshGeneralData,
 } from 'features/generalPageSlice';
 
@@ -75,7 +75,7 @@ const useGeneralPageData = () => {
   const backwardToSummaryPage = useCallback(() => {
     batch(() => {
       dispatch(resetDefaultIds());
-      dispatch(resetGeneralFiscalYear());
+      dispatch(resetFilters());
     });
   }, [dispatch]);
 

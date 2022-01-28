@@ -22,15 +22,15 @@ export const useStyles = makeStyles((theme) => ({
   row: {
     background: 'rgba(240, 243, 247, 1)',
     borderBottom: `1px solid ${theme.color.greyLight1}`,
-    '&:hover': {
-      background: theme.color.transparentBlue,
-      cursor: 'pointer',
-    },
     '&:first-child': {
       borderTop: `1px solid ${theme.color.greyLight1}`,
     },
     '&:nth-child(2n)': {
       background: '#fff',
+    },
+    '&:hover': {
+      background: theme.color.transparentBlue,
+      cursor: 'pointer',
     },
   },
   btnsWrapper: {

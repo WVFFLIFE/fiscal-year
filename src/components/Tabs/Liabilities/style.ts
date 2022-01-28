@@ -49,6 +49,9 @@ export const useStyles = makeStyles((theme) => ({
       opacity: 0,
     },
   },
+  light: {
+    fontWeight: 300,
+  },
   semibold: {
     fontWeight: 600,
   },

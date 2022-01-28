@@ -23,12 +23,6 @@ const Comments = () => {
   const wasScrolled = useRef(false);
   const parentRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (parentRef.current) {
-      parentRef.current.scrollTop = parentRef.current.scrollHeight;
-    }
-  }, []);
-
   const {
     requestState,
     handleInitError,

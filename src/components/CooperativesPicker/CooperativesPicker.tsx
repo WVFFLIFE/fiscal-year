@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { CommonCooperativeModel } from 'models';
 import _orderBy from 'lodash/orderBy';
 import _toLower from 'lodash/toLower';
-import { filterBySearchTerm } from 'utils';
+import { filterBySearchTerm, getMyOwnCooperatives } from 'utils';
 
 import Picker from 'components/controls/Picker';
 import PickerSearch from 'components/controls/PickerSearch';
@@ -19,8 +19,7 @@ import Button from 'components/Button';
 import CheckboxControl from 'components/CheckboxControl';
 import QuickFilter, { QuickFilterOption } from 'components/QuickFilter';
 import CooperativesList from './CooperativesList';
-import { Box } from '@mui/material';
-import { ApplyButton, CancelButton } from 'components/Styled';
+import { ApplyButton, CancelButton, BtnsWrapper } from 'components/Styled';
 import { CloseIcon } from 'components/Icons';
 
 import clsx from 'clsx';
@@ -174,7 +173,7 @@ const Body = <T extends CommonCooperativeModel>({
     <div
       className={classes.wrapper}
       ref={rootRef}
-      style={{ width: 'auto', minWidth: 350 }}
+      style={{ width: 'auto', minWidth: 450 }}
     >
       <PickerSearch
         ref={searchRef}
@@ -189,14 +188,7 @@ const Body = <T extends CommonCooperativeModel>({
         onChange={handleChangeQuickFilter}
       />
       {multiple && (
-        <Box
-          display="flex"
-          alignItems="center"
-          justifyContent="space-between"
-          marginBottom={3}
-          paddingLeft="16px"
-          paddingRight="16px"
-        >
+        <div className={classes.controlsWrapper}>
           {activeQuickFilter === 'all' ? (
             <span style={{ fontSize: 14, fontWeight: 300 }}>
               {t('#control.cooperativepicker.selectupto')}
@@ -219,7 +211,7 @@ const Body = <T extends CommonCooperativeModel>({
             startIcon={<CloseIcon />}
             label={t('#common.clearfilters')}
           />
-        </Box>
+        </div>
       )}
       <CooperativesList
         className={classes.list}
@@ -234,12 +226,7 @@ const Body = <T extends CommonCooperativeModel>({
         onClickItem={handleClickItem}
       />
       {multiple ? (
-        <Box
-          display="flex"
-          alignItems="center"
-          justifyContent="flex-end"
-          marginTop="20px"
-        >
+        <BtnsWrapper className={classes.topOffset}>
           <CancelButton
             className={classes.cancelBtnOffsetRight}
             onClick={onClosePicker}
@@ -249,7 +236,7 @@ const Body = <T extends CommonCooperativeModel>({
           <ApplyButton onClick={handleSelectCooperatives}>
             {t('#button.apply')}
           </ApplyButton>
-        </Box>
+        </BtnsWrapper>
       ) : null}
     </div>
   );
@@ -259,12 +246,10 @@ function isAllMyOwn(
   cooperatives: CommonCooperativeModel[],
   selectedCooperatives: CommonCooperativeModel[]
 ) {
-  const allMyOwnCoops = cooperatives
-    .filter((coop) => coop.IsOwn)
-    .map((coop) => coop.Id);
-  return selectedCooperatives.every((selectedCoop) =>
-    allMyOwnCoops.includes(selectedCoop.Id)
-  );
+  const allMyOwnCoops = getMyOwnCooperatives(cooperatives);
+  const selectedMyOwnCooperatives = getMyOwnCooperatives(selectedCooperatives);
+
+  return allMyOwnCoops.length === selectedMyOwnCooperatives.length;
 }
 
 const CooperativesPicker = <T extends CommonCooperativeModel>({

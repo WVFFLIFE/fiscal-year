@@ -5,9 +5,9 @@ export const useStyles = makeStyles(() => ({
     padding: 16,
 
     border: 0,
-    fontSize: 14,
+    fontSize: '1em',
     fontFamily: 'Lato',
-    lineHeight: '16px',
+    lineHeight: 1,
     color: '#333',
   },
   small: {

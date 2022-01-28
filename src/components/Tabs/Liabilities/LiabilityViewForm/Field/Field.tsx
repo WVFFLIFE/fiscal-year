@@ -21,19 +21,20 @@ const Field: React.FC<FieldProps> = ({
   const classes = useStyles();
   const { t } = useTranslation();
 
+  const output =
+    type === 'translate'
+      ? data
+        ? t(String(data))
+        : null
+      : renderAs(data, type);
+
   return (
     <div>
       <span className={classes.label}>
         {t(label)}
         {required && <sup className={classes.required}>*</sup>}
       </span>
-      <span className={classes.output}>
-        {type === 'translate'
-          ? data
-            ? t(String(data))
-            : null
-          : renderAs(data, type)}
-      </span>
+      <span className={classes.output}>{output || '---'}</span>
     </div>
   );
 };

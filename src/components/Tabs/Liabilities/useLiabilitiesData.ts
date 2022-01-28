@@ -62,13 +62,12 @@ const useLiabilitiesData = () => {
   }, [fiscalYear?.id]);
 
   const handleToggleSelectAll = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      const { checked } = e.target;
+    (event: ChangeEvent<HTMLInputElement>) => {
       setRequestState((prevState) => ({
         ...prevState,
-        selectedRows: checked
-          ? prevState.liabilities.map((item) => item.id)
-          : [],
+        selectedRows: !!prevState.selectedRows.length
+          ? []
+          : prevState.liabilities.map((item) => item.id),
       }));
     },
     []

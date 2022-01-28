@@ -1,5 +1,8 @@
 import useEditDocumentsData from './useEditDocumentsData';
+import { useTranslation } from 'react-i18next';
 import { FolderModel, DocumentModel, SelectedAttributesModel } from 'models';
+
+import { getAttributeTitle } from '../utils';
 
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -35,6 +38,7 @@ const EditDocuments: React.FC<EditDocumentsProps> = ({
   onClose,
 }) => {
   const classes = useStyles();
+  const { t } = useTranslation();
 
   const {
     attributes,
@@ -62,16 +66,19 @@ const EditDocuments: React.FC<EditDocumentsProps> = ({
   );
 
   const disabledSaveBtn = saveFlag || !selected.folder;
+  const disabledAddNewFolderBtn = newFolder.show || selected.folderDepth >= 2;
 
   return (
     <div>
-      <h3 className={classes.title}>Edit document</h3>
+      <h3 className={classes.title}>{t('#tab.documents.edit.title')}</h3>
       {attributesLoading ? (
         <CircularProgress className={classes.loader} />
       ) : (
         <>
           <Box marginBottom="10px">
-            <InputLabel>Parent Folder Name</InputLabel>
+            <InputLabel>
+              {t('#tab.documents.upload.parentfoldername')}
+            </InputLabel>
             <FolderPicker
               rootFolder={rootFolder}
               selectedFolder={selected.folder}
@@ -80,23 +87,27 @@ const EditDocuments: React.FC<EditDocumentsProps> = ({
             />
           </Box>
           <Button
-            disabled={!!(newFolder.show || selected.folderDepth >= 2)}
+            disabled={disabledAddNewFolderBtn}
             onClick={handleAddNewFolder}
             className={classes.addBtn}
             classes={{
               startIcon: classes.addIcon,
             }}
             size="small"
-            label="Add new folder"
+            label={t('#tab.documents.upload.addnewfolder')}
             startIcon={<PlusIcon />}
           />
           {newFolder.show ? (
             <Box>
-              <InputLabel>New Folder Name</InputLabel>
+              <InputLabel>
+                {t('#tab.documents.upload.newfoldername')}
+              </InputLabel>
               <Box display="flex" alignItems="center">
                 <Input
                   autoFocus
-                  placeholder="Enter name for new folder"
+                  placeholder={t(
+                    '#tab.documents.upload.enternameforanewfolder'
+                  )}
                   className={classes.input}
                   value={newFolder.name}
                   onChange={handleChangeNewFolderName}
@@ -108,7 +119,7 @@ const EditDocuments: React.FC<EditDocumentsProps> = ({
             </Box>
           ) : null}
           <CheckboxControl
-            label={'Overwrite file'}
+            label={t('#tab.documents.upload.overwritefile')}
             checked={overwrite}
             onChange={handleChangeOverwriteCheckbox}
           />
@@ -122,12 +133,14 @@ const EditDocuments: React.FC<EditDocumentsProps> = ({
             {attributes.map((attribute) => {
               const disabled =
                 attribute.InternalName === 'Viewing_x0020_rights';
+              const title = getAttributeTitle(attribute.InternalName);
 
               return (
                 <Box key={attribute.DisplayName} flexBasis="calc(50% - 10px)">
                   <CheckboxGroup
                     name={attribute.InternalName}
                     attribute={attribute}
+                    title={t(title)}
                     selected={
                       selected.attributes[
                         attribute.InternalName as keyof SelectedAttributesModel
@@ -141,7 +154,9 @@ const EditDocuments: React.FC<EditDocumentsProps> = ({
             })}
           </Box>
           <Box display="flex" alignItems="center" justifyContent="flex-end">
-            <CancelButton onClick={() => onClose()}>Cancel</CancelButton>
+            <CancelButton onClick={() => onClose()}>
+              {t('#button.cancel')}
+            </CancelButton>
             <ApplyButton
               className={classes.uploadBtn}
               disableRipple={saveFlag}
@@ -156,7 +171,7 @@ const EditDocuments: React.FC<EditDocumentsProps> = ({
                 ) : undefined
               }
             >
-              Save
+              {t('#button.save')}
             </ApplyButton>
           </Box>
           <DialogError error={error} initError={initError} />

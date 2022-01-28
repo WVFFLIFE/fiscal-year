@@ -5,13 +5,7 @@ export const useStyles = makeStyles((theme) => ({
     borderBottom: `1px solid ${theme.color.greyLight1}`,
   },
   headCell: {
-    padding: 7,
-    '&:first-child': {
-      paddingLeft: 16,
-    },
-    '&:last-child': {
-      paddingRight: 16,
-    },
+    padding: '7px 16px',
   },
   pagination: {
     marginTop: 20,

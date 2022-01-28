@@ -6,7 +6,19 @@ import Services from 'services';
 
 export const fetchSettings = createAsyncThunk(
   'settings/fetchSettings',
-  async () => await Services.getSettings()
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await Services.getSettings();
+
+      if (!res.IsSuccess) throw new Error(res.Message);
+
+      return res.Settings;
+    } catch (err) {
+      console.error(err);
+
+      return rejectWithValue(err);
+    }
+  }
 );
 
 interface SettingsState {
@@ -100,64 +112,60 @@ export const settingsSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder
-      .addCase(fetchSettings.fulfilled, (_, action) => {
-        const { Settings: settings } = action.payload;
+    builder.addCase(fetchSettings.fulfilled, (_, action) => {
+      const settings = action.payload;
 
-        return {
-          balance: {
-            propertyMaintenanceProductNameMaxLength:
-              settings.PropertyMeintenanceProductNameMaxLength,
-            specFinCalcProductName1MaxLength:
-              settings.SpecFinCalcProductName1MaxLength,
-            specFinCalcProductName2MaxLength:
-              settings.SpecFinCalcProductName2MaxLength,
-            specFinCalcProductName3MaxLength:
-              settings.SpecFinCalcProductName3MaxLength,
-            specFinCalcProductName4MaxLength:
-              settings.SpecFinCalcProductName4MaxLength,
-            specFinCalcProductName5MaxLength:
-              settings.SpecFinCalcProductName5MaxLength,
-            vatCalculationsProductNameMaxLength:
-              settings.VATCalculationsProductNameMaxLength,
-          },
-          annualReport: {
-            annualGeneralMeetingsMaxLength:
-              settings.AnnualGeneralMeetingsMaxLength,
-            boardsProposalOnThePLMaxLength:
-              settings.BoardsProposalOnThePLMaxLength,
-            budgetComprasionMaxLength: settings.BudgetComprasionMaxLength,
-            consumptionDataMaxLength: settings.ConsumptionDataMaxLength,
-            essentialEventsMaxLength: settings.EssentialEventsMaxLength,
-            futureDevelopmentMaxLength: settings.FutureDevelopmentMaxLength,
-            liquidityMaxLength: settings.LiquidityMaxLength,
-            persistentStrainsAndMortgagesMaxLength:
-              settings.PersistentStrainsAndMortgagesMaxLength,
-            theBoardOfDirectorsConvenedDuringTheFYMaxLength:
-              settings.TheBoardOfDirectorsConvenedDuringTheFYMaxLength,
-          },
-          appendexis: {
-            accountingBasisMaxLength: settings.AccountingBasisMaxLength,
-            accountingBooksMaxLength: settings.AccountingBooksMaxLength,
-            balanceSheetNotesMaxLength: settings.BalanceSheetNotesMaxLength,
-            loansMaturingOverFiveYearsMaxLength:
-              settings.LoansMaturingOverFiveYearsMaxLength,
-            personnelMaxLength: settings.PersonnelMaxLength,
-          },
-          liabilities: {
-            nameMaxLength: settings.LiabilityName,
-            descriptionMaxLength: settings.LiabilityDescription,
-            documentNumberMaxLength: settings.LiabilityDocumentNumber,
-          },
-          comments: {
-            commentMaxLength: settings.Comment,
-          },
-          languageCode: settings.LanguageCode,
-        };
-      })
-      .addCase(fetchSettings.rejected, (_, action) => {
-        console.error(`Settings was not loaded (${action.error.message})`);
-      });
+      return {
+        balance: {
+          propertyMaintenanceProductNameMaxLength:
+            settings.PropertyMeintenanceProductNameMaxLength,
+          specFinCalcProductName1MaxLength:
+            settings.SpecFinCalcProductName1MaxLength,
+          specFinCalcProductName2MaxLength:
+            settings.SpecFinCalcProductName2MaxLength,
+          specFinCalcProductName3MaxLength:
+            settings.SpecFinCalcProductName3MaxLength,
+          specFinCalcProductName4MaxLength:
+            settings.SpecFinCalcProductName4MaxLength,
+          specFinCalcProductName5MaxLength:
+            settings.SpecFinCalcProductName5MaxLength,
+          vatCalculationsProductNameMaxLength:
+            settings.VATCalculationsProductNameMaxLength,
+        },
+        annualReport: {
+          annualGeneralMeetingsMaxLength:
+            settings.AnnualGeneralMeetingsMaxLength,
+          boardsProposalOnThePLMaxLength:
+            settings.BoardsProposalOnThePLMaxLength,
+          budgetComprasionMaxLength: settings.BudgetComprasionMaxLength,
+          consumptionDataMaxLength: settings.ConsumptionDataMaxLength,
+          essentialEventsMaxLength: settings.EssentialEventsMaxLength,
+          futureDevelopmentMaxLength: settings.FutureDevelopmentMaxLength,
+          liquidityMaxLength: settings.LiquidityMaxLength,
+          persistentStrainsAndMortgagesMaxLength:
+            settings.PersistentStrainsAndMortgagesMaxLength,
+          theBoardOfDirectorsConvenedDuringTheFYMaxLength:
+            settings.TheBoardOfDirectorsConvenedDuringTheFYMaxLength,
+        },
+        appendexis: {
+          accountingBasisMaxLength: settings.AccountingBasisMaxLength,
+          accountingBooksMaxLength: settings.AccountingBooksMaxLength,
+          balanceSheetNotesMaxLength: settings.BalanceSheetNotesMaxLength,
+          loansMaturingOverFiveYearsMaxLength:
+            settings.LoansMaturingOverFiveYearsMaxLength,
+          personnelMaxLength: settings.PersonnelMaxLength,
+        },
+        liabilities: {
+          nameMaxLength: settings.LiabilityName,
+          descriptionMaxLength: settings.LiabilityDescription,
+          documentNumberMaxLength: settings.LiabilityDocumentNumber,
+        },
+        comments: {
+          commentMaxLength: settings.Comment,
+        },
+        languageCode: settings.LanguageCode,
+      };
+    });
   },
 });
 

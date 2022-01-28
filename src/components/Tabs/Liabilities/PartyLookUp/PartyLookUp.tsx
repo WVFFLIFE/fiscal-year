@@ -1,4 +1,5 @@
 import useToggleSwitch from 'hooks/useToggleSwitch';
+import { useTranslation } from 'react-i18next';
 import { Organization } from 'services/s';
 
 import Input from 'components/Input';
@@ -25,6 +26,7 @@ const PartyLookUp: React.FC<PartyLookUpProps> = ({
   classes: propsClasses,
 }) => {
   const classes = useStyles();
+  const { t } = useTranslation();
 
   const [showLookup, toggleLookup] = useToggleSwitch();
 
@@ -42,7 +44,7 @@ const PartyLookUp: React.FC<PartyLookUpProps> = ({
         open={showLookup}
         maxWidth="md"
         handleClose={toggleLookup}
-        title="Look up record"
+        title={t('#tab.liabilities.lookuprecord')}
       >
         <LookUpRecords onChange={onChange} onClose={toggleLookup} />
       </Dialog>

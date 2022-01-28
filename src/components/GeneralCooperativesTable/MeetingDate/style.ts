@@ -22,4 +22,8 @@ export const useStyles = makeStyles((theme) => ({
   noBorder: {
     border: 0,
   },
+  centered: {
+    display: 'flex',
+    justifyContent: 'center',
+  },
 }));

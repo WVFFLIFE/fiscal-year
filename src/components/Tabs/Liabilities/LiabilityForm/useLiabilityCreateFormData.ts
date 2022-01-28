@@ -1,8 +1,8 @@
 import { ChangeEvent, useState } from 'react';
-import { useFormik } from 'formik';
+import { useFormik, FormikErrors } from 'formik';
 import useCooperative from 'hooks/useCooperative';
 import { Services, Organization, LiabilityFormBody } from 'services/s';
-import { toFloatStr, floatStrToNumber } from 'utils';
+import { toFloatStr, floatStrToNumber, toIntFormat } from 'utils';
 import { serverFormat } from 'utils/dates';
 import { ErrorModel } from 'models';
 
@@ -30,6 +30,10 @@ interface OptionsModel {
   initialValues?: InitialValues | null;
   onUpdate(): void;
   onClose(): void;
+}
+
+function isValidForm(errors: FormikErrors<unknown>) {
+  return !Object.keys(errors).length;
 }
 
 const useLiabilityFormData = (options: OptionsModel) => {
@@ -149,13 +153,9 @@ const useLiabilityFormData = (options: OptionsModel) => {
           });
         }
 
-        if (res.IsSuccess) {
-          formik.setSubmitting(false);
-          onClose();
-          onUpdate();
-        } else {
-          throw new Error(res.Message);
-        }
+        if (!res.IsSuccess) throw new Error(res.Message);
+
+        formik.setSubmitting(false);
       } catch (err) {
         console.error(err);
 
@@ -208,7 +208,7 @@ const useLiabilityFormData = (options: OptionsModel) => {
     const { value } = event.target;
     formik.setValues((prevState) => ({
       ...prevState,
-      quantity: toFloatStr(value, 6),
+      quantity: toIntFormat(value),
     }));
   };
 
@@ -224,11 +224,17 @@ const useLiabilityFormData = (options: OptionsModel) => {
     formik.setErrors({});
   };
 
-  const handleResetCommonErrors = () => {
+  const handleResetRequestErrors = () => {
     setError(null);
   };
 
-  console.log(formik.values, 'VALUES');
+  const handleSubmit = async () => {
+    await formik.submitForm();
+    const errors = formik.validateForm();
+    const isValid = isValidForm(errors);
+
+    console.log(isValid);
+  };
 
   return {
     formik,
@@ -241,7 +247,8 @@ const useLiabilityFormData = (options: OptionsModel) => {
     handleChangeLiabilityParty,
     handleChnagePriceItemRate,
     handleResetValidationErrors,
-    handleResetCommonErrors,
+    handleResetRequestErrors,
+    handleSubmit,
   };
 };
 

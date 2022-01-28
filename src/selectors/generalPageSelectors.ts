@@ -84,3 +84,7 @@ export const selectCooperativeLink = createDraftSafeSelector(
   selectFiscalYear,
   (fiscalYear) => fiscalYear?.general.cooperativeLink || undefined
 );
+export const selectSearchTerm = createDraftSafeSelector(
+  selectFilters,
+  (filters) => filters.searchTerm
+);

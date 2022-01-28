@@ -6,7 +6,7 @@ import useAppDispatch from 'hooks/useAppDispatch';
 import useStateSelector from 'hooks/useStateSelector';
 import useSelectFiscalYear from 'hooks/useSelectFiscalYear';
 
-import { fetchGeneralFiscalYear } from 'features/generalPageSlice';
+import { updateFiscalYear } from 'features/generalPageSlice';
 import { selectConsumptionData } from 'selectors/generalPageSelectors';
 
 import { sleep, readFile } from 'utils';
@@ -241,12 +241,12 @@ const useConsumptionData = () => {
         const res = await Services.fiscalYearConsumptionUpdate(reqBody);
 
         if (res.IsSuccess) {
+          await dispatch(updateFiscalYear(fiscalYear.id));
+
           setState((prevState) => ({
             ...prevState,
             saving: false,
           }));
-
-          await dispatch(fetchGeneralFiscalYear(fiscalYear.id));
         } else {
           setState((prevState) => ({
             ...prevState,

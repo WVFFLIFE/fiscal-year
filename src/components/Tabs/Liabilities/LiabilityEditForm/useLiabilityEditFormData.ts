@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { ErrorModel } from 'models';
 import { Services, LiabilityDetails } from 'services/s';
-import { toNumberFormat } from 'utils';
+import { toNumberFormat, toIntFormat } from 'utils';
 
 import { InitialFormValues } from '../LiabilityForm';
 
@@ -20,7 +20,7 @@ function makeInitialValues(
     liabilityPartyId: liability.PartyId,
     priceItemRate: toNumberFormat(liability.PriceItemRate) || '',
     product: liability.Product,
-    quantity: toNumberFormat(liability.Quantity, { decimalScale: 6 }) || '',
+    quantity: liability.Quantity ? String(liability.Quantity) : '',
     startDate: liability.StartDate ? new Date(liability.StartDate) : null,
     type: liability.Type,
     usage: liability.Usage,

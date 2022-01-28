@@ -192,3 +192,16 @@ export function updateBreadcrumbsList(
     return findFolderInRootFolder(rootFolder, folder) || folder;
   });
 }
+
+export function getAttributeTitle(internalName: string) {
+  switch (internalName) {
+    case 'Viewing_x0020_rights':
+      return '#tab.documents.upload.viewingrights';
+    case 'Information_x0020_Group':
+      return '#tab.documents.upload.informationgroup';
+    case 'Service_x002f_Process':
+      return '#tab.documents.upload.serviceprocess';
+    default:
+      return '';
+  }
+}

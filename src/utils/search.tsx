@@ -8,7 +8,7 @@ function convertByType(data: any, type: 'string' | 'date') {
     case 'string':
       return data as string;
     case 'date':
-      return data ? defaultFormat(new Date(data)) : 'No Date';
+      return data ? defaultFormat(new Date(data)) : null;
     default:
       return null;
   }

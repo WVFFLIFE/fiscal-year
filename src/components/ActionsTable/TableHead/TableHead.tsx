@@ -64,6 +64,7 @@ const TableHead = <T extends DefaultTableData>({
             {CheckboxHeadProps.show === false ? null : (
               <Checkbox
                 checked={CheckboxHeadProps.selectedAll}
+                indeterminate={CheckboxHeadProps.indeterminate}
                 onChange={CheckboxHeadProps.onToggleSelectAll}
               />
             )}

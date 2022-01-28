@@ -14,6 +14,11 @@ interface ConsumptionTableProps {
   disabled?: boolean;
 }
 
+type SelectedRowId = {
+  prev: string | null;
+  current: string | null;
+};
+
 const ConsumptionTable: React.FC<ConsumptionTableProps> = ({
   data,
   onSaveConsumption,
@@ -21,16 +26,24 @@ const ConsumptionTable: React.FC<ConsumptionTableProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  const [activeRowId, setActiveRowId] = useState<string | null>(null);
+  const [selectedRowId, setSelectedRowId] = useState<SelectedRowId>({
+    current: null,
+    prev: null,
+  });
 
   const handleSetActiveRow = useCallback((id: string | null) => {
-    setActiveRowId(id);
+    setSelectedRowId((prevState) => ({
+      ...prevState,
+      current: id,
+      prev: id ? prevState.current : null,
+    }));
   }, []);
 
   return (
     <Box>
       <ConsumptionTableRow
-        active={activeRowId === 'HeatEnergyOfHotWater'}
+        activeId={selectedRowId.current}
+        prevId={selectedRowId.prev}
         data={data.heatEnergyOfHotWater}
         field="HeatEnergyOfHotWater"
         label={t('#tab.consumption.table.heatenergyofhotwater')}
@@ -39,7 +52,8 @@ const ConsumptionTable: React.FC<ConsumptionTableProps> = ({
         onSelectActiveRow={handleSetActiveRow}
       />
       <ConsumptionTableRow
-        active={activeRowId === 'ConsumptionOfHotWater'}
+        activeId={selectedRowId.current}
+        prevId={selectedRowId.prev}
         data={data.consumptionOfHotWater}
         field="ConsumptionOfHotWater"
         label={t('#tab.consumption.table.consumptionofhotwater')}
@@ -48,7 +62,8 @@ const ConsumptionTable: React.FC<ConsumptionTableProps> = ({
         onSelectActiveRow={handleSetActiveRow}
       />
       <ConsumptionTableRow
-        active={activeRowId === 'Population'}
+        activeId={selectedRowId.current}
+        prevId={selectedRowId.prev}
         data={data.population}
         field="Population"
         label={t('#tab.consumption.table.population')}

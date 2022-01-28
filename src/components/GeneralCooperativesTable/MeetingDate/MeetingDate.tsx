@@ -1,13 +1,13 @@
+import { defaultFormat, isBefore, startOfDay } from 'utils/dates';
+
+import Highlight from 'components/Highlight';
 import Tooltip from 'components/Tooltip';
 import { RoundCheckIcon } from 'components/Icons';
-
-import { defaultFormat, isBefore } from 'utils/dates';
 
 import clsx from 'clsx';
 import { useStyles } from './style';
 
 interface MeetingDateProps {
-  highlight(input: any): any;
   actualDate: string | null;
   plannedDate: string | null;
   link: string | null;
@@ -15,23 +15,24 @@ interface MeetingDateProps {
 
 const MeetingDate: React.FC<MeetingDateProps> = ({
   link,
-  highlight,
   actualDate,
-  plannedDate,
+  plannedDate: plannedDateStr,
 }) => {
   const classes = useStyles();
 
   if (actualDate) {
     return (
-      <Tooltip title={defaultFormat(new Date(actualDate))}>
-        <RoundCheckIcon className={classes.checkIcon} />
-      </Tooltip>
+      <div className={classes.centered}>
+        <Tooltip title={defaultFormat(new Date(actualDate))}>
+          <RoundCheckIcon className={classes.checkIcon} />
+        </Tooltip>
+      </div>
     );
   }
 
-  if (plannedDate) {
-    const pd = new Date(plannedDate);
-    const isWarning = isBefore(pd, new Date());
+  if (plannedDateStr) {
+    const plannedDate = new Date(plannedDateStr);
+    const isWarning = isBefore(plannedDate, startOfDay(new Date()));
 
     return (
       <a
@@ -42,7 +43,7 @@ const MeetingDate: React.FC<MeetingDateProps> = ({
         target="_blank"
         rel="noopener noreferrer"
       >
-        {highlight(defaultFormat(pd))}
+        <Highlight text={defaultFormat(plannedDate)} />
       </a>
     );
   }

@@ -56,5 +56,6 @@ export const useStyles = makeStyles((theme) => ({
     borderColor: 'transparent',
     boxShadow: 'none',
     color: 'rgba(51, 51, 51, 1)',
+    wordBreak: 'break-all',
   },
 }));

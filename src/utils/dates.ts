@@ -5,8 +5,10 @@ export { default as isSameDay } from 'date-fns/isSameDay';
 export { default as startOfDay } from 'date-fns/startOfDay';
 export { default as startOfYear } from 'date-fns/startOfYear';
 export { default as endOfYear } from 'date-fns/endOfYear';
+export { default as addYears } from 'date-fns/addYears';
 export { default as subYears } from 'date-fns/subYears';
 export { default as isWithinInterval } from 'date-fns/isWithinInterval';
+export { default as eachYearOfInterval } from 'date-fns/eachYearOfInterval';
 
 export const DEFAULT_FORMAT_PATTERN = 'd.M.yyyy';
 export const REQUEST_DATE_FORMAT_PATTERN = "yyyy-MM-dd'T'00:00:00";

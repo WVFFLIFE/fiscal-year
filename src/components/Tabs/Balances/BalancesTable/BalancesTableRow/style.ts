@@ -1,5 +1,11 @@
 import { makeStyles } from '@mui/styles';
 
+const ITEM_PART = 6;
+
+function countItemWidth(fraction: number) {
+  return `${(100 / ITEM_PART) * fraction}%`;
+}
+
 export const useStyles = makeStyles((theme) => ({
   row: {
     display: 'flex',
@@ -28,20 +34,23 @@ export const useStyles = makeStyles((theme) => ({
       },
     },
   },
+  input: {
+    width: '100%',
+  },
   item: {
     padding: '8px 16px',
-    flex: 1,
+    flexBasis: countItemWidth(1),
 
-    fontSize: 14,
+    fontSize: '1em',
     fontFamily: 'Lato',
     fontWeight: 600,
     lineHeight: '16px',
     color: '#333',
     '&:first-child': {
-      flex: 3,
+      flexBasis: countItemWidth(3),
     },
     '&:nth-child(2)': {
-      flex: 2,
+      flexBasis: countItemWidth(2),
     },
   },
   actions: {
@@ -61,21 +70,6 @@ export const useStyles = makeStyles((theme) => ({
   },
   btnOffset: {
     marginRight: 10,
-  },
-  input: {
-    padding: '0px 20px',
-    height: 24,
-    fontSize: 14,
-    fontFamily: 'Proxima Nova',
-    background: '#fff',
-    border: '1px solid rgba(242, 242, 242, 1)',
-    borderRadius: 3,
-    boxShadow: 'inset 0px 1px 4px rgba(0, 0, 0, 0.15)',
-    color: '#000',
-    '&:focus': {
-      border: `1px solid ${theme.color.blue2}`,
-      outline: 0,
-    },
   },
   textInput: {
     height: 24,

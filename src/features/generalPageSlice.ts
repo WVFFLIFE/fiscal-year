@@ -203,6 +203,25 @@ export const fetchGeneralFiscalYear = createAsyncThunk(
   }
 );
 
+export const updateFiscalYear = createAsyncThunk(
+  'generalPage/updateFiscalYear',
+  async (fiscalYearId: string, { rejectWithValue }) => {
+    try {
+      const res = await Services.getFiscalYear(fiscalYearId);
+
+      if (res.IsSuccess) {
+        return makeFiscalYear(res.FiscalYear);
+      } else {
+        throw new Error(res.Message);
+      }
+    } catch (err) {
+      console.error(err);
+
+      return rejectWithValue(err);
+    }
+  }
+);
+
 export const refreshGeneralData = createAsyncThunk(
   'generalPage/refreshGeneralData',
   async (_, { rejectWithValue, getState, dispatch }) => {
@@ -239,7 +258,12 @@ export const generalPageSlice = createSlice({
   name: 'generalPage',
   initialState,
   reducers: {
-    resetGeneralFiscalYear: (state) => {
+    resetFilters: (state) => {
+      state.filters.cooperatives.current = null;
+      state.filters.cooperatives.next = null;
+      state.filters.fiscalYears.current = null;
+      state.filters.fiscalYears.list = [];
+      state.filters.fiscalYears.next = null;
       state.generalFiscalYear = null;
     },
     setCooperativesList: (
@@ -354,12 +378,22 @@ export const generalPageSlice = createSlice({
         state.loading = false;
         state.error = { messages: [String(action.error.message)] };
       });
+
+    builder
+      .addCase(updateFiscalYear.fulfilled, (state, action) => {
+        state.generalFiscalYear = action.payload;
+        state.loading = false;
+      })
+      .addCase(updateFiscalYear.rejected, (state, action) => {
+        state.loading = false;
+        state.error = { messages: [String(action.error.message)] };
+      });
   },
 });
 
 export default generalPageSlice.reducer;
 export const {
-  resetGeneralFiscalYear,
+  resetFilters,
   setCooperativesList,
   setCurrentCooperative,
   setCurrentFiscalYear,

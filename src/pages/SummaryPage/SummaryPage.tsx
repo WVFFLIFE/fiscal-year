@@ -1,7 +1,7 @@
 import { useMemo, FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import useSummaryPageData from './useSummaryPageData';
-import useSearchTerm from 'hooks/useSearchTerm';
+
 import { CommonCooperativeModel } from 'models';
 import { buildCalendarYearOptions } from './utils';
 
@@ -45,17 +45,15 @@ const SummaryPage: FC<SummaryPageProps> = ({ commonCooperatives }) => {
 
   const {
     state,
+    searchTerm,
+    handleChangeSearchTerm,
     handleInitError,
-    isDisabledApplyButton,
-    handleLoadCooperatives,
     handleRefreshCooperatives,
     handleChangeActiveQuickFilter,
     handleChangeCalendarYear,
     handleSelectCooperative,
     handleChangeSelectedCooperatives,
   } = useSummaryPageData();
-
-  const { searchTerm, onChangeSearchTerm } = useSearchTerm();
 
   const filteredExtendedCooperatives = useMemo(() => {
     return state.extendedCooperatives.filter((coop) => {
@@ -100,14 +98,6 @@ const SummaryPage: FC<SummaryPageProps> = ({ commonCooperatives }) => {
             disabled={isDisabledCalendarYearPicker}
           />
         </Box>
-        <Box marginRight={4} padding={4} paddingX={2}>
-          <ApplyButton
-            disabled={isDisabledApplyButton}
-            onClick={handleLoadCooperatives}
-          >
-            {t('#button.apply')}
-          </ApplyButton>
-        </Box>
         <Box padding={4} paddingX={2}>
           <QuickFilter
             itemClassName={classes.filterItem}
@@ -127,7 +117,10 @@ const SummaryPage: FC<SummaryPageProps> = ({ commonCooperatives }) => {
             </IconButton>
           </Box>
           <Box padding={4} paddingRight={2} paddingLeft={1}>
-            <PageSearch searchTerm={searchTerm} onChange={onChangeSearchTerm} />
+            <PageSearch
+              searchTerm={searchTerm}
+              onChange={handleChangeSearchTerm}
+            />
           </Box>
         </Box>
       </FiltersWrapper>

@@ -2,13 +2,12 @@ import {
   memo,
   MouseEvent,
   ChangeEvent,
-  KeyboardEvent,
   useState,
   useEffect,
   useRef,
 } from 'react';
 
-import Menu from 'components/Menu';
+import Dropdown from './Dropdown';
 import Search from 'components/controls/PickerSearch';
 import { IconButton } from 'components/Styled';
 import { SearchIcon, CloseIcon } from 'components/Icons';
@@ -22,45 +21,47 @@ interface PageSearchProps {
   onChange(searchTerm: string): void;
 }
 
-interface BodyProps extends PageSearchProps {
-  onClose(): void;
-}
+interface BodyProps extends PageSearchProps {}
 
-const Body: React.FC<BodyProps> = ({ searchTerm, onChange, onClose }) => {
+const Body: React.FC<BodyProps> = ({ searchTerm, onChange }) => {
   const classes = useBodyStyles();
 
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  const [defaultSearchTerm, setDefaultSearchTerm] = useState(searchTerm);
-
-  useEffect(() => {
+  const focusInput = () => {
     if (searchInputRef.current) {
       searchInputRef.current.focus();
     }
-  }, []);
+  };
 
   const handleChangeDefaultSearchTerm = (e: ChangeEvent<HTMLInputElement>) => {
-    setDefaultSearchTerm(e.target.value);
+    onChange(e.target.value);
   };
 
-  const handleKeyPress = (e: KeyboardEvent<HTMLDivElement>) => {
-    e.stopPropagation();
-    if (e.key === 'Enter') {
-      onChange(defaultSearchTerm);
-      onClose();
-    }
+  const handleInitSearchTerm = () => {
+    onChange('');
+    focusInput();
   };
+
+  useEffect(() => {
+    return () => {
+      onChange('');
+    };
+  }, []);
 
   return (
     <div className={classes.wrapper}>
       <SearchIcon className={classes.searchIcon} />
       <Search
+        autoFocus
         className={classes.input}
         ref={searchInputRef}
-        value={defaultSearchTerm}
+        value={searchTerm}
         onChange={handleChangeDefaultSearchTerm}
-        onKeyPress={handleKeyPress}
       />
+      <IconButton className={classes.closeBtn} onClick={handleInitSearchTerm}>
+        <CloseIcon className={classes.closeIcon} />
+      </IconButton>
     </div>
   );
 };
@@ -74,12 +75,8 @@ const PageSearch: React.FC<PageSearchProps> = ({
 
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
-  const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(e.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
+  const handleToggle = (e: MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl((prevState) => (prevState ? null : e.currentTarget));
   };
 
   const open = !!anchorEl;
@@ -89,7 +86,7 @@ const PageSearch: React.FC<PageSearchProps> = ({
       <IconButton
         disabled={disabled}
         disableRipple
-        onClick={disabled ? undefined : handleClick}
+        onClick={disabled ? undefined : handleToggle}
         className={clsx(classes.btn, {
           [classes.fill]: !!searchTerm,
           [classes.open]: open,
@@ -101,25 +98,9 @@ const PageSearch: React.FC<PageSearchProps> = ({
           <SearchIcon className={classes.icon} />
         )}
       </IconButton>
-      <Menu
-        open={open}
-        anchorEl={anchorEl}
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right',
-        }}
-        transformOrigin={{
-          horizontal: 'right',
-          vertical: -4,
-        }}
-      >
-        <Body
-          searchTerm={searchTerm}
-          onChange={onChange}
-          onClose={handleClose}
-        />
-      </Menu>
+      <Dropdown open={open} anchorEl={anchorEl} placement="bottom-end">
+        <Body searchTerm={searchTerm} onChange={onChange} />
+      </Dropdown>
     </>
   );
 };

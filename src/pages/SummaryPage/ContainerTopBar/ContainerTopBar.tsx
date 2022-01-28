@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { CommonCooperativeModel, CalendarYearOption } from 'models';
 import { isAllMyOwn } from 'utils';
 import { defaultFormat } from 'utils/dates';
@@ -20,6 +21,7 @@ const ContainerTopBar: React.FC<ContainerTopBarProps> = ({
   selectedCooperatives,
 }) => {
   const classes = useStyles();
+  const { t } = useTranslation();
 
   const coopsLabel = useMemo(() => {
     if (!selectedCooperatives.length) return null;
@@ -28,11 +30,13 @@ const ContainerTopBar: React.FC<ContainerTopBarProps> = ({
       return coop.Name;
     }
     if (isAllMyOwn(cooperatives, selectedCooperatives)) {
-      return 'All my own cooperatives';
+      return t('#common.allmyowncooperatives');
     }
 
-    return `${selectedCooperatives.length} cooperatives`;
-  }, [selectedCooperatives, cooperatives]);
+    return t('#common.selectedcooperatives', {
+      count: selectedCooperatives.length,
+    });
+  }, [t, selectedCooperatives, cooperatives]);
 
   return (
     <div className={clsx(classes.root, classes.text, className)}>

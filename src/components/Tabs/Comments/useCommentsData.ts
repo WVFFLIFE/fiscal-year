@@ -2,21 +2,12 @@ import { useState, useEffect, useRef } from 'react';
 import useAppDispatch from 'hooks/useAppDispatch';
 import useSelectFiscalYear from 'hooks/useSelectFiscalYear';
 
-import {
-  setUnreadComments,
-  fetchUnreadCommentsSize,
-} from 'features/commentsSlice';
+import { fetchUnreadCommentsSize } from 'features/commentsSlice';
 
 import { ErrorModel } from 'models';
 import { Services, Comment } from 'services/s';
 
 const CommentsService = new Services.Comments();
-
-function countUnreadComments(comments: Comment[]) {
-  return comments.reduce((acc, next) => {
-    return next.IsRead ? acc : acc++;
-  }, 0);
-}
 
 interface RequestStateModel {
   comments: Comment[];
@@ -50,7 +41,6 @@ const useCommentsData = () => {
       const res = await CommentsService.get(fiscalYearId);
 
       if (res.IsSuccess) {
-        dispatch(setUnreadComments(countUnreadComments(res.Comments)));
         setRequestState((prevState) => ({
           ...prevState,
           comments: res.Comments,
@@ -197,6 +187,7 @@ const useCommentsData = () => {
           }
 
           const res = await CommentsService.get(fiscalYear.id);
+          dispatch(fetchUnreadCommentsSize(fiscalYear.id));
 
           if (res.IsSuccess) {
             setRequestState((prevState) => ({

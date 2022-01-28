@@ -16,6 +16,7 @@ export type CheckboxProps<T extends object = DefaultTableData> = {
   HeadProps: {
     show?: boolean;
     selectedAll: boolean;
+    indeterminate?: boolean;
     onToggleSelectAll(event: ChangeEvent<HTMLInputElement>): void;
     Cell?: {
       className?: string;

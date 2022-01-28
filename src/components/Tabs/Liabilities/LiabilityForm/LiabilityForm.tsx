@@ -59,13 +59,18 @@ const LiabilityForm: React.FC<LiabilityFormProps> = ({
     handleChangeQuantity,
     handleChnagePriceItemRate,
     handleResetValidationErrors,
-    handleResetCommonErrors,
+    handleResetRequestErrors,
+    handleSubmit,
   } = useLiabilityCreateFormData({ initialValues, action, onUpdate, onClose });
 
   const generalOptions = getCodes(GeneralTypeCode);
   const usageOptions = getCodes(UsageCode);
   const productOptions = getCodes(ProductCode);
   const typeOptions = getCodes(TypeCode);
+
+  const SaveEndIcon = formik.isSubmitting ? (
+    <CircularProgress size={17} className={classes.loader} />
+  ) : undefined;
 
   return (
     <form onSubmit={formik.handleSubmit}>
@@ -75,7 +80,7 @@ const LiabilityForm: React.FC<LiabilityFormProps> = ({
             <Field
               type="input"
               required
-              label="Liability Name"
+              label={t('#tab.liabilities.liabilityname')}
               error={formik.errors.liabilityName}
               onResetError={handleResetValidationErrors}
               ControlProps={{
@@ -93,7 +98,7 @@ const LiabilityForm: React.FC<LiabilityFormProps> = ({
             <Field
               type="input"
               required
-              label="Organization"
+              label={t('#tab.liabilities.organization')}
               onResetError={handleResetValidationErrors}
               error={formik.errors.cooperativeName}
               ControlProps={{
@@ -105,7 +110,7 @@ const LiabilityForm: React.FC<LiabilityFormProps> = ({
           <li className={classes.listItem}>
             <Field
               type="input"
-              label="Description"
+              label={t('#tab.liabilities.description')}
               ControlProps={{
                 value: formik.values.description,
                 onChange: handleChangeInput,
@@ -113,7 +118,7 @@ const LiabilityForm: React.FC<LiabilityFormProps> = ({
                 multiline: true,
                 rows: 5,
                 maxRows: 5,
-                placeholder: 'Type description here',
+                placeholder: t('#tab.liabilities.description.placeholder'),
                 inputClasses: { input: classes.textarea },
                 inputProps: {
                   maxLength: liabilitiesSettings.descriptionMaxLength,
@@ -125,7 +130,7 @@ const LiabilityForm: React.FC<LiabilityFormProps> = ({
             <Field
               type="select"
               required
-              label="Liability Type"
+              label={t('#tab.liabilities.liabilitytype')}
               error={formik.errors.generalType}
               onResetError={handleResetValidationErrors}
               ControlProps={{
@@ -142,7 +147,7 @@ const LiabilityForm: React.FC<LiabilityFormProps> = ({
             <Field
               type="partylookup"
               required
-              label="Liability Party"
+              label={t('#tab.liabilities.liabilityparty')}
               error={formik.errors.liabilityPartyName}
               onResetError={handleResetValidationErrors}
               ControlProps={{
@@ -156,29 +161,29 @@ const LiabilityForm: React.FC<LiabilityFormProps> = ({
           <li className={classes.listItem}>
             <Field
               type="datepicker"
-              label="Start date"
+              label={t('#tab.liabilities.startdate')}
               ControlProps={{
                 date: formik.values.startDate,
                 onChange: handleChangeStartDate,
-                placeholder: 'Select date',
+                placeholder: t('#tab.liabilities.startdate.placeholder'),
               }}
             />
           </li>
           <li className={classes.listItem}>
             <Field
               type="datepicker"
-              label="End date"
+              label={t('#tab.liabilities.enddate')}
               ControlProps={{
                 date: formik.values.endDate,
                 onChange: handleChangeEndDate,
-                placeholder: 'Select date',
+                placeholder: t('#tab.liabilities.enddate.placeholder'),
               }}
             />
           </li>
           <li className={classes.listItem}>
             <Field
               type="input"
-              label="Document number"
+              label={t('#tab.liabilities.documentnumber')}
               ControlProps={{
                 value: formik.values.documentNumber,
                 onChange: handleChangeInput,
@@ -194,7 +199,7 @@ const LiabilityForm: React.FC<LiabilityFormProps> = ({
             <Field
               type="select"
               required
-              label="Usage"
+              label={t('#tab.liabilities.usage')}
               error={formik.errors.usage}
               onResetError={handleResetValidationErrors}
               ControlProps={{
@@ -211,7 +216,7 @@ const LiabilityForm: React.FC<LiabilityFormProps> = ({
             <Field
               type="select"
               required
-              label="Product"
+              label={t('#tab.liabilities.product')}
               error={formik.errors.product}
               onResetError={handleResetValidationErrors}
               ControlProps={{
@@ -227,7 +232,7 @@ const LiabilityForm: React.FC<LiabilityFormProps> = ({
           <li className={classes.listItem}>
             <Field
               type="select"
-              label="Type"
+              label={t('#tab.liabilities.type')}
               ControlProps={{
                 value: formik.values.type,
                 options: typeOptions,
@@ -241,26 +246,29 @@ const LiabilityForm: React.FC<LiabilityFormProps> = ({
           <li className={classes.listItem}>
             <Field
               required
-              type="input"
-              label="Quantity"
+              type="number"
+              label={t('#tab.liabilities.quantity')}
               error={formik.errors.quantity}
               onResetError={handleResetValidationErrors}
               ControlProps={{
                 value: formik.values.quantity,
                 onChange: handleChangeQuantity,
+                decimalScale: 0,
               }}
             />
           </li>
           <li className={classes.listItem}>
             <Field
               required
-              type="input"
-              label="Price item rate"
+              type="number"
+              label={t('#tab.liabilities.priceitemrate')}
               error={formik.errors.priceItemRate}
               onResetError={handleResetValidationErrors}
               ControlProps={{
                 value: formik.values.priceItemRate,
                 onChange: handleChnagePriceItemRate,
+                decimalScale: 2,
+                decimalSeparator: ',',
               }}
             />
           </li>
@@ -272,19 +280,28 @@ const LiabilityForm: React.FC<LiabilityFormProps> = ({
           {t('#button.cancel')}
         </ActionButton>
         <ActionButton
+          className={classes.btnOffset}
+          onClick={handleSubmit}
+          disabled={formik.isSubmitting}
+        >
+          {t('#button.saveandnew')}
+        </ActionButton>
+        <ActionButton
+          className={classes.btnOffset}
+          disabled={formik.isSubmitting}
+        >
+          {t('#button.saveandcopy')}
+        </ActionButton>
+        <ActionButton
           disabled={formik.isSubmitting}
           palette="darkBlue"
           type="submit"
-          endIcon={
-            formik.isSubmitting ? (
-              <CircularProgress size={17} className={classes.loader} />
-            ) : undefined
-          }
+          endIcon={SaveEndIcon}
         >
           {t('#button.save')}
         </ActionButton>
       </div>
-      <DialogError error={error} initError={handleResetCommonErrors} />
+      <DialogError error={error} initError={handleResetRequestErrors} />
     </form>
   );
 };

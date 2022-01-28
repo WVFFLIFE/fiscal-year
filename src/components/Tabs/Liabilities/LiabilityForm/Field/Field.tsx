@@ -1,6 +1,7 @@
 import { useRef, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import NumberFormat, { NumberFormatProps } from 'react-number-format';
 import Select, { SelectProps } from 'components/controls/Select';
 import Input, { InputProps } from 'components/Input';
 import DatePicker, { DatePickerProps } from 'components/DatePicker';
@@ -11,6 +12,7 @@ import { useStyles } from './style';
 
 type ComponentProps =
   | { type: 'input'; ControlProps: InputProps }
+  | { type: 'number'; ControlProps: NumberFormatProps }
   | { type: 'select'; ControlProps: SelectProps }
   | { type: 'datepicker'; ControlProps: DatePickerProps }
   | { type: 'partylookup'; ControlProps: PartyLookUpProps };
@@ -63,6 +65,17 @@ const Field: React.FC<FieldProps> = ({
             {...(ControlProps as InputProps)}
             onChange={handleChange}
             classes={{ root: clsx({ [classes.borderRed]: !!error }) }}
+          />
+        );
+      case 'number':
+        return (
+          <NumberFormat
+            {...(ControlProps as NumberFormatProps)}
+            className={clsx(
+              classes.numberInput,
+              (ControlProps as NumberFormatProps).className
+            )}
+            onChange={handleChange}
           />
         );
       case 'select':

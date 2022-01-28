@@ -1,5 +1,6 @@
 import { FC } from 'react';
 import useDocumentsData from './useDocumentsData';
+import { useTranslation } from 'react-i18next';
 import { DocumentModel, FolderModel } from 'models';
 
 import Box from '@mui/material/Box';
@@ -33,18 +34,18 @@ import clsx from 'clsx';
 import { useStyles } from './style';
 
 const options: QuickFilterOption[] = [
-  { id: 'published', label: 'Published' },
-  { id: 'unpublished', label: 'Unpublished' },
+  { id: 'published', label: '#control.quickfilter.published' },
+  { id: 'unpublished', label: '#control.quickfilter.unpublished' },
 ];
 
-const successMessages: { [key: string]: string } = {
-  successUpdated: 'Document(s) have been successfully updated',
-  successUploaded: 'Files have been successfully upload',
-  folderNameUpdated: 'Folder Name has been successfully updated',
-  successPublished: 'Document(s) have been successfully published',
-  successUnpublished: 'Document(s) have been successfully unpublished',
-  successDeleted: 'Selected entity(ies) have been successfully deleted',
-  successDocumentsUpdated: 'Selected documents have been successfully updated',
+const successMessages = {
+  successUpdated: '#tab.documents.notification.documentsupdated',
+  successUploaded: '#tab.documents.confirmation.filesuploaded',
+  folderNameUpdated: '#tab.documents.notification.foldernameupdated',
+  successPublished: '#tab.documents.notification.successpublished',
+  successUnpublished: '#tab.documents.notification.successunpublished',
+  successDeleted: '#tab.documents.notification.entitesdeleted',
+  successDocumentsUpdated: '#tab.documents.notification.selecteddocsupdated',
 };
 
 const rowsPerPage = [5, 10, 15];
@@ -55,6 +56,7 @@ export interface DocumentsTabProps {
 
 const Documents: FC = () => {
   const classes = useStyles();
+  const { t } = useTranslation();
 
   const {
     hasFolder,
@@ -136,14 +138,19 @@ const Documents: FC = () => {
               [classes.zeroAmount]: !amount.docs && !amount.folders,
             })}
           >
-            {`${amount.folders} ${amount.folders > 0 ? 'Rows' : 'Row'}`}
-            {amount.docs ? (
-              <>
-                <span className={classes.divider}></span>
-                {`${amount.docs} Documents`}
-              </>
-            ) : null}{' '}
-            selected
+            {t(
+              amount.folders > 1
+                ? '#tab.documents.rowsselected'
+                : '#tab.documents.rowselected',
+              { count: amount.folders }
+            )}
+            <span className={classes.divider}></span>
+            {t(
+              amount.docs > 1
+                ? '#tab.documents.docsselected'
+                : '#tab.documents.docselected',
+              { count: amount.docs }
+            )}
           </Box>
           <Box display="flex" alignItems="center">
             <QuickFilter
@@ -154,7 +161,7 @@ const Documents: FC = () => {
               onChange={handleChangeQuickFilter}
             />
             <Box marginLeft="40px">
-              <Tooltip title="Edit entity(ies)">
+              <Tooltip title={t('#button.edit') as string}>
                 <span className={classes.btnOffset}>
                   <ActionButton
                     disabled={!!!selectedItems.length || isDisabledEditButton}
@@ -164,7 +171,7 @@ const Documents: FC = () => {
                   </ActionButton>
                 </span>
               </Tooltip>
-              <Tooltip title="Delete entity(ies)">
+              <Tooltip title={t('#button.delete') as string}>
                 <span className={classes.btnOffset}>
                   <ActionButton
                     disabled={!!!selectedItems.length}
@@ -176,7 +183,7 @@ const Documents: FC = () => {
                   </ActionButton>
                 </span>
               </Tooltip>
-              <Tooltip title="Download document(s)">
+              <Tooltip title={t('#button.download') as string}>
                 <span className={classes.btnOffset}>
                   <ActionButton
                     disabled={!!!amount.docs}
@@ -198,7 +205,7 @@ const Documents: FC = () => {
                   </span>
                 </Tooltip>
               ) : (
-                <Tooltip title="Publish document(s)">
+                <Tooltip title={t('#button.publish') as string}>
                   <span className={classes.btnOffset}>
                     <ActionButton
                       disabled={!!!amount.docs || publishing}
@@ -209,7 +216,7 @@ const Documents: FC = () => {
                   </span>
                 </Tooltip>
               )}
-              <Tooltip title="Refresh documents">
+              <Tooltip title={t('#button.refresh') as string}>
                 <span className={classes.btnOffset}>
                   <ActionButton
                     disabled={loading || publishing}
@@ -219,7 +226,9 @@ const Documents: FC = () => {
                   </ActionButton>
                 </span>
               </Tooltip>
-              <Tooltip title="Open sharepoint">
+              <Tooltip
+                title={t('#tab.documents.tooltip.opensharepoint') as string}
+              >
                 <span className={classes.btnOffset}>
                   <ActionButton
                     disabled={!!!activeFolder?.Url}
@@ -230,7 +239,7 @@ const Documents: FC = () => {
                   </ActionButton>
                 </span>
               </Tooltip>
-              <Tooltip title="Upload new document(s)">
+              <Tooltip title={t('#button.upload') as string}>
                 <span className={classes.btnOffset}>
                   <ActionButton
                     palette="darkBlue"

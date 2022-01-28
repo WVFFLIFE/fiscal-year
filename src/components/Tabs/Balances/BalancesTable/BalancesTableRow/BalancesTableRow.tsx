@@ -52,7 +52,7 @@ const BalancesTableRow = <T extends object>({
         {activeEditMode ? (
           <TextEditor
             autoFocus
-            className={clsx({ [classes.warning]: !isValid })}
+            className={clsx(classes.input, { [classes.warning]: !isValid })}
             type={column.type}
             value={inputData}
             onChange={handleChangeInputData}

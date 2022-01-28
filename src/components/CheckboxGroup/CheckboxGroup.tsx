@@ -10,6 +10,7 @@ interface CheckboxGroupProps {
   selected: string[];
   attribute: MettadataAttributeModel;
   name: string;
+  title: string;
   onChange(e: ChangeEvent<HTMLInputElement>, groupName: string): void;
   disabled?: boolean;
 }
@@ -19,6 +20,7 @@ const CheckboxGroup: React.FC<CheckboxGroupProps> = ({
   name,
   attribute,
   selected,
+  title,
   onChange,
   disabled,
 }) => {
@@ -30,7 +32,7 @@ const CheckboxGroup: React.FC<CheckboxGroupProps> = ({
 
   return (
     <div className={className}>
-      <span className={classes.title}>{attribute.DisplayName}</span>
+      <span className={classes.title}>{title}</span>
       <ul className={classes.list}>
         {attribute.AvailableValues.map((value) => {
           const checked = selected.includes(value);

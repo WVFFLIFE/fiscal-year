@@ -4,7 +4,7 @@ export const useStyles = makeStyles((theme) => ({
   root: {
     minWidth: 'auto',
     padding: '8px 16px',
-    fontSize: 14,
+    fontSize: '0.875rem',
     lineHeight: '16px',
     borderRadius: 20,
     fontFamily: 'Proxima Nova',

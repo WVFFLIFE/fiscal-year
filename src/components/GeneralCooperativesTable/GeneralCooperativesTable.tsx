@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, FC } from 'react';
 import usePagination, { slice } from 'hooks/usePagination';
 import { ExtendedCooperativeModel, ErrorModel } from 'models';
 import { DeprecatedColumn, SortModel } from 'models/TableModel';
@@ -19,49 +19,53 @@ import { useStyles } from './style';
 
 const columns: DeprecatedColumn[] = [
   {
+    align: 'left',
     field: 'Name',
     label: '#table.summary.cooperative',
     type: 'string',
   },
   {
+    align: 'right',
     field: 'LatestClosedDate',
     label: '#table.summary.periodclosed',
     type: 'date',
+    style: { width: 131 },
   },
   {
+    align: 'right',
     field: 'IsFinancialCalculationsAccepted',
     label: '#table.summary.fcaccepted',
-    align: 'right',
     style: { width: 90 },
   },
   {
+    align: 'right',
     field: 'IsFiscalYearClosed',
     label: '#table.summary.fyclosed',
-    align: 'right',
     style: { width: 90 },
   },
   {
+    align: 'right',
     field: 'BoardMeetingPlannedDate',
     label: '#table.summary.boardmeeting',
-    align: 'center',
     style: { width: 115 },
     type: 'date',
   },
   {
+    align: 'right',
     field: 'AuditReturnNeededDate',
     label: '#table.summary.auditing',
-    align: 'center',
     style: { width: 115 },
     type: 'date',
   },
   {
+    align: 'right',
     field: 'GeneralMeetingPlannedDate',
     label: '#table.summary.generalmeeting',
-    align: 'center',
     style: { width: 115 },
     type: 'date',
   },
   {
+    align: 'left',
     field: 'FiscalYearComments',
     label: '#table.summary.comments',
     style: { width: 230 },
@@ -88,7 +92,7 @@ interface GeneralCooperativeTableProps {
   fetchExtendedCooperativesList(): Promise<void>;
 }
 
-const GeneralCooperativeTable: React.FC<GeneralCooperativeTableProps> = ({
+const GeneralCooperativeTable: FC<GeneralCooperativeTableProps> = ({
   searchTerm,
   cooperatives,
   onSelectCooperative,
@@ -153,12 +157,12 @@ const GeneralCooperativeTable: React.FC<GeneralCooperativeTableProps> = ({
       });
 
       if (res.IsSuccess) {
+        await fetchExtendedCooperativesList();
+
         setState((prevState) => ({
           ...prevState,
           loading: false,
         }));
-
-        await fetchExtendedCooperativesList();
         return;
       } else {
         setState((prevState) => ({
@@ -267,7 +271,6 @@ const GeneralCooperativeTable: React.FC<GeneralCooperativeTableProps> = ({
           {slicedCooperatives.map((cooperative) => {
             return (
               <GeneralCooperativesTableRow
-                searchTerm={searchTerm}
                 key={cooperative.Id}
                 cooperative={cooperative}
                 onSelectCooperative={onSelectCooperative}
