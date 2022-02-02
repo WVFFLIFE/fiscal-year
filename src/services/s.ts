@@ -127,7 +127,7 @@ export namespace Services {
       export namespace Parties {
         export interface Organization {
           Id: string;
-          Name: string | null;
+          Name: string;
           Location: string | null;
           BusinessIdentityCode: string | null;
         }

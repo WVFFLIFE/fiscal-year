@@ -1,17 +1,16 @@
 import { useRef, memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import useToggleSwitch from 'hooks/useToggleSwitch';
 
+import useToggleSwitch from 'hooks/useToggleSwitch';
 import useStateSelector from 'hooks/useStateSelector';
 
 import { selectEvents } from 'selectors/generalPageSelectors';
 
 import ActionButton from 'components/ActionButton';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import Fade from '@mui/material/Fade';
+import Dropdown from 'components/Dropdown';
 import { PlusIcon, ArrowIcon } from 'components/Icons';
 
+import clsx from 'clsx';
 import { useStyles } from './style';
 
 const CreateEvent = () => {
@@ -20,9 +19,7 @@ const CreateEvent = () => {
 
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  const { events } = useStateSelector((state) => ({
-    events: selectEvents(state),
-  }));
+  const events = useStateSelector(selectEvents);
 
   const [openMenu, toggleMenuVisibility] = useToggleSwitch();
 
@@ -34,69 +31,58 @@ const CreateEvent = () => {
         className={classes.btn}
         ref={buttonRef}
         startIcon={<PlusIcon />}
-        endIcon={<ArrowIcon />}
+        endIcon={
+          <ArrowIcon
+            className={clsx(classes.arrowIcon, { [classes.active]: openMenu })}
+          />
+        }
         onClick={toggleMenuVisibility}
         disabled={isDisabledOpenBtn}
       >
         {t('#createevent.title')}
       </ActionButton>
-      <Menu
+      <Dropdown
         open={openMenu}
         onClose={toggleMenuVisibility}
         anchorEl={buttonRef.current}
-        TransitionComponent={Fade}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right',
-        }}
-        transformOrigin={{
-          vertical: -4,
-          horizontal: 'right',
-        }}
-        PaperProps={{
-          className: classes.list,
-        }}
       >
         {events?.createBoardMeetingLink && (
-          <li onClick={toggleMenuVisibility} role="menuitem">
-            <MenuItem
-              className={classes.link}
-              href={events.createBoardMeetingLink}
-              target="_blank"
-              component="a"
-              role="link"
-            >
-              {t('#createevent.boardmeeting')}
-            </MenuItem>
-          </li>
+          <Dropdown.Item
+            className={classes.link}
+            onClick={toggleMenuVisibility}
+            href={events.createBoardMeetingLink}
+            target="_blank"
+            component="a"
+            role="link"
+          >
+            {t('#createevent.boardmeeting')}
+          </Dropdown.Item>
         )}
         {events?.createGeneralMeetingLink && (
-          <li onClick={toggleMenuVisibility} role="menuitem">
-            <MenuItem
-              className={classes.link}
-              href={events.createGeneralMeetingLink}
-              target="_blank"
-              component="a"
-              role="link"
-            >
-              {t('#createevent.generalmeeting')}
-            </MenuItem>
-          </li>
+          <Dropdown.Item
+            className={classes.link}
+            onClick={toggleMenuVisibility}
+            href={events.createGeneralMeetingLink}
+            target="_blank"
+            component="a"
+            role="link"
+          >
+            {t('#createevent.generalmeeting')}
+          </Dropdown.Item>
         )}
         {events?.createAuditingLink && (
-          <li onClick={toggleMenuVisibility} role="menuitem">
-            <MenuItem
-              className={classes.link}
-              href={events.createAuditingLink}
-              target="_blank"
-              component="a"
-              role="link"
-            >
-              {t('#createevent.auditing')}
-            </MenuItem>
-          </li>
+          <Dropdown.Item
+            className={classes.link}
+            onClick={toggleMenuVisibility}
+            href={events.createAuditingLink}
+            target="_blank"
+            component="a"
+            role="link"
+          >
+            {t('#createevent.auditing')}
+          </Dropdown.Item>
         )}
-      </Menu>
+      </Dropdown>
     </>
   );
 };

@@ -16,7 +16,7 @@ interface ClassNames {
 
 export interface PartyLookUpProps {
   value: string | null;
-  onChange(organization: Organization): void;
+  onChange(organization: { id: string; name: string }): void;
   classes?: ClassNames;
 }
 

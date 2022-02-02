@@ -5,9 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { ButtonProps } from '@mui/material/Button';
 import ActionButton from 'components/ActionButton';
 import { PlusIcon, ArrowIcon, TemplateIcon, CopyIcon } from 'components/Icons';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import Fade from '@mui/material/Fade';
+import Dropdown from 'components/Dropdown';
 import Dialog from 'components/Dialog';
 import CopyDialogBody from './CopyDialogBody';
 import CreateFromTemplateDialogBody from './CreateFromTemplateDialogBody';
@@ -63,38 +61,22 @@ const AddFiscalYearButton: React.FC<ButtonProps> = (props) => {
       >
         {t('#button.addfy')}
       </ActionButton>
-      <Menu
-        open={!!anchorEl}
-        onClose={handleCloseMenu}
-        anchorEl={anchorEl}
-        TransitionComponent={Fade}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right',
-        }}
-        transformOrigin={{
-          vertical: -4,
-          horizontal: 'right',
-        }}
-        PaperProps={{
-          className: classes.list,
-        }}
-      >
-        <MenuItem
+      <Dropdown anchorEl={anchorEl} open={!!anchorEl} onClose={handleCloseMenu}>
+        <Dropdown.Item
           className={classes.menuItem}
           onClick={handleClickCreateFromTemplateFiscalYearItem}
         >
           <TemplateIcon className={classes.menuItemIcon} />
           From template
-        </MenuItem>
-        <MenuItem
+        </Dropdown.Item>
+        <Dropdown.Item
           onClick={handleClickCopyExistingFiscalYearItem}
           className={classes.menuItem}
         >
           <CopyIcon className={classes.menuItemIcon} />
           Copy existing fiscal year
-        </MenuItem>
-      </Menu>
+        </Dropdown.Item>
+      </Dropdown>
       <Dialog
         maxWidth="xs"
         open={openCopyDialog}

@@ -37,7 +37,7 @@ interface RequestStateModel {
 
 const useLiabilityEditFormData = (ids: string[]) => {
   const [requestState, setRequestState] = useState<RequestStateModel>({
-    loading: false,
+    loading: true,
     error: null,
     liability: null,
   });
@@ -46,7 +46,7 @@ const useLiabilityEditFormData = (ids: string[]) => {
     try {
       setRequestState((prevState) => ({
         ...prevState,
-        loading: false,
+        loading: true,
       }));
 
       const res = await LiabilityServices.getLiability(id);
@@ -55,6 +55,7 @@ const useLiabilityEditFormData = (ids: string[]) => {
         setRequestState((prevState) => ({
           ...prevState,
           liability: res.Liability,
+          loading: false,
         }));
       } else {
         throw new Error(res.Message);

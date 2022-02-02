@@ -15,4 +15,10 @@ export const useStyles = makeStyles((theme) => ({
     fontWeight: 600,
     color: theme.color.darkBlue,
   },
+  arrowIcon: {
+    transition: 'transform .15s linear',
+  },
+  active: {
+    transform: 'rotate(180deg)',
+  },
 }));

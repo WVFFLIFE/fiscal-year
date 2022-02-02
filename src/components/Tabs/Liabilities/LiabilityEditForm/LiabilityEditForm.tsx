@@ -25,7 +25,7 @@ const LiabilityEditForm: React.FC<LiabilityEditFormProps> = ({
     >
       <LiabilityForm
         action="edit"
-        initialValues={initialValues}
+        initialValues={initialValues || undefined}
         onClose={onClose}
         onUpdate={onUpdate}
       />

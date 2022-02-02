@@ -26,12 +26,14 @@ const useLiabilitiesData = () => {
     deleting: false,
   });
 
-  const fetchLiabilitiesList = async (fiscalYearId: string) => {
+  const fetchLiabilitiesList = async (fiscalYearId: string, loading = true) => {
     try {
-      setRequestState((prevState) => ({
-        ...prevState,
-        loading: true,
-      }));
+      if (loading) {
+        setRequestState((prevState) => ({
+          ...prevState,
+          loading: true,
+        }));
+      }
 
       const res = await LiabilitiesService.getList(fiscalYearId);
 
@@ -55,11 +57,14 @@ const useLiabilitiesData = () => {
     }
   };
 
-  const handleUpdateList = useCallback(() => {
-    if (!fiscalYear?.id) return;
+  const handleUpdateList = useCallback(
+    (loading: boolean = true) => {
+      if (!fiscalYear?.id) return;
 
-    fetchLiabilitiesList(fiscalYear.id);
-  }, [fiscalYear?.id]);
+      fetchLiabilitiesList(fiscalYear.id, loading);
+    },
+    [fiscalYear?.id]
+  );
 
   const handleToggleSelectAll = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {

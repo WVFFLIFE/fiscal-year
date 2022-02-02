@@ -1,4 +1,3 @@
-import { useRef, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import NumberFormat, { NumberFormatProps } from 'react-number-format';
@@ -12,7 +11,10 @@ import { useStyles } from './style';
 
 type ComponentProps =
   | { type: 'input'; ControlProps: InputProps }
-  | { type: 'number'; ControlProps: NumberFormatProps }
+  | {
+      type: 'number';
+      ControlProps: NumberFormatProps;
+    }
   | { type: 'select'; ControlProps: SelectProps }
   | { type: 'datepicker'; ControlProps: DatePickerProps }
   | { type: 'partylookup'; ControlProps: PartyLookUpProps };
@@ -22,7 +24,6 @@ type FieldProps = {
   className?: string;
   required?: boolean;
   error?: string;
-  onResetError?(): void;
 } & ComponentProps;
 
 const Field: React.FC<FieldProps> = ({
@@ -32,30 +33,11 @@ const Field: React.FC<FieldProps> = ({
   error,
   type,
   ControlProps,
-  onResetError,
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
 
-  const rootRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!!error && rootRef.current) {
-      rootRef.current.scrollIntoView();
-    }
-  }, [error]);
-
-  const handleChange = useCallback(
-    (...args) => {
-      if (onResetError) {
-        onResetError();
-      }
-
-      // @ts-ignore
-      ControlProps.onChange && ControlProps.onChange(...args);
-    },
-    [ControlProps, onResetError]
-  );
+  const errorClassNames = clsx({ [classes.borderRed]: !!error });
 
   const renderComponent = () => {
     switch (type) {
@@ -63,8 +45,7 @@ const Field: React.FC<FieldProps> = ({
         return (
           <Input
             {...(ControlProps as InputProps)}
-            onChange={handleChange}
-            classes={{ root: clsx({ [classes.borderRed]: !!error }) }}
+            classes={{ root: errorClassNames }}
           />
         );
       case 'number':
@@ -73,32 +54,25 @@ const Field: React.FC<FieldProps> = ({
             {...(ControlProps as NumberFormatProps)}
             className={clsx(
               classes.numberInput,
-              (ControlProps as NumberFormatProps).className
+              (ControlProps as NumberFormatProps).className,
+              errorClassNames
             )}
-            onChange={handleChange}
           />
         );
       case 'select':
-        return (
-          <Select
-            {...(ControlProps as SelectProps)}
-            onChange={handleChange}
-            error={!!error}
-          />
-        );
+        return <Select {...(ControlProps as SelectProps)} error={!!error} />;
       case 'datepicker':
         return (
           <DatePicker
             {...(ControlProps as DatePickerProps)}
-            onChange={handleChange}
+            classes={{ inputRoot: errorClassNames }}
           />
         );
       case 'partylookup':
         return (
           <PartyLookup
             {...(ControlProps as PartyLookUpProps)}
-            onChange={handleChange}
-            classes={{ border: clsx({ [classes.borderRed]: !!error }) }}
+            classes={{ border: errorClassNames }}
           />
         );
       default:
@@ -107,7 +81,7 @@ const Field: React.FC<FieldProps> = ({
   };
 
   return (
-    <div className={clsx(classes.root, className)} ref={rootRef}>
+    <div className={clsx(classes.root, className)}>
       <span className={classes.label}>
         {t(label)}
         {required && <sup className={classes.required}>*</sup>}

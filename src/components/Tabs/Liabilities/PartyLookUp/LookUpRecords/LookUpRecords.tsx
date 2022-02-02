@@ -24,7 +24,7 @@ const defaulSort: SortModel<Organization> = {
 const rowsPerPageOptions = [5, 10, 15];
 
 interface LookUpRecordsProps {
-  onChange(organization: Organization): void;
+  onChange(organization: { id: string; name: string }): void;
   onClose(): void;
 }
 
@@ -52,7 +52,7 @@ const LookUpRecords: React.FC<LookUpRecordsProps> = ({ onChange, onClose }) => {
     if (selectedOrganizations.length) {
       const [organization] = selectedOrganizations;
 
-      onChange(organization);
+      onChange({ id: organization.Id, name: organization.Name });
       onClose();
     }
   };

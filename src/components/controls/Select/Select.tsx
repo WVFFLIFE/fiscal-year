@@ -1,7 +1,13 @@
-import { memo, SyntheticEvent } from 'react';
+import {
+  memo,
+  SyntheticEvent,
+  forwardRef,
+  ForwardedRef,
+  PropsWithoutRef,
+} from 'react';
 
 import Autocomplete, { AutocompleteProps } from '@mui/material/Autocomplete';
-import TextField from '@mui/material/TextField';
+import TextField, { TextFieldProps } from '@mui/material/TextField';
 import { ArrowIcon, CloseIcon } from 'components/Icons';
 
 import clsx from 'clsx';
@@ -17,20 +23,27 @@ export interface SelectProps<T extends string | number | object = any> {
   error?: boolean;
   getOptionLabel?: AutocompleteProps<T, false, false, false>['getOptionLabel'];
   renderOption?: AutocompleteProps<T, false, false, false>['renderOption'];
+  inputRef?: TextFieldProps['inputRef'];
 }
 
-const Select = <T extends string | number | object>({
-  value,
-  options,
-  onChange,
-  placeholder,
-  name,
-  error,
-  disabled,
-  getOptionLabel,
-  renderOption,
-}: SelectProps<T>) => {
+const SelectWithoutRef = <T extends string | number | object>(
+  props: PropsWithoutRef<SelectProps<T>>,
+  ref: ForwardedRef<HTMLInputElement>
+) => {
   const classes = useStyles();
+
+  const {
+    onChange,
+    options,
+    value,
+    disabled,
+    error,
+    getOptionLabel,
+    name,
+    placeholder,
+    renderOption,
+    inputRef,
+  } = props;
 
   const handleChange = (
     event: SyntheticEvent<Element, Event>,
@@ -41,6 +54,7 @@ const Select = <T extends string | number | object>({
 
   return (
     <Autocomplete
+      ref={ref}
       classes={{
         option: classes.option,
         endAdornment: classes.endAdornment,
@@ -63,6 +77,7 @@ const Select = <T extends string | number | object>({
           name={name}
           placeholder={placeholder}
           variant="standard"
+          inputRef={inputRef}
           InputProps={{
             ...params.InputProps,
             disableUnderline: true,
@@ -73,5 +88,7 @@ const Select = <T extends string | number | object>({
     />
   );
 };
+
+const Select = forwardRef(SelectWithoutRef);
 
 export default memo(Select);

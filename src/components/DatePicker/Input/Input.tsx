@@ -61,6 +61,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     const parsedDate = parseDate(value);
 
     useEffect(() => {
+      if (!date) {
+        setValue('');
+        return;
+      }
       if (isValid(date)) {
         setValue(getDateStr(date));
       }

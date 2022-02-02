@@ -1,6 +1,13 @@
 import { useState, KeyboardEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import { setMonth, setYear, getMonth, getYear, Locale } from 'date-fns';
+import {
+  setMonth,
+  setYear,
+  getMonth,
+  getYear,
+  Locale,
+  isValid,
+} from 'date-fns';
 import { enGB } from 'date-fns/locale';
 
 import Control, { CalendarViewType } from './ControlPanel';
@@ -33,7 +40,9 @@ const Body: React.FC<BodyProps> = ({
   const classes = useStyles();
   const { t } = useTranslation();
 
-  const [tempDate, setTempDate] = useState(() => date || new Date());
+  const [tempDate, setTempDate] = useState(() =>
+    date && isValid(date) ? date : new Date()
+  );
   const [calendarView, setCalendarView] = useState<CalendarViewType>('days');
 
   const handleChangeCalendarView = (view: CalendarViewType) => {

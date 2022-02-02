@@ -177,6 +177,10 @@ export function floatStrToNumber(input: string) {
   return Number(input.replace(/,/g, '.').replace(/ /g, ''));
 }
 
+export function toFloat(input: string) {
+  return parseFloat(input.replace(',', '.'));
+}
+
 export function getMyOwnCooperatives(cooperatives: CommonCooperativeModel[]) {
   return cooperatives.filter((cooperative) => cooperative.IsOwn);
 }
