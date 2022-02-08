@@ -1,5 +1,5 @@
 import { ChangeEvent, FormEvent, useCallback, useState } from 'react';
-import { ErrorModel, OptionalNumber, OptionalString } from 'models';
+import { ErrorModel } from 'models';
 
 import useAppDispatch from 'hooks/useAppDispatch';
 import useSelectFiscalYear from 'hooks/useSelectFiscalYear';
@@ -12,35 +12,16 @@ import {
   selectBalancesProducts,
 } from 'selectors/generalPageSelectors';
 
-import {
-  isProductEmpty,
-  isProductVisible,
-  BalanceProductModel,
-  unzipProducts,
-} from 'utils/fiscalYear';
+import { toFloat } from 'utils';
 
-import Services from 'services';
+import Services, { BalanceUpdateRequest } from 'services';
 
 interface FormStateModel {
   productName: string;
   deficit: string;
   uploading: boolean;
   error: ErrorModel | null;
-  validation: { [key: string]: string };
-}
-
-function toNumber(val: string) {
-  return Number(val.replace(/ /g, '').replace(/,/g, '.'));
-}
-
-function getFieldIdx(products: BalanceProductModel[]) {
-  const nextProduct = products.find(
-    (product) =>
-      isProductEmpty(product.productName, product.surplusDeficitPreviousFY) &&
-      isProductVisible(product)
-  );
-
-  return nextProduct?.index;
+  validation: Record<string, string>;
 }
 
 const useAddFormData = (onClose: () => void) => {
@@ -122,69 +103,36 @@ const useAddFormData = (onClose: () => void) => {
       )
         return;
 
-      const unzippedProducts = unzipProducts(balancesProducts);
-
       setFormState((prevState) => ({
         ...prevState,
         uploading: true,
       }));
 
-      const fieldIdx = getFieldIdx(balancesProducts);
-
-      const options = fieldIdx
-        ? {
-            [`SpecFinCalcProductName${fieldIdx}`]: formState.productName,
-            [`SpecFinCalcSurplusDeficitPreviousFY${fieldIdx}`]: toNumber(
-              formState.deficit
-            ),
-          }
-        : {};
-
-      const reqBody = {
+      const reqBody: BalanceUpdateRequest = {
         FiscalYearId: fiscalYear.id,
         PropertyMeintenanceProductName:
           balancesData.propertyMaintenanceProductName,
         PropertyMeintenanceSurplusDeficitPreviousFY:
           balancesData.propertyMaintenanceSurplusDeficitPreviousFY,
-        Show1: true,
-        Show2: true,
-        Show3: true,
-        Show4: true,
-        Show5: true,
-        SpecFinCalcProductName1: unzippedProducts[
-          'productName1'
-        ] as OptionalString,
-        SpecFinCalcProductName2: unzippedProducts[
-          'productName2'
-        ] as OptionalString,
-        SpecFinCalcProductName3: unzippedProducts[
-          'productName3'
-        ] as OptionalString,
-        SpecFinCalcProductName4: unzippedProducts[
-          'productName4'
-        ] as OptionalString,
-        SpecFinCalcProductName5: unzippedProducts[
-          'productName5'
-        ] as OptionalString,
-        SpecFinCalcSurplusDeficitPreviousFY1: unzippedProducts[
-          'surplusDeficitPreviousFY1'
-        ] as OptionalNumber,
-        SpecFinCalcSurplusDeficitPreviousFY2: unzippedProducts[
-          'surplusDeficitPreviousFY2'
-        ] as OptionalNumber,
-        SpecFinCalcSurplusDeficitPreviousFY3: unzippedProducts[
-          'surplusDeficitPreviousFY3'
-        ] as OptionalNumber,
-        SpecFinCalcSurplusDeficitPreviousFY4: unzippedProducts[
-          'surplusDeficitPreviousFY4'
-        ] as OptionalNumber,
-        SpecFinCalcSurplusDeficitPreviousFY5: unzippedProducts[
-          'surplusDeficitPreviousFY5'
-        ] as OptionalNumber,
+        SpecialFinancialCalculations: [
+          ...balancesData.products.map((product) => ({
+            Id: product.id,
+            IsDisabled: product.isDisabled,
+            IsShow: product.isShow,
+            ProductName: product.productName,
+            SurplusDeficitPreviousFY: product.surplusDeficitPreviousFY,
+          })),
+          {
+            Id: null,
+            IsDisabled: false,
+            IsShow: true,
+            ProductName: formState.productName,
+            SurplusDeficitPreviousFY: toFloat(formState.deficit),
+          },
+        ],
         VATCalculationsProductName: balancesData.vatCalculationsProductName,
         VATCalculationsSurplusDeficitPreviousFY:
           balancesData.vatCalculationsSurplusDeficitPreviousFY,
-        ...options,
       };
 
       const res = await Services.fiscalYearBalancesUpdate(reqBody);

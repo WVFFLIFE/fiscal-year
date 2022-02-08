@@ -14,7 +14,7 @@ function convertByType(data: any, type: 'string' | 'date') {
   }
 }
 
-export interface AccessorModel<T extends object = { [key: string]: any }> {
+export interface AccessorModel<T extends Record<string, any> = any> {
   accessor: keyof T | string | ((el: T) => string | keyof T | null);
   type: 'string' | 'date';
 }

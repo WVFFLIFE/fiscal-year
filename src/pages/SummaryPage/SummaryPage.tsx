@@ -14,7 +14,6 @@ import Backdrop from 'components/Backdrop';
 import DialogError from 'components/DialogError';
 import {
   FiltersWrapper,
-  ApplyButton,
   InfoBox,
   Container,
   IconButton,
@@ -127,7 +126,7 @@ const SummaryPage: FC<SummaryPageProps> = ({ commonCooperatives }) => {
       {isEmptyFilter && <InfoBox>{t(hint)}</InfoBox>}
       {!isEmptyFilter &&
         (state.extendedCooperatives.length ? (
-          <Container className={classes.offsetTop}>
+          <Container className={classes.container}>
             {state.current.cooperatives.length &&
               state.current.calendarYear && (
                 <ContainerTopBar

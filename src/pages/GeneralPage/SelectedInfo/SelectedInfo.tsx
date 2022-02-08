@@ -12,6 +12,7 @@ import { IconButton } from 'components/Styled';
 import { ListBulletsIcon } from 'components/Icons';
 import AnnualReport from './AnnualReport';
 import CreateEvent from './CreateEvent';
+import Tooltip from 'components/Tooltip';
 import UnsavedChanges from 'components/Tabs/UnsavedChanges';
 
 import { useStyles } from './style';
@@ -50,9 +51,11 @@ const SelectedInfo: React.FC<SelectedInfoProps> = ({
   return (
     <div className={classes.root}>
       <div className={classes.leftSide}>
-        <IconButton className={classes.iconBtn} onClick={handleClickBackBtn}>
-          <ListBulletsIcon className={classes.icon} />
-        </IconButton>
+        <Tooltip title={t('#common.summary') as string} arrow>
+          <IconButton className={classes.iconBtn} onClick={handleClickBackBtn}>
+            <ListBulletsIcon className={classes.icon} />
+          </IconButton>
+        </Tooltip>
         <a
           className={classes.link}
           href={cooperativeLink}

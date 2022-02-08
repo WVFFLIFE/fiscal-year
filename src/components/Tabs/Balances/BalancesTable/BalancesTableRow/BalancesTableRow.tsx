@@ -15,6 +15,7 @@ interface BalancesTableRowProps<T extends object> {
   data: T;
   column: Column<T>;
   disabled?: boolean;
+  rowColor?: string;
 }
 
 const BalancesTableRow = <T extends object>({
@@ -22,11 +23,10 @@ const BalancesTableRow = <T extends object>({
   column,
   className,
   disabled,
+  rowColor,
 }: BalancesTableRowProps<T>) => {
-  const classes = useStyles();
+  const classes = useStyles({ background: rowColor });
   const { t } = useTranslation();
-
-  const isDisabled = disabled || column.disabled;
 
   const {
     activeEditMode,
@@ -42,9 +42,10 @@ const BalancesTableRow = <T extends object>({
 
   return (
     <div
-      className={clsx(classes.row, className, {
+      className={clsx(classes.row, {
         [classes.active]: activeEditMode,
-        [classes.disabled]: isDisabled,
+        [classes.disabled]: disabled || !column.editable,
+        [classes.rowDisabled]: column.disabled,
       })}
     >
       <div className={classes.item}>{t(column.label)}</div>
@@ -59,8 +60,10 @@ const BalancesTableRow = <T extends object>({
           />
         ) : column.render ? (
           column.render(data)
+        ) : text ? (
+          <Highlight text={String(text)} />
         ) : (
-          text && <Highlight text={String(text)} />
+          '---'
         )}
       </div>
       {column.editable ? (

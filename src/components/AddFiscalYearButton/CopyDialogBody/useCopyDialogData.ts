@@ -1,10 +1,11 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback } from 'react';
 import { ErrorModel, FiscalYearModel } from 'models';
 
 import useStateSelector from 'hooks/useStateSelector';
-import { selectFiscalYearsList } from 'selectors/generalPageSelectors';
-
-import { startOfYear, endOfYear, isSameDay, subYears } from 'utils/dates';
+import {
+  selectFiscalYearsList,
+  selectNextFiscalYear,
+} from 'selectors/generalPageSelectors';
 
 import { Services, FiscalYear } from 'services/s';
 
@@ -19,32 +20,13 @@ interface RequestState {
   error: ErrorModel | null;
 }
 
-const getPrevFiscalYear = () => ({
-  startDate: subYears(startOfYear(new Date()), 1),
-  endDate: subYears(endOfYear(new Date()), 1),
-});
-
-export const findPrevFiscalYear = (fiscalYearsList: FiscalYearModel[]) => {
-  const prevFiscalYear = getPrevFiscalYear();
-
-  return (
-    fiscalYearsList.find(
-      (fiscalYear) =>
-        isSameDay(new Date(fiscalYear.StartDate), prevFiscalYear.startDate) &&
-        isSameDay(new Date(fiscalYear.EndDate), prevFiscalYear.endDate)
-    ) || null
-  );
-};
-
 const useCopyDialogData = (options: Options) => {
   const { onClose } = options;
 
-  const fiscalYearsList = useStateSelector(selectFiscalYearsList);
-
-  const prevFiscalYear = useMemo(
-    () => findPrevFiscalYear(fiscalYearsList),
-    [fiscalYearsList]
-  );
+  const { fiscalYearsList, nextFiscalYear } = useStateSelector((state) => ({
+    fiscalYearsList: selectFiscalYearsList(state),
+    nextFiscalYear: selectNextFiscalYear(state),
+  }));
 
   const [requestState, setRequestState] = useState<RequestState>({
     creating: false,
@@ -52,7 +34,7 @@ const useCopyDialogData = (options: Options) => {
   });
 
   const [selectedFiscalYear, setSelectedFiscalYear] =
-    useState<FiscalYearModel | null>(prevFiscalYear);
+    useState<FiscalYearModel | null>(nextFiscalYear && { ...nextFiscalYear });
 
   const handleCreateFromSource = async () => {
     if (!selectedFiscalYear) return;
@@ -94,7 +76,6 @@ const useCopyDialogData = (options: Options) => {
   };
 
   return {
-    hasPreviousFiscalYear: !!prevFiscalYear,
     fiscalYearsList,
     requestState,
     selectedFiscalYear,

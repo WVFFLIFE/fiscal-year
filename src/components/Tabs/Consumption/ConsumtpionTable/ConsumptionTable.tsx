@@ -8,7 +8,7 @@ import ConsumptionTableRow from './ConsumtpionTableRow';
 interface ConsumptionTableProps {
   data: ConsumptionModel;
   onSaveConsumption(
-    option: { [key: string]: number },
+    option: Record<string, number>,
     cb?: () => void
   ): Promise<unknown>;
   disabled?: boolean;

@@ -16,7 +16,7 @@ import {
   selectVATCalculationData,
 } from 'selectors/generalPageSelectors';
 
-import { unzipProducts, hasEmptyProduct } from 'utils/fiscalYear';
+import { toFloat } from 'utils';
 
 import Services from 'services';
 
@@ -53,14 +53,83 @@ const useBalancesData = () => {
     };
   }, []);
 
+  const handleSaveProducts = async (
+    value: string,
+    fieldName: 'productName' | 'deficit',
+    id: number,
+    cb?: () => void
+  ) => {
+    if (!fiscalYear?.id || !balancesData || !products) return;
+
+    const newProducts = products.map((product) => {
+      let newProduct = {
+        Id: product.id,
+        IsDisabled: product.isDisabled,
+        IsShow: product.isShow,
+        ProductName: product.productName,
+        SurplusDeficitPreviousFY: product.surplusDeficitPreviousFY,
+      };
+
+      if (product.id === id) {
+        if (fieldName === 'productName') {
+          newProduct.ProductName = value;
+        } else if (fieldName === 'deficit') {
+          newProduct.SurplusDeficitPreviousFY = +value;
+        }
+      }
+
+      return newProduct;
+    });
+
+    const reqBody = {
+      FiscalYearId: fiscalYear.id,
+      PropertyMeintenanceProductName:
+        balancesData.propertyMaintenanceProductName,
+      PropertyMeintenanceSurplusDeficitPreviousFY:
+        balancesData.propertyMaintenanceSurplusDeficitPreviousFY,
+      SpecialFinancialCalculations: newProducts,
+      VATCalculationsProductName: balancesData.vatCalculationsProductName,
+      VATCalculationsSurplusDeficitPreviousFY:
+        balancesData.vatCalculationsSurplusDeficitPreviousFY,
+    };
+
+    try {
+      setRequestState((prevState) => ({
+        ...prevState,
+        loading: true,
+      }));
+
+      const res = await Services.fiscalYearBalancesUpdate(reqBody);
+
+      if (res.IsSuccess) {
+        if (cb) cb();
+        setRequestState((prevState) => ({
+          ...prevState,
+          loading: false,
+        }));
+
+        dispatch(fetchGeneralFiscalYear(fiscalYear.id));
+        return;
+      }
+
+      throw new Error(res.Message);
+    } catch (err) {
+      console.error(err);
+
+      setRequestState((prevState) => ({
+        ...prevState,
+        loading: false,
+        error: { messages: [String(err)] },
+      }));
+    }
+  };
+
   const handleSaveFields = useCallback(
     async (
-      options: { [key: string]: OptionalNumber | OptionalString },
+      options: Record<string, OptionalNumber | OptionalString>,
       cb?: () => void
     ) => {
       if (!fiscalYear?.id || !balancesData || !products) return;
-
-      const unzippedProducts = unzipProducts(products);
 
       const reqBody = {
         FiscalYearId: fiscalYear.id,
@@ -68,41 +137,13 @@ const useBalancesData = () => {
           balancesData.propertyMaintenanceProductName,
         PropertyMeintenanceSurplusDeficitPreviousFY:
           balancesData.propertyMaintenanceSurplusDeficitPreviousFY,
-        Show1: true,
-        Show2: true,
-        Show3: true,
-        Show4: true,
-        Show5: true,
-        SpecFinCalcProductName1: unzippedProducts[
-          'productName1'
-        ] as OptionalString,
-        SpecFinCalcProductName2: unzippedProducts[
-          'productName2'
-        ] as OptionalString,
-        SpecFinCalcProductName3: unzippedProducts[
-          'productName3'
-        ] as OptionalString,
-        SpecFinCalcProductName4: unzippedProducts[
-          'productName4'
-        ] as OptionalString,
-        SpecFinCalcProductName5: unzippedProducts[
-          'productName5'
-        ] as OptionalString,
-        SpecFinCalcSurplusDeficitPreviousFY1: unzippedProducts[
-          'surplusDeficitPreviousFY1'
-        ] as OptionalNumber,
-        SpecFinCalcSurplusDeficitPreviousFY2: unzippedProducts[
-          'surplusDeficitPreviousFY2'
-        ] as OptionalNumber,
-        SpecFinCalcSurplusDeficitPreviousFY3: unzippedProducts[
-          'surplusDeficitPreviousFY3'
-        ] as OptionalNumber,
-        SpecFinCalcSurplusDeficitPreviousFY4: unzippedProducts[
-          'surplusDeficitPreviousFY4'
-        ] as OptionalNumber,
-        SpecFinCalcSurplusDeficitPreviousFY5: unzippedProducts[
-          'surplusDeficitPreviousFY5'
-        ] as OptionalNumber,
+        SpecialFinancialCalculations: balancesData.products.map((product) => ({
+          Id: product.id,
+          IsDisabled: product.isDisabled,
+          IsShow: product.isShow,
+          ProductName: product.productName,
+          SurplusDeficitPreviousFY: product.surplusDeficitPreviousFY,
+        })),
         VATCalculationsProductName: balancesData.vatCalculationsProductName,
         VATCalculationsSurplusDeficitPreviousFY:
           balancesData.vatCalculationsSurplusDeficitPreviousFY,
@@ -117,18 +158,15 @@ const useBalancesData = () => {
 
         const res = await Services.fiscalYearBalancesUpdate(reqBody);
 
-        if (res.IsSuccess) {
-          if (cb) cb();
-          setRequestState((prevState) => ({
-            ...prevState,
-            loading: false,
-          }));
+        if (!res.IsSuccess) throw new Error(res.Message);
 
-          dispatch(fetchGeneralFiscalYear(fiscalYear.id));
-          return;
-        }
+        if (cb) cb();
+        setRequestState((prevState) => ({
+          ...prevState,
+          loading: false,
+        }));
 
-        throw new Error(res.Message);
+        dispatch(fetchGeneralFiscalYear(fiscalYear.id));
       } catch (err) {
         console.error(err);
 
@@ -139,7 +177,7 @@ const useBalancesData = () => {
         }));
       }
     },
-    [balancesData, fiscalYear, products]
+    [balancesData, fiscalYear, products, dispatch]
   );
 
   const handleInitError = () => {
@@ -149,15 +187,9 @@ const useBalancesData = () => {
     }));
   };
 
-  const isDisabledAddNewProductBtn = useMemo(() => {
-    if (!products) return true;
-
-    return !hasEmptyProduct(products);
-  }, [products]);
-
   return {
     isClosed: !!fiscalYear?.isClosed,
-    isDisabledAddNewProductBtn,
+    handleSaveProducts,
     requestState,
     products,
     propertyMaintenanceData,

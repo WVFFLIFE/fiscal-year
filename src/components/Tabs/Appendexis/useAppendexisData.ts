@@ -31,12 +31,6 @@ interface RequestStateModel {
   error: ErrorModel | null;
 }
 
-function getArticleId(str: string, id: string | null) {
-  if (!id) return str;
-
-  return `${str}_${id}`;
-}
-
 interface ArticleIdModel {
   current: string | null;
   prev: string | null;
@@ -64,13 +58,6 @@ const useAppendexisData = () => {
     current: null,
     prev: null,
   });
-
-  // useEffect(() => {
-  //   setArticleId({
-  //     current: null,
-  //     prev: null,
-  //   });
-  // }, [fiscalYear]);
 
   const runningNumberSettings = useMemo(
     () => additionalSettingsAdapter(rawRunningNumberSettings, t),
@@ -217,16 +204,16 @@ const useAppendexisData = () => {
               },
               maxLength: appendexisSettings.loansMaturingOverFiveYearsMaxLength,
             },
-            {
-              id: 'AccountingBooks',
-              label: '#tab.appendexis.subtitle.accountingbooks',
-              editorData: {
-                formatted: appendexisData.accountingBooksFormatted,
-                html: appendexisData.accountingBooksHtml,
-                text: appendexisData.accountingBooks,
-              },
-              maxLength: appendexisSettings.accountingBooksMaxLength,
-            },
+            // {
+            //   id: 'AccountingBooks',
+            //   label: '#tab.appendexis.subtitle.accountingbooks',
+            //   editorData: {
+            //     formatted: appendexisData.accountingBooksFormatted,
+            //     html: appendexisData.accountingBooksHtml,
+            //     text: appendexisData.accountingBooks,
+            //   },
+            //   maxLength: appendexisSettings.accountingBooksMaxLength,
+            // },
           ]
         : [],
     [appendexisData, appendexisSettings, fiscalYear?.id]

@@ -1,246 +1,15 @@
-import {
-  memo,
-  useState,
-  useRef,
-  useEffect,
-  useCallback,
-  ChangeEvent,
-  useMemo,
-} from 'react';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CommonCooperativeModel } from 'models';
-import _orderBy from 'lodash/orderBy';
-import _toLower from 'lodash/toLower';
-import { filterBySearchTerm, getMyOwnCooperatives } from 'utils';
+
+import { getMyOwnCooperatives } from 'utils';
 
 import Picker from 'components/controls/Picker';
-import PickerSearch from 'components/controls/PickerSearch';
-import Button from 'components/Button';
-import CheckboxControl from 'components/CheckboxControl';
-import QuickFilter, { QuickFilterOption } from 'components/QuickFilter';
-import CooperativesList from './CooperativesList';
-import { ApplyButton, CancelButton, BtnsWrapper } from 'components/Styled';
-import { CloseIcon } from 'components/Icons';
+import SingleView from './SingleView';
+import MultipleView from './MultipleView';
 
 import clsx from 'clsx';
-import { useStyles, useBodyStyles } from './style';
-
-function sortCooperatives<T extends CommonCooperativeModel>(coops: T[]) {
-  return _orderBy(coops, (coop) => _toLower(coop.Name), 'asc');
-}
-
-interface CooperativesPickerProps<T extends CommonCooperativeModel> {
-  className?: string;
-  disabled?: boolean;
-  multiple?: boolean;
-  cooperatives: T[];
-  selectedCooperatives: T[];
-  onSelectCooperatives(cooperatives: T[]): void;
-}
-
-interface BodyProps<T extends CommonCooperativeModel>
-  extends CooperativesPickerProps<T> {
-  onClosePicker(): void;
-}
-
-const Body = <T extends CommonCooperativeModel>({
-  disabled = false,
-  multiple = false,
-  cooperatives,
-  onSelectCooperatives,
-  selectedCooperatives,
-  onClosePicker,
-}: BodyProps<T>) => {
-  const classes = useBodyStyles();
-  const { t } = useTranslation();
-
-  const searchRef = useRef<HTMLInputElement>(null);
-  const rootRef = useRef<HTMLDivElement>(null);
-
-  const [searchTerm, setSearchTerm] = useState('');
-  const [activeQuickFilter, setActiveQuickFilter] = useState('myOwn');
-  const [currentCooperative, setCurrentCooperative] =
-    useState<T[]>(selectedCooperatives);
-
-  const selectedAll =
-    !!cooperatives.length && cooperatives.length === currentCooperative.length;
-
-  const focusSearchField = () => {
-    if (searchRef.current) {
-      searchRef.current.focus();
-    }
-  };
-
-  useEffect(() => {
-    focusSearchField();
-  }, [activeQuickFilter]);
-
-  const handleChangeSearchTerm = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      setSearchTerm(e.target.value);
-    },
-    []
-  );
-
-  const handleChangeQuickFilter = useCallback((newFilter: string) => {
-    setActiveQuickFilter(newFilter);
-  }, []);
-
-  const handleClickItem = (currentCooperative: T, remove = true) => {
-    if (multiple) {
-      setCurrentCooperative((prevCoops) =>
-        remove
-          ? prevCoops.filter(
-              (prevCoop) => prevCoop.Id !== currentCooperative.Id
-            )
-          : prevCoops.concat(currentCooperative)
-      );
-    } else {
-      onSelectCooperatives([currentCooperative]);
-      onClosePicker();
-    }
-  };
-
-  const handleSelectCooperatives = () => {
-    onSelectCooperatives(currentCooperative);
-    onClosePicker();
-  };
-
-  const resetFilters = () => {
-    setCurrentCooperative([]);
-    setSearchTerm('');
-    setActiveQuickFilter('myOwn');
-  };
-
-  const groupedList = useMemo(() => {
-    return selectedAll || !multiple
-      ? sortCooperatives(cooperatives)
-      : sortCooperatives([...currentCooperative]).concat(
-          sortCooperatives(
-            cooperatives.filter(
-              (coop) =>
-                !!!currentCooperative.find(
-                  (currentCoop) => currentCoop.Id === coop.Id
-                )
-            )
-          )
-        );
-  }, [selectedAll, cooperatives, currentCooperative, multiple]);
-
-  const filteredCooperativesByQuickFilter = useMemo(() => {
-    return activeQuickFilter
-      ? groupedList.filter((cooperative) => {
-          return activeQuickFilter === 'myOwn'
-            ? cooperative.IsOwn
-            : activeQuickFilter === 'pmCompany'
-            ? cooperative.IsPMCompanyEmployee
-            : true;
-        })
-      : groupedList;
-  }, [groupedList, activeQuickFilter]);
-
-  const filteredCooperativesBySearchTerm = useMemo(() => {
-    return filteredCooperativesByQuickFilter.filter((cooperative) => {
-      return filterBySearchTerm(cooperative.Name, searchTerm);
-    });
-  }, [filteredCooperativesByQuickFilter, searchTerm]);
-
-  const handleToggleSelectAll = () => {
-    setCurrentCooperative(
-      currentCooperative.length ? [] : [...filteredCooperativesBySearchTerm]
-    );
-  };
-
-  const quickFilterOptions: QuickFilterOption[] = useMemo(
-    () => [
-      {
-        id: 'myOwn',
-        label: '#control.quickfilter.myown',
-      },
-      {
-        id: 'pmCompany',
-        label: '#control.quickfilter.pmcompany',
-      },
-      {
-        id: 'all',
-        label: '#control.quickfilter.all',
-      },
-    ],
-    []
-  );
-
-  return (
-    <div
-      className={classes.wrapper}
-      ref={rootRef}
-      style={{ width: 'auto', minWidth: 450 }}
-    >
-      <PickerSearch
-        ref={searchRef}
-        className={classes.offset}
-        value={searchTerm}
-        onChange={handleChangeSearchTerm}
-      />
-      <QuickFilter
-        className={classes.offset}
-        options={quickFilterOptions}
-        active={activeQuickFilter}
-        onChange={handleChangeQuickFilter}
-      />
-      {multiple && (
-        <div className={classes.controlsWrapper}>
-          {activeQuickFilter === 'all' ? (
-            <span style={{ fontSize: 14, fontWeight: 300 }}>
-              {t('#control.cooperativepicker.selectupto')}
-            </span>
-          ) : (
-            <CheckboxControl
-              checked={selectedAll}
-              onChange={handleToggleSelectAll}
-              label={t('#common.selectall')}
-              indeterminate={!!currentCooperative.length && !selectedAll}
-            />
-          )}
-          <Button
-            onClick={resetFilters}
-            className={classes.closeBtn}
-            classes={{
-              startIcon: classes.closeIcon,
-            }}
-            size="small"
-            startIcon={<CloseIcon />}
-            label={t('#common.clearfilters')}
-          />
-        </div>
-      )}
-      <CooperativesList
-        className={classes.list}
-        disabled={
-          multiple &&
-          activeQuickFilter === 'all' &&
-          currentCooperative.length >= 5
-        }
-        multiple={multiple}
-        cooperatives={filteredCooperativesBySearchTerm}
-        selected={currentCooperative}
-        onClickItem={handleClickItem}
-      />
-      {multiple ? (
-        <BtnsWrapper className={classes.topOffset}>
-          <CancelButton
-            className={classes.cancelBtnOffsetRight}
-            onClick={onClosePicker}
-          >
-            {t('#button.cancel')}
-          </CancelButton>
-          <ApplyButton onClick={handleSelectCooperatives}>
-            {t('#button.apply')}
-          </ApplyButton>
-        </BtnsWrapper>
-      ) : null}
-    </div>
-  );
-};
+import { useStyles } from './style';
 
 function isAllMyOwn(
   cooperatives: CommonCooperativeModel[],
@@ -252,16 +21,46 @@ function isAllMyOwn(
   return allMyOwnCoops.length === selectedMyOwnCooperatives.length;
 }
 
-const CooperativesPicker = <T extends CommonCooperativeModel>({
-  className,
-  disabled = false,
-  multiple = false,
-  cooperatives,
-  onSelectCooperatives,
-  selectedCooperatives,
-}: CooperativesPickerProps<T>) => {
+interface CooperativesPickerProps {
+  className?: string;
+  /**
+   * If `true`, the menu will support multiple selections
+   * @default false
+   */
+  multiple?: boolean;
+  /**
+   * If `true` component will be disabled
+   * @default false
+   */
+  disabled?: boolean;
+  /**
+   * List of cooperatives
+   */
+  cooperatives: CommonCooperativeModel[];
+  /**
+   * List of selected cooperatives
+   */
+  selectedCooperatives: CommonCooperativeModel[];
+  /**
+   * Callback fired when cooperative(s) will be selected (in single mode)
+   * or apply button will be clicked (multiple mode)
+   * @param {CommonCooperativeModel[]} cooperatives
+   */
+  onSelectCooperatives(cooperatives: CommonCooperativeModel[]): void;
+}
+
+const CooperativesPicker: React.FC<CooperativesPickerProps> = (props) => {
   const classes = useStyles();
   const { t } = useTranslation();
+
+  const {
+    cooperatives,
+    onSelectCooperatives,
+    selectedCooperatives,
+    className,
+    disabled = false,
+    multiple = false,
+  } = props;
 
   const renderValue = () => {
     if (!selectedCooperatives.length) return null;
@@ -280,15 +79,27 @@ const CooperativesPicker = <T extends CommonCooperativeModel>({
     });
   };
 
-  const renderBody = (onClosePicker: () => void) => (
-    <Body
-      multiple={multiple}
-      cooperatives={cooperatives}
-      selectedCooperatives={selectedCooperatives}
-      onSelectCooperatives={onSelectCooperatives}
-      onClosePicker={onClosePicker}
-    />
-  );
+  const renderBody = (onClosePicker: () => void) => {
+    return (
+      <div className={classes.body}>
+        {multiple ? (
+          <MultipleView
+            cooperatives={cooperatives}
+            selectedCooperatives={selectedCooperatives}
+            onClose={onClosePicker}
+            onSelect={onSelectCooperatives}
+          />
+        ) : (
+          <SingleView
+            cooperatives={cooperatives}
+            selectedCooperatives={selectedCooperatives}
+            onClose={onClosePicker}
+            onSelect={onSelectCooperatives}
+          />
+        )}
+      </div>
+    );
+  };
 
   return (
     <Picker

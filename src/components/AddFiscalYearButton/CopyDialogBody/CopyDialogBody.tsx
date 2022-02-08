@@ -17,7 +17,6 @@ const CopyDialogBody: React.FC<CopyDialogBodyProps> = ({ onClose }) => {
   const { t } = useTranslation();
 
   const {
-    hasPreviousFiscalYear,
     fiscalYearsList,
     requestState,
     selectedFiscalYear,
@@ -25,8 +24,7 @@ const CopyDialogBody: React.FC<CopyDialogBodyProps> = ({ onClose }) => {
     handleCreateFromSource,
   } = useCopyDialogData({ onClose });
 
-  const isDisabledCreateBtn =
-    !!!selectedFiscalYear || requestState.creating || !hasPreviousFiscalYear;
+  const isDisabledCreateBtn = !!!selectedFiscalYear || requestState.creating;
 
   return (
     <div>
@@ -41,7 +39,6 @@ const CopyDialogBody: React.FC<CopyDialogBodyProps> = ({ onClose }) => {
         value={selectedFiscalYear}
         options={fiscalYearsList}
         onSelectFiscalYear={handleChangeFiscalYear}
-        disabled={!hasPreviousFiscalYear}
       />
       <div className={classes.btnsWrapper}>
         <ActionButton className={classes.cancelBtn} onClick={onClose}>

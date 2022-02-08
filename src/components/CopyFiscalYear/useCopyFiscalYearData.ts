@@ -31,46 +31,46 @@ const useCopyFiscalYearData = () => {
   const [openConfirmationDialog, toggleConfirmationDialogVisibility] =
     useToggleSwitch();
 
-  const handleCopyFiscalYear = async () => {
-    if (!fiscalYear?.id) return;
+  // const handleCopyFiscalYear = async () => {
+  //   if (!fiscalYear?.id) return;
 
-    try {
-      setRequestState((prevState) => ({
-        ...prevState,
-        loading: true,
-      }));
+  //   try {
+  //     setRequestState((prevState) => ({
+  //       ...prevState,
+  //       loading: true,
+  //     }));
 
-      const res = await FiscalYearService.copy(fiscalYear.id);
+  //     const res = await FiscalYearService.copy(fiscalYear.id);
 
-      if (res.IsSuccess) {
-        setRequestState((prevState) => ({
-          ...prevState,
-          loading: false,
-        }));
+  //     if (res.IsSuccess) {
+  //       setRequestState((prevState) => ({
+  //         ...prevState,
+  //         loading: false,
+  //       }));
 
-        toggleConfirmationDialogVisibility();
-        dispatch(fetchGeneralFiscalYear(fiscalYear.id));
-      } else {
-        throw new Error(
-          res.ResponseCode ===
-          CopyFiscalYearResponseCode.AmbiguityFiscalYearNotFound
-            ? t('#error.fiscalyear.copy.ambiguityfiscalyearnotfound')
-            : res.ResponseCode ===
-              CopyFiscalYearResponseCode.PreviousFiscalYearNotFound
-            ? t('#error.fiscalyear.copy.previousfiscalyearnotfound')
-            : res.Message
-        );
-      }
-    } catch (err) {
-      console.error(err);
+  //       toggleConfirmationDialogVisibility();
+  //       dispatch(fetchGeneralFiscalYear(fiscalYear.id));
+  //     } else {
+  //       throw new Error(
+  //         res.ResponseCode ===
+  //         CopyFiscalYearResponseCode.AmbiguityFiscalYearNotFound
+  //           ? t('#error.fiscalyear.copy.ambiguityfiscalyearnotfound')
+  //           : res.ResponseCode ===
+  //             CopyFiscalYearResponseCode.PreviousFiscalYearNotFound
+  //           ? t('#error.fiscalyear.copy.previousfiscalyearnotfound')
+  //           : res.Message
+  //       );
+  //     }
+  //   } catch (err) {
+  //     console.error(err);
 
-      setRequestState((prevState) => ({
-        ...prevState,
-        error: { messages: [(err as Error).message] },
-        loading: false,
-      }));
-    }
-  };
+  //     setRequestState((prevState) => ({
+  //       ...prevState,
+  //       error: { messages: [(err as Error).message] },
+  //       loading: false,
+  //     }));
+  //   }
+  // };
 
   const handleInitError = () => {
     setRequestState((prevState) => ({
@@ -83,7 +83,6 @@ const useCopyFiscalYearData = () => {
     requestState,
     openConfirmationDialog,
     toggleConfirmationDialogVisibility,
-    handleCopyFiscalYear,
     handleInitError,
   };
 };

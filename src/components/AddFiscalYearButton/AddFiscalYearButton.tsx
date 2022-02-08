@@ -8,7 +8,7 @@ import { PlusIcon, ArrowIcon, TemplateIcon, CopyIcon } from 'components/Icons';
 import Dropdown from 'components/Dropdown';
 import Dialog from 'components/Dialog';
 import CopyDialogBody from './CopyDialogBody';
-import CreateFromTemplateDialogBody from './CreateFromTemplateDialogBody';
+import FromTemplateView from 'components/FromTemplateView';
 
 import clsx from 'clsx';
 import { useStyles } from './style';
@@ -67,14 +67,14 @@ const AddFiscalYearButton: React.FC<ButtonProps> = (props) => {
           onClick={handleClickCreateFromTemplateFiscalYearItem}
         >
           <TemplateIcon className={classes.menuItemIcon} />
-          From template
+          {t('#common.fromtemplate')}
         </Dropdown.Item>
         <Dropdown.Item
           onClick={handleClickCopyExistingFiscalYearItem}
           className={classes.menuItem}
         >
           <CopyIcon className={classes.menuItemIcon} />
-          Copy existing fiscal year
+          {t('#common.copytheexistingfiscalyear')}
         </Dropdown.Item>
       </Dropdown>
       <Dialog
@@ -89,7 +89,8 @@ const AddFiscalYearButton: React.FC<ButtonProps> = (props) => {
         open={openCreatFromTemplateDialog}
         handleClose={toggleCreateFromTemplateDialogVisibility}
       >
-        <CreateFromTemplateDialogBody
+        <FromTemplateView
+          type="create"
           onClose={toggleCreateFromTemplateDialogVisibility}
         />
       </Dialog>

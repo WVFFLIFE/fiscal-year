@@ -95,6 +95,7 @@ const Tabs: FC = () => {
     <Box className={classes.root}>
       <MuiTabs
         value={selectedTab}
+        variant="scrollable"
         onChange={handleChangeSelectedTab}
         classes={tabsClasses}
       >

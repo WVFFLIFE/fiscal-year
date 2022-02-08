@@ -87,6 +87,10 @@ const useArticleEditorData = (options: HookOptions) => {
     }
   }, [touched, editorState]);
 
+  useEffect(() => {
+    prevEditorState.current = convertDataToState(editorData);
+  }, [editorData]);
+
   return {
     activeEditMode,
     editorState,

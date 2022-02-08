@@ -1,6 +1,6 @@
 import { makeStyles } from '@mui/styles';
 
-export const useStyles = makeStyles(() => ({
+export const useStyles = makeStyles((theme) => ({
   checkboxIcon: {
     display: 'flex',
     alignItems: 'center',
@@ -18,8 +18,16 @@ export const useStyles = makeStyles(() => ({
     color: '#fff',
   },
   checkboxRoot: {
-    padding: 0,
+    padding: 10,
     color: '#218D7A',
+    '& input:disabled ~ $checkboxIcon': {
+      background: theme.color.greyLight2,
+      borderColor: theme.color.greyBorder,
+    },
+    '& input:disabled ~ $checkedCheckboxIcon': {
+      background: theme.color.greyBorder,
+      borderColor: theme.color.greyBorder,
+    },
   },
   colorSecondary: {
     '&.Mui-disabled': {

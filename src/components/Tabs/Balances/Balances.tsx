@@ -1,5 +1,7 @@
 import { FC, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { alpha } from '@mui/system';
+import { useTheme } from '@mui/styles';
 
 import { Column } from './BalancesTable/models';
 
@@ -26,17 +28,18 @@ import { useStyles } from './style';
 const Balances: FC = () => {
   const { t } = useTranslation();
   const classes = useStyles();
+  const theme = useTheme();
 
   const {
     products,
     propertyMaintenanceData,
     vatCalculationData,
     isClosed,
-    isDisabledAddNewProductBtn,
     requestState,
     showDialog,
     toggleShowDialog,
     handleSaveFields,
+    handleSaveProducts,
     handleInitError,
   } = useBalancesData();
 
@@ -148,50 +151,44 @@ const Balances: FC = () => {
       product,
       [
         {
-          id: `SpecFinCalcProductName${product.index}`,
+          id: `SpecFinCalcProductName${product.id}`,
           label: '#tab.balances.specialfinancialcalculation.productname',
           field: 'productName',
           editable: true,
+          disabled: product.isDisabled,
           type: 'string',
-          onSave: (output, ...rest) =>
-            savingInterceptor(
-              output,
-              {
-                type: 'product',
-                index: product.index,
-                property: 'productName',
-              },
-              (req) => handleSaveFields(req, ...rest)
+          onSave: (value, ...rest) =>
+            handleSaveProducts(
+              value as string,
+              'productName',
+              product.id,
+              ...rest
             ),
         },
         {
-          id: `SpecFinCalcSurplusDeficitPreviousFY${product.index}`,
+          id: `SpecFinCalcSurplusDeficitPreviousFY${product.id}`,
           label: '#tab.balances.specialfinancialcalculation.deficit',
           field: 'surplusDeficitPreviousFY',
           editable: true,
+          disabled: product.isDisabled,
           type: 'number',
           render: (data) => {
             const text = toNumberFormat(data.surplusDeficitPreviousFY);
             return (
               <span className={classes.deficit}>
-                {text && <Highlight text={text} />}
+                {text ? <Highlight text={text} /> : '---'}
               </span>
             );
           },
-          onSave: (output, ...rest) =>
-            savingInterceptor(
-              output,
-              {
-                type: 'product',
-                index: product.index,
-                property: 'surplusDeficitPreviousFY',
-              },
-              (req) => handleSaveFields(req, ...rest)
-            ),
+          onSave: (value, ...rest) =>
+            handleSaveProducts(value as string, 'deficit', product.id, ...rest),
         },
       ],
     ]);
-  }, [classes, products, handleSaveFields]);
+  }, [classes, products]);
+
+  const isDisabledAddNewProductBtn =
+    isClosed || (!!products && products.length > 4);
 
   return (
     <Box>
@@ -204,8 +201,8 @@ const Balances: FC = () => {
             <BalancesTable
               columns={propertyMaintenanceColumns}
               data={propertyMaintenanceData}
-              className={classes.propertyMaintenanceRow}
               disabled={isClosed}
+              rowColor={alpha(theme.color.green, 0.1)}
             />
           )}
         </Box>
@@ -217,31 +214,33 @@ const Balances: FC = () => {
             <BalancesTable
               columns={vatCalculationColumns}
               data={vatCalculationData}
-              className={classes.vatCalculationRow}
               disabled={isClosed}
+              rowColor={theme.color.greyLight2}
             />
           )}
         </Box>
       </Box>
       <Box display="flex" flexDirection="column">
-        <Box display="flex" width="100%" marginBottom={4}>
-          <Box flex={1} marginRight={4}>
-            <SubTitle className={clsx(classes.subTitle, classes.initMargin)}>
-              {t('#tab.balances.specialfinancialcalculation.header')}
-            </SubTitle>
-          </Box>
-          <Box flex={1} display="flex" justifyContent="flex-end">
-            <ActionButton
-              className={classes.addBtn}
-              classes={btnCls}
-              palette="darkBlue"
-              startIcon={<PlusIcon />}
-              onClick={toggleShowDialog}
-              disabled={isClosed || isDisabledAddNewProductBtn}
-            >
-              {t('#button.addnewproduct')}
-            </ActionButton>
-          </Box>
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+          width="100%"
+          marginBottom={4}
+        >
+          <SubTitle className={clsx(classes.subTitle, classes.initMargin)}>
+            {t('#tab.balances.specialfinancialcalculation.header')}
+          </SubTitle>
+          <ActionButton
+            className={classes.addBtn}
+            classes={btnCls}
+            palette="darkBlue"
+            startIcon={<PlusIcon />}
+            onClick={toggleShowDialog}
+            disabled={isDisabledAddNewProductBtn}
+          >
+            {t('#button.addnewproduct')}
+          </ActionButton>
         </Box>
         <Box display="flex" flexWrap="wrap">
           {productsList &&
@@ -249,22 +248,20 @@ const Balances: FC = () => {
               const [product, columns] = productList;
 
               return (
-                product.visible && (
-                  <Box
-                    key={product.index}
-                    width="100%"
-                    maxWidth="calc(50% - 10px)"
-                    marginBottom={8}
-                    className={classes.oddBox}
-                  >
-                    <BalancesTable
-                      columns={columns}
-                      data={product}
-                      className={classes.specFinCalcRow}
-                      disabled={isClosed}
-                    />
-                  </Box>
-                )
+                <Box
+                  key={product.id}
+                  width="100%"
+                  maxWidth="calc(50% - 10px)"
+                  marginBottom={8}
+                  className={classes.oddBox}
+                >
+                  <BalancesTable
+                    columns={columns}
+                    data={product}
+                    disabled={isClosed}
+                    rowColor={alpha('#DB76001A', 0.1)}
+                  />
+                </Box>
               );
             })}
         </Box>

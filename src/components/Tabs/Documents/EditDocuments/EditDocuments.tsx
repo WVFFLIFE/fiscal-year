@@ -7,7 +7,7 @@ import { getAttributeTitle } from '../utils';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import FolderPicker from 'components/FolderPicker';
-import Button from 'components/Button';
+import ActionButton from 'components/ActionButton';
 import Input from 'components/Input';
 import DialogError from 'components/DialogError';
 import CheckboxGroup from 'components/CheckboxGroup';
@@ -86,7 +86,7 @@ const EditDocuments: React.FC<EditDocumentsProps> = ({
               onChangeFolderName={handleSaveNewFolderName}
             />
           </Box>
-          <Button
+          <ActionButton
             disabled={disabledAddNewFolderBtn}
             onClick={handleAddNewFolder}
             className={classes.addBtn}
@@ -94,9 +94,10 @@ const EditDocuments: React.FC<EditDocumentsProps> = ({
               startIcon: classes.addIcon,
             }}
             size="small"
-            label={t('#tab.documents.upload.addnewfolder')}
             startIcon={<PlusIcon />}
-          />
+          >
+            {t('#tab.documents.upload.addnewfolder')}
+          </ActionButton>
           {newFolder.show ? (
             <Box>
               <InputLabel>

@@ -29,7 +29,7 @@ declare global {
 
 WebFont.load({
   active: launch,
-  inactive: launch,
+  // inactive: launch,
   google: {
     families: ['Lato:300,400,500,700'],
   },

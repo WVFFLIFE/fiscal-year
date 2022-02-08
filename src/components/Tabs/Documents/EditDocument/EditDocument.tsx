@@ -7,7 +7,7 @@ import { getAttributeTitle } from '../utils';
 import Box from '@mui/material/Box';
 import FolderPicker from 'components/FolderPicker';
 import Input from 'components/Input';
-import Button from 'components/Button';
+import ActionButton from 'components/ActionButton';
 import CheckboxGroup from 'components/CheckboxGroup';
 import CheckboxControl from 'components/CheckboxControl';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -91,7 +91,7 @@ const EditDocument: React.FC<EditDocumentModel> = ({
               onChangeFolderName={handleSaveNewFolderName}
             />
           </Box>
-          <Button
+          <ActionButton
             disabled={!!(newFolder.show || selected.folderDepth >= 2)}
             onClick={handleAddNewFolder}
             className={classes.addBtn}
@@ -99,9 +99,10 @@ const EditDocument: React.FC<EditDocumentModel> = ({
               startIcon: classes.addIcon,
             }}
             size="small"
-            label={t('#tab.documents.upload.addnewfolder')}
             startIcon={<PlusIcon />}
-          />
+          >
+            {t('#tab.documents.upload.addnewfolder')}
+          </ActionButton>
           {newFolder.show ? (
             <Box marginBottom="30px">
               <InputLabel>

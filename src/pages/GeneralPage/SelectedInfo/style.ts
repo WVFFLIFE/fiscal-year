@@ -5,6 +5,8 @@ export const useStyles = makeStyles((theme) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: 20,
     marginBottom: 20,
   },
   leftSide: {

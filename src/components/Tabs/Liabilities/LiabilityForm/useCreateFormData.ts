@@ -226,10 +226,10 @@ const useCreateFormData = (
       if (isSaved) {
         closeSuccessDialog.current = () => {
           successDialogState.close();
+          onClose();
           onUpdate();
         };
         successDialogState.open();
-        onClose();
       }
     })();
   };

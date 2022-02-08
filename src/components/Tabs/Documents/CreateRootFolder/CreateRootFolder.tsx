@@ -33,35 +33,40 @@ const CreateRootFolder = () => {
       case BaseFolderStatusCode.Unknown:
         return (
           <>
-            <p className={classes.description}>
-              Main parent folder has been deleted.
-              <br />
-              For further work with documents you need to create the parent
-              folder again.
-            </p>
+            <p
+              className={classes.description}
+              dangerouslySetInnerHTML={{
+                __html: t('#tab.documents.parentfolderdeleted', {
+                  interpolation: { escapeValue: false },
+                }),
+              }}
+            />
             <ActionButton
               palette="darkBlue"
               startIcon={<PlusIcon />}
               onClick={toggleConfirmationDialogVisibility}
             >
-              Create parent folder
+              {t('#tab.documents.createparentfolder')}
             </ActionButton>
           </>
         );
       case BaseFolderStatusCode.InProgress:
         return (
           <>
-            <p className={clsx(classes.description, classes.m0)}>
-              Previously the process of creating a parent folder has been
-              started. <br />
-              Refresh the page to check the current status
-            </p>
+            <p
+              className={clsx(classes.description, classes.m0)}
+              dangerouslySetInnerHTML={{
+                __html: t('#tab.documents.jobisrunning', {
+                  interpolation: { escapeValue: false },
+                }),
+              }}
+            />
           </>
         );
       case BaseFolderStatusCode.Error:
         return (
           <p className={clsx(classes.description, classes.m0)}>
-            Something went wrong. Try to refresh the page.
+            {t('#common.somethingwentwrong')}
           </p>
         );
       default:
@@ -80,10 +85,8 @@ const CreateRootFolder = () => {
           maxWidth="xs"
           open={openConfirmationDialog}
           handleClose={toggleConfirmationDialogVisibility}
-          title={'Create parent folder'}
-          description={
-            'It may take some time to create the parent folder. To check the creation of the folder you need to refresh the page after a while'
-          }
+          title={t('#tab.documents.createparentfolder')}
+          description={t('#tab.documents.checkjobcreation')}
           Icon={<InfoIcon className={classes.infoIcon} />}
           ApplyBtnProps={{
             label: t('#button.create'),

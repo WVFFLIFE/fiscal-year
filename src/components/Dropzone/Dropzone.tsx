@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { useDropzone } from 'react-dropzone';
 
-import Button from '@mui/material/Button';
+import ActionButton from 'components/ActionButton';
 
 import clsx from 'clsx';
 import { useStyles } from './style';
@@ -53,9 +53,14 @@ const Dropzone: React.FC<DropzoneProps> = ({
         )}
       </span>
       <span className={classes.or}>{t('#common.or')}</span>
-      <Button className={classes.btn} onClick={open} disabled={disabled}>
+      <ActionButton
+        className={classes.btn}
+        size="small"
+        onClick={open}
+        disabled={disabled}
+      >
         {t('#button.select')}
-      </Button>
+      </ActionButton>
     </div>
   );
 };

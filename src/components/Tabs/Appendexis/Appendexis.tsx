@@ -31,16 +31,14 @@ const Appendexis = () => {
   const [showDialog, toggleDialogVisibility] = useToggleSwitch();
 
   return (
-    <Box>
-      <Box display="flex" alignItems="center" justifyContent="flex-end">
-        <ActionButton
-          className={classes.btn}
-          startIcon={<InfoIcon />}
-          onClick={toggleDialogVisibility}
-        >
-          {t('#tab.appendexis.runningnumbersettings.btn')}
-        </ActionButton>
-      </Box>
+    <Box sx={{ position: 'relative' }}>
+      <ActionButton
+        className={classes.btn}
+        startIcon={<InfoIcon />}
+        onClick={toggleDialogVisibility}
+      >
+        {t('#tab.appendexis.runningnumbersettings.btn')}
+      </ActionButton>
       <Box>
         {columns.map((column) => {
           return (

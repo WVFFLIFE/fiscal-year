@@ -362,11 +362,16 @@ export namespace Services {
     };
 
     copy = async (
-      fiscalYearId: string
+      fiscalYearId: string,
+      from: 'source' | 'template'
     ): Promise<Model.FiscalYear.Copy.Response> => {
-      return await this.executeRequest('uds_FiscalYearCopy', {
-        FiscalYearId: fiscalYearId,
-      });
+      return await this.executeTypeRequest(
+        'uds_FiscalYearCopy',
+        from === 'source' ? 1 : 2,
+        {
+          FiscalYearId: fiscalYearId,
+        }
+      );
     };
 
     validate = async (

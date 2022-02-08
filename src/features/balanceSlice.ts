@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface BalanceState {
-  activeRowId: string | null;
-  prevRowId: string | null;
+  activeRowId: string | number | null;
+  prevRowId: string | number | null;
 }
 
 const initialState: BalanceState = {
@@ -14,10 +14,10 @@ export const balanceSlice = createSlice({
   name: 'balance',
   initialState,
   reducers: {
-    setPrevRowId: (state, action: PayloadAction<string | null>) => {
+    setPrevRowId: (state, action: PayloadAction<string | number | null>) => {
       state.prevRowId = action.payload;
     },
-    setActiveRowId: (state, action: PayloadAction<string | null>) => {
+    setActiveRowId: (state, action: PayloadAction<string | number | null>) => {
       state.prevRowId = state.activeRowId;
       state.activeRowId = action.payload;
     },

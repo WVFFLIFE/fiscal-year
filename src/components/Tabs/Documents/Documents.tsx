@@ -40,7 +40,7 @@ const options: QuickFilterOption[] = [
 
 const successMessages = {
   successUpdated: '#tab.documents.notification.documentsupdated',
-  successUploaded: '#tab.documents.confirmation.filesuploaded',
+  successUploaded: '#tab.documents.notification.filesuploaded',
   folderNameUpdated: '#tab.documents.notification.foldernameupdated',
   successPublished: '#tab.documents.notification.successpublished',
   successUnpublished: '#tab.documents.notification.successunpublished',
@@ -60,6 +60,7 @@ const Documents: FC = () => {
 
   const {
     hasFolder,
+    folderExists,
     entitesType,
     loading,
     allPublished,
@@ -116,7 +117,7 @@ const Documents: FC = () => {
     handleInitEditDocumentDialog,
   } = useDocumentsData();
 
-  const showCreateFolderBlock = !hasFolder;
+  const showCreateFolderBlock = !hasFolder || !folderExists;
 
   return (
     <SuspenceFacade loading={loading} error={error} onInitError={initError}>
@@ -380,7 +381,7 @@ const Documents: FC = () => {
         >
           {successDialogState.type ? (
             <SuccessDialogView
-              text={successMessages[successDialogState.type]}
+              text={t(successMessages[successDialogState.type])}
             />
           ) : null}
         </Dialog>

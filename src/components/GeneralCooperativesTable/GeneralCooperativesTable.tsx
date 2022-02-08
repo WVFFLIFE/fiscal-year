@@ -14,6 +14,7 @@ import GeneralCooperativesTableRow from './GeneralCooperativesTableRow';
 import Pagination from 'components/Pagination';
 import Backdrop from 'components/Backdrop';
 import DialogError from 'components/DialogError';
+import { Scroll } from 'components/Styled';
 
 import { useStyles } from './style';
 
@@ -23,6 +24,7 @@ const columns: DeprecatedColumn[] = [
     field: 'Name',
     label: '#table.summary.cooperative',
     type: 'string',
+    style: { width: 330 },
   },
   {
     align: 'right',
@@ -259,27 +261,30 @@ const GeneralCooperativeTable: FC<GeneralCooperativeTableProps> = ({
 
   return (
     <>
-      <Table>
-        <TableHead
-          className={classes.tableHeadRow}
-          classes={headClasses}
-          columns={columns}
-          sort={sortParams}
-          onChangeSortParams={handleChangeSortParams}
-        />
-        <TableBody>
-          {slicedCooperatives.map((cooperative) => {
-            return (
-              <GeneralCooperativesTableRow
-                key={cooperative.Id}
-                cooperative={cooperative}
-                onSelectCooperative={onSelectCooperative}
-                saveComment={saveComment}
-              />
-            );
-          })}
-        </TableBody>
-      </Table>
+      <Scroll className={classes.tableWrapper}>
+        <Table className={classes.table}>
+          <TableHead
+            className={classes.tableHeadRow}
+            classes={headClasses}
+            columns={columns}
+            sort={sortParams}
+            onChangeSortParams={handleChangeSortParams}
+          />
+          <TableBody>
+            {slicedCooperatives.map((cooperative) => {
+              return (
+                <GeneralCooperativesTableRow
+                  key={cooperative.Id}
+                  cooperative={cooperative}
+                  onSelectCooperative={onSelectCooperative}
+                  saveComment={saveComment}
+                />
+              );
+            })}
+          </TableBody>
+        </Table>
+      </Scroll>
+
       <Pagination
         className={classes.pagination}
         rowsPerPage={rowsPerPage}

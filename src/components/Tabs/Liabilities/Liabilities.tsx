@@ -243,13 +243,25 @@ const Liabilities = () => {
         onToggleSelectAll: handleToggleSelectAll,
         Cell: {
           className: classes.fixed,
-          style: { left: 0, width: CHECKBOX_COLUMN_WIDTH, background: '#fff' },
+          style: {
+            left: 0,
+            width: CHECKBOX_COLUMN_WIDTH,
+            paddingLeft: 0,
+            paddingRight: 0,
+            background: '#fff',
+            textAlign: 'center',
+          },
         },
       },
       BodyProps: {
         Cell: {
           className: classes.fixed,
-          style: { left: 0 },
+          style: {
+            left: 0,
+            paddingLeft: 0,
+            paddingRight: 0,
+            textAlign: 'center',
+          },
         },
         Row: (liability) => {
           const checked = requestState.selectedRows.includes(liability.id);

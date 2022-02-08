@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 import { ApplyButton, CancelButton } from 'components/Styled';
 import { RoundQuestionIcon } from 'components/Icons';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -16,13 +18,16 @@ const DeleteConfirmation: React.FC<DeleteConfirmationProps> = ({
   loading,
 }) => {
   const classes = useStyles();
+  const { t } = useTranslation();
 
   return (
     <div className={classes.root}>
-      <h3 className={classes.title}>Delete entity(ies)</h3>
+      <h3 className={classes.title}>
+        {t('#dialog.delete.confirmation.title')}
+      </h3>
       <RoundQuestionIcon className={classes.icon} />
       <p className={classes.description}>
-        Are you sure you want to delete selected entity(ies)?
+        {t('#dialog.delete.confirmation.description')}
       </p>
       <div className={classes.btnsRow}>
         <CancelButton
@@ -30,7 +35,7 @@ const DeleteConfirmation: React.FC<DeleteConfirmationProps> = ({
           onClick={loading ? undefined : cancel}
           className={classes.cancelBtn}
         >
-          Cancel
+          {t('#button.cancel')}
         </CancelButton>
         <ApplyButton
           disabled={loading}
@@ -41,7 +46,7 @@ const DeleteConfirmation: React.FC<DeleteConfirmationProps> = ({
             ) : undefined
           }
         >
-          Delete
+          {t('#button.delete')}
         </ApplyButton>
       </div>
     </div>

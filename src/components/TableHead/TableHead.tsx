@@ -18,12 +18,12 @@ export interface TableHeadClasses {
   cell?: string;
 }
 //TODO: remove style prop;
-interface NestedColumn<T extends object = { [key: string]: any }>
+interface NestedColumn<T extends object = Record<string, any>>
   extends Column<T> {
   style?: CSSProperties;
 }
 
-type TableHeadProps<T extends object = { [key: string]: any }> = {
+type TableHeadProps<T extends object = Record<string, any>> = {
   className?: string;
   classes?: TableHeadClasses;
   columns: NestedColumn<T>[];
@@ -45,7 +45,7 @@ function switchColumnTypeToSort(colType: Column['type']) {
   }
 }
 
-const TableHead = <T extends object = { [key: string]: any }>({
+const TableHead = <T extends object = Record<string, any>>({
   className,
   classes,
   columns,

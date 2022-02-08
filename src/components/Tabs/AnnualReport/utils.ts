@@ -16,7 +16,7 @@ export function saveRequestAdapter(
   formatted: string | null,
   html: string | null,
   options: Options
-): { [key: string]: string | null } {
+): Record<string, string | null> {
   const { type } = options;
 
   switch (type) {

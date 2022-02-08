@@ -5,7 +5,7 @@ import _get from 'lodash/get';
 
 export type SortParamsType = 'alphanumeric' | 'date';
 
-export interface SortModel<T extends { [key: string]: any } = {}> {
+export interface SortModel<T extends Record<string, any> = {}> {
   order: 'asc' | 'desc';
   orderBy: keyof T | string | null;
   type: SortParamsType;
@@ -28,7 +28,7 @@ function prepareData<T extends {}, K extends keyof T>(
   }
 }
 
-const useSort = <T extends { [key: string]: any }>(
+const useSort = <T extends Record<string, any>>(
   list: T[],
   params?: Partial<SortModel<T>>
 ) => {

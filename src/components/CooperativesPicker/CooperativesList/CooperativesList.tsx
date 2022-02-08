@@ -15,7 +15,7 @@ import { useStyles } from './style';
 export interface CooperativesListProps<T extends CommonCooperativeModel> {
   className?: string;
   disabled?: boolean;
-  multiple: boolean;
+  multiple?: boolean;
   cooperatives: T[];
   selected: T[];
   onClickItem(cooperative: T, selected: boolean): void;
@@ -31,7 +31,7 @@ const rowCache = new CellMeasurerCache({
 const CooperativesList = <T extends CommonCooperativeModel>({
   className,
   disabled = false,
-  multiple,
+  multiple = false,
   cooperatives,
   selected,
   onClickItem,

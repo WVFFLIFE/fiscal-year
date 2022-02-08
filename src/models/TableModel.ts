@@ -1,6 +1,6 @@
 import { CSSProperties, MouseEvent } from 'react';
 
-export type DefaultTableData = { [key: string]: any };
+export type DefaultTableData = Record<string, any>;
 export type SortParamsType = 'alphanumeric' | 'date';
 export type Order = 'asc' | 'desc';
 

@@ -31,6 +31,11 @@ function get<T extends object, K extends keyof T>(
   return _get(object, key, defaultValue);
 }
 
+export interface CommonProductDataModel {
+  productName: OptionalString;
+  surplusDeficitPreviousFY: OptionalNumber;
+}
+
 export interface AuditingModel {
   auditingDone: OptionalString;
   deliveryDate: OptionalString;
@@ -102,15 +107,12 @@ export interface AnnualReportModel {
 
 export interface AppendexisModel {}
 
-export interface CommonProductDataModel {
-  productName: OptionalString;
-  surplusDeficitPreviousFY: OptionalNumber;
-}
-
-export interface BalanceProductModel extends CommonProductDataModel {
-  show: boolean;
-  index: number;
-  visible: boolean;
+export interface BalanceProductModel {
+  id: number;
+  isDisabled: boolean;
+  isShow: boolean;
+  productName: string;
+  surplusDeficitPreviousFY: number;
 }
 
 export interface BalancesModel {
@@ -360,83 +362,13 @@ export function makeFiscalYear(
       runningNumberSettings: get(fiscalYearRes, 'AdditionalSettings', []),
     },
     balances: {
-      products: [
-        {
-          index: 1,
-          show: get(fiscalYearRes, 'Show1', false),
-          productName: get(fiscalYearRes, 'SpecFinCalcProductName1'),
-          surplusDeficitPreviousFY: get(
-            fiscalYearRes,
-            'SpecFinCalcSurplusDeficitPreviousFY1'
-          ),
-          visible:
-            get(fiscalYearRes, 'Show1', false) &&
-            !isProductEmpty(
-              get(fiscalYearRes, 'SpecFinCalcProductName1'),
-              get(fiscalYearRes, 'SpecFinCalcSurplusDeficitPreviousFY1')
-            ),
-        },
-        {
-          index: 2,
-          show: get(fiscalYearRes, 'Show2', false),
-          productName: get(fiscalYearRes, 'SpecFinCalcProductName2'),
-          surplusDeficitPreviousFY: get(
-            fiscalYearRes,
-            'SpecFinCalcSurplusDeficitPreviousFY2'
-          ),
-          visible:
-            get(fiscalYearRes, 'Show2', false) &&
-            !isProductEmpty(
-              get(fiscalYearRes, 'SpecFinCalcProductName2'),
-              get(fiscalYearRes, 'SpecFinCalcSurplusDeficitPreviousFY2')
-            ),
-        },
-        {
-          index: 3,
-          show: get(fiscalYearRes, 'Show3', false),
-          productName: get(fiscalYearRes, 'SpecFinCalcProductName3'),
-          surplusDeficitPreviousFY: get(
-            fiscalYearRes,
-            'SpecFinCalcSurplusDeficitPreviousFY3'
-          ),
-          visible:
-            get(fiscalYearRes, 'Show3', false) &&
-            !isProductEmpty(
-              get(fiscalYearRes, 'SpecFinCalcProductName3'),
-              get(fiscalYearRes, 'SpecFinCalcSurplusDeficitPreviousFY3')
-            ),
-        },
-        {
-          index: 4,
-          show: get(fiscalYearRes, 'Show4', false),
-          productName: get(fiscalYearRes, 'SpecFinCalcProductName4'),
-          surplusDeficitPreviousFY: get(
-            fiscalYearRes,
-            'SpecFinCalcSurplusDeficitPreviousFY4'
-          ),
-          visible:
-            get(fiscalYearRes, 'Show4', false) &&
-            !isProductEmpty(
-              get(fiscalYearRes, 'SpecFinCalcProductName4'),
-              get(fiscalYearRes, 'SpecFinCalcSurplusDeficitPreviousFY4')
-            ),
-        },
-        {
-          index: 5,
-          show: get(fiscalYearRes, 'Show5', false),
-          productName: get(fiscalYearRes, 'SpecFinCalcProductName5'),
-          surplusDeficitPreviousFY: get(
-            fiscalYearRes,
-            'SpecFinCalcSurplusDeficitPreviousFY5'
-          ),
-          visible:
-            get(fiscalYearRes, 'Show5', false) &&
-            !isProductEmpty(
-              get(fiscalYearRes, 'SpecFinCalcProductName5'),
-              get(fiscalYearRes, 'SpecFinCalcSurplusDeficitPreviousFY5')
-            ),
-        },
-      ],
+      products: fiscalYearRes.SpecialFinancialCalculations.map((item) => ({
+        id: item.Id,
+        isDisabled: item.IsDisabled,
+        isShow: item.IsShow,
+        productName: item.ProductName,
+        surplusDeficitPreviousFY: item.SurplusDeficitPreviousFY,
+      })),
       propertyMaintenanceProductName: get(
         fiscalYearRes,
         'PropertyMeintenanceProductName'
@@ -500,34 +432,4 @@ export function runningNumberSettingsSelector(
 
 export function getGeneralData(fiscalYear: FiscalYearModel) {
   return fiscalYear && fiscalYear.general;
-}
-
-export function unzipProducts(products: BalanceProductModel[]) {
-  return products.reduce((acc, next) => {
-    acc[`show${next.index}`] = next.show;
-    acc[`productName${next.index}`] = next.productName;
-    acc[`surplusDeficitPreviousFY${next.index}`] =
-      next.surplusDeficitPreviousFY;
-
-    return acc;
-  }, {} as { [key: string]: boolean | string | null | number });
-}
-
-export function isProductVisible(product: BalanceProductModel) {
-  return product.show;
-}
-
-export function isProductEmpty(
-  productName: OptionalString,
-  surplusDeficit: OptionalNumber
-) {
-  return !productName && !surplusDeficit;
-}
-
-export function hasEmptyProduct(products: BalanceProductModel[]) {
-  return products.some(
-    (product) =>
-      isProductEmpty(product.productName, product.surplusDeficitPreviousFY) &&
-      isProductVisible(product)
-  );
 }

@@ -1,4 +1,5 @@
 import { memo, useState, ChangeEvent, KeyboardEvent, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ExtendedCooperativeModel } from 'models';
 import { defaultFormat, isBefore, startOfDay } from 'utils/dates';
 
@@ -60,6 +61,7 @@ const GeneralCooperativesTableRow: React.FC<
   GeneralCooperativesTableRowPropsModel
 > = ({ cooperative, onSelectCooperative, saveComment }) => {
   const classes = useStyles();
+  const { t } = useTranslation();
 
   const [fyComment, setFyComment] = useState(
     cooperative.FiscalYearComments || ''
@@ -191,12 +193,14 @@ const GeneralCooperativesTableRow: React.FC<
         )}
       </BodyTableCell>
       <BodyTableCell className={classes.cell}>
-        <IconButton
-          className={classes.actionBtn}
-          onClick={() => onSelectCooperative(cooperative)}
-        >
-          <IcList className={classes.icon} />
-        </IconButton>
+        <Tooltip title={t('#common.opencurrentcooperative') as string} arrow>
+          <IconButton
+            className={classes.actionBtn}
+            onClick={() => onSelectCooperative(cooperative)}
+          >
+            <IcList className={classes.icon} />
+          </IconButton>
+        </Tooltip>
       </BodyTableCell>
     </BodyTableRow>
   );

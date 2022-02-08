@@ -8,7 +8,10 @@ import { styled } from '@mui/styles';
 import { alpha } from '@mui/material/styles';
 
 export const RootContainer = styled('div')(({ theme }) => ({
-  paddingLeft: theme.size.sidebarWidth + parseInt(theme.spacing(8)),
+  display: 'flex',
+  flexDirection: 'column',
+  minHeight: '100vh',
+  paddingLeft: theme.spacing(8),
   paddingTop: theme.spacing(7),
   paddingRight: theme.spacing(8),
   paddingBottom: theme.spacing(8),
@@ -246,4 +249,37 @@ export const BtnsWrapper = styled('div')(() => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'flex-end',
+}));
+
+export const DialogTitle = styled('h3')(() => ({
+  margin: 0,
+  padding: 0,
+
+  fontSize: 24,
+  fontFamily: 'Proxima Nova',
+  fontWeight: 600,
+  textAlign: 'center',
+  color: '#000',
+}));
+
+export const DialogContent = styled('div')(() => ({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+}));
+
+export const DialogDescription = styled('p')(() => ({
+  margin: 0,
+  fontSize: 16,
+  fontFamily: 'Proxima Nova',
+  lineHeight: '20px',
+  color: '#30344B',
+}));
+
+export const DialogFooter = styled('div')(() => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'flex-end',
+  marginTop: 20,
 }));

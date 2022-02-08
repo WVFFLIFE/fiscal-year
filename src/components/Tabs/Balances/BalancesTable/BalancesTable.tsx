@@ -8,6 +8,7 @@ interface BalancesTableProps<T extends object> {
   data: T;
   columns: Column<T>[];
   disabled?: boolean;
+  rowColor?: string;
 }
 
 const BalancesTable = <T extends object>({
@@ -15,6 +16,7 @@ const BalancesTable = <T extends object>({
   data,
   columns,
   disabled,
+  rowColor,
 }: BalancesTableProps<T>) => {
   const classes = useStyles();
 
@@ -27,6 +29,7 @@ const BalancesTable = <T extends object>({
           column={column}
           data={data}
           disabled={disabled}
+          rowColor={rowColor}
         />
       ))}
     </div>

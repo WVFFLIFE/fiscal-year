@@ -3,7 +3,10 @@ import { makeStyles } from '@mui/styles';
 export const useStyles = makeStyles((theme) => ({
   cooperativeItem: {
     justifyContent: 'space-between',
-    padding: '10px 16px',
+    padding: '5px 16px',
+    '&.Mui-disabled': {
+      opacity: 1,
+    },
   },
   text: {
     fontSize: 14,

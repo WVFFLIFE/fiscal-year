@@ -13,7 +13,7 @@ export const useStyles = makeStyles(() => ({
     listStyle: 'none',
   },
   listItem: {
-    marginBottom: 25,
+    marginBottom: 20,
     '&:last-child': {
       marginBottom: 0,
     },

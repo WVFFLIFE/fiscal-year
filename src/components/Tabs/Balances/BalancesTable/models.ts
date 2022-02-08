@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { OptionalNumber, OptionalString } from 'models';
 
-export type Obj = { [key: string]: OptionalNumber | OptionalString };
+export type Obj = Record<string, OptionalNumber | OptionalString>;
 
 export interface Column<T extends object> {
   id: string;

@@ -1,19 +1,18 @@
-import { makeStyles } from '@mui/styles';
+import { makeStyles, styled } from '@mui/styles';
+
+export const Hint = styled('span')(() => ({
+  fontSize: 14,
+  fontWeight: 300,
+}));
 
 export const useBodyStyles = makeStyles(() => ({
-  wrapper: {
-    width: 'auto',
-    minWidth: 450,
-    padding: 12,
-    background: 'rgba(248, 248, 248, 1)',
-  },
   controlsWrapper: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 15,
     paddingLeft: 16,
-    paddingRight: 16,
+    paddingRight: 0,
   },
   offset: {
     marginBottom: 20,
@@ -32,17 +31,6 @@ export const useBodyStyles = makeStyles(() => ({
   pointer: {
     cursor: 'pointer',
   },
-  closeBtn: {
-    fontSize: 12,
-    fontFamily: 'Proxima Nova',
-    fontWeight: 600,
-    textTransform: 'none',
-  },
-  closeIcon: {
-    '& .MuiSvgIcon-root': {
-      fontSize: 12,
-    },
-  },
   list: {
     marginBottom: 40,
   },
@@ -53,4 +41,10 @@ export const useBodyStyles = makeStyles(() => ({
 
 export const useStyles = makeStyles(() => ({
   picker: { width: 300 },
+  body: {
+    width: 'auto',
+    minWidth: 500,
+    padding: 12,
+    background: 'rgba(248, 248, 248, 1)',
+  },
 }));

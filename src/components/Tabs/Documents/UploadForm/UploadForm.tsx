@@ -13,7 +13,7 @@ import {
   CancelButton,
   InputLabel,
 } from 'components/Styled';
-import Button from 'components/Button';
+import ActionButton from 'components/ActionButton';
 import Input from 'components/Input';
 import Dropzone from 'components/Dropzone';
 import FilesList from 'components/FilesList';
@@ -93,7 +93,7 @@ const UploadForm: React.FC<UploadFormProps> = ({
                 onChangeFolderName={handleSaveNewFolderName}
               />
             </Box>
-            <Button
+            <ActionButton
               disabled={
                 !!(
                   newFolder.show ||
@@ -106,9 +106,10 @@ const UploadForm: React.FC<UploadFormProps> = ({
                 startIcon: classes.addIcon,
               }}
               size="small"
-              label={t('#tab.documents.upload.addnewfolder')}
               startIcon={<PlusIcon />}
-            />
+            >
+              {t('#tab.documents.upload.addnewfolder')}
+            </ActionButton>
             {newFolder.show ? (
               <Box>
                 <InputLabel>

@@ -116,6 +116,7 @@ const LookUpRecords: React.FC<LookUpRecordsProps> = ({ onChange, onClose }) => {
         {t('#tab.liabilities.enteryoursearchcriteria')}
       </p>
       <Search
+        autoFocus
         className={classes.searchField}
         value={searchTerm}
         onChange={handleChangeSearchTerm}

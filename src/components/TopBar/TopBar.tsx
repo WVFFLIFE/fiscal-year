@@ -77,8 +77,8 @@ const TopBar: FC = () => {
               ? t('#common.unlockfiscalyear')
               : confirmationWindowState.type === 'lock'
               ? t('#common.lockfiscalyear')
-              : 'Error'
-            : 'Error'
+              : t('#common.error')
+            : t('#common.error')
         }
         onInitError={handleInitError}
       />

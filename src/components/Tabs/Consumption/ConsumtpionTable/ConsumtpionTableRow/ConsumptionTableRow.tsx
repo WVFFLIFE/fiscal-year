@@ -17,7 +17,7 @@ interface ConsumptionTableRowProps {
   field: string;
   label: string;
   disabled?: boolean;
-  onSave(option: { [key: string]: number }): Promise<unknown>;
+  onSave(option: Record<string, number>): Promise<unknown>;
   onSelectActiveRow(id: string | null): void;
 }
 

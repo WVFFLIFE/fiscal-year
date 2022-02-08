@@ -7,7 +7,10 @@ import {
   PartyRoleType,
 } from 'models';
 import { AnnualReportModel } from 'models/AnnualReportModel';
-import { BalancesModel } from 'models/BalancesModel';
+import {
+  BalancesModel,
+  SpecialFinancialCalculation,
+} from 'models/BalancesModel';
 import { ConsumptionModel } from 'models/ConsumptionModel';
 import { GeneralModel } from 'models/GeneralModel';
 import { BaseResponse, Services as S } from './s';
@@ -260,21 +263,9 @@ export interface BalanceUpdateRequest {
   PropertyMeintenanceSurplusDeficitPreviousFY: number | null;
   VATCalculationsProductName: string | null;
   VATCalculationsSurplusDeficitPreviousFY: number | null;
-  SpecFinCalcProductName1: string | null;
-  SpecFinCalcSurplusDeficitPreviousFY1: number | null;
-  SpecFinCalcProductName2: string | null;
-  SpecFinCalcSurplusDeficitPreviousFY2: number | null;
-  SpecFinCalcProductName3: string | null;
-  SpecFinCalcSurplusDeficitPreviousFY3: number | null;
-  SpecFinCalcProductName4: string | null;
-  SpecFinCalcSurplusDeficitPreviousFY4: number | null;
-  SpecFinCalcProductName5: string | null;
-  SpecFinCalcSurplusDeficitPreviousFY5: number | null;
-  Show1: boolean;
-  Show2: boolean;
-  Show3: boolean;
-  Show4: boolean;
-  Show5: boolean;
+  SpecialFinancialCalculations: (Omit<SpecialFinancialCalculation, 'Id'> & {
+    Id: number | null;
+  })[];
 }
 
 export type SettledResponse = PromiseSettledResult<BaseResponseModel>[];

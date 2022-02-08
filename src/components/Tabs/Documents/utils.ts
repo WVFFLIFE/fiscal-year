@@ -54,11 +54,12 @@ export function countEntitiesAmount(entities: (FolderModel | DocumentModel)[]) {
       const innerAmount = countEntitiesAmount(list);
 
       amount.docs += innerAmount.docs;
-      amount.folders += innerAmount.folders + 1;
     } else {
       amount.docs += 1;
     }
   }
+
+  amount.folders = entities.length;
 
   return amount;
 }

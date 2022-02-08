@@ -11,8 +11,10 @@ export const useStyles = makeStyles((theme) => ({
       background: 'transparent',
     },
   },
+  controlPanel: {
+    marginBottom: 10,
+  },
   editorWrapper: {
-    marginTop: 10,
     padding: '12px 19px',
     fontSize: 14,
     fontFamily: 'Proxima Nova',

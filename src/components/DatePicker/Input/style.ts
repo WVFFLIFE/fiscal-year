@@ -4,10 +4,10 @@ export const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
     alignItems: 'center',
-    height: 32,
+    height: 34,
     padding: '8px 20px',
     borderRadius: 3,
-    border: '1px solid transparent',
+    border: '1px solid rgba(242, 242, 242, 1)',
     boxShadow: 'inset 0px 1px 4px rgba(0, 0, 0, 0.15)',
   },
   focus: {

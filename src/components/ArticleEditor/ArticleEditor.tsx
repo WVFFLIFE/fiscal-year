@@ -8,7 +8,7 @@ import Box from '@mui/material/Box';
 import TextEditor from 'components/TextEditor';
 import ActionButton from 'components/ActionButton';
 import { SubTitle } from 'components/Styled';
-import { EditIcon, RoundCheckIcon } from 'components/Icons';
+import { EditIcon, RoundCheckIcon, CloseIcon } from 'components/Icons';
 
 import clsx from 'clsx';
 import { useStyles } from './style';
@@ -104,6 +104,7 @@ const ArticleEditor: FC<ArticleEditorProps> = ({
                 }}
                 size="small"
                 palette="white"
+                startIcon={<CloseIcon />}
               >
                 {t('#button.cancel')}
               </ActionButton>

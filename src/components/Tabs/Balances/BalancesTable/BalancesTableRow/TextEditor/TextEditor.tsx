@@ -38,16 +38,6 @@ const TextEditor: FC<TextEditorProps> = ({
     onChange(value, name);
   };
 
-  const handleChangeNumber = (
-    values: NumberFormatValues,
-    sourceInfo: SourceInfo
-  ) => {
-    const { value } = values;
-    if (sourceInfo.source === 'event') {
-      onChange(value);
-    }
-  };
-
   return type === 'string' ? (
     <Input
       autoFocus={autoFocus}
@@ -67,8 +57,7 @@ const TextEditor: FC<TextEditorProps> = ({
       value={value}
       name={name}
       placeholder={placeholder}
-      onValueChange={handleChangeNumber}
-      isNumericString
+      onChange={handleChangeInput}
       thousandSeparator=" "
       decimalSeparator=","
       decimalScale={2}

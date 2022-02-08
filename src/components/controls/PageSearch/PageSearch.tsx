@@ -1,4 +1,5 @@
 import {
+  forwardRef,
   memo,
   MouseEvent,
   ChangeEvent,
@@ -23,8 +24,10 @@ interface PageSearchProps {
 
 interface BodyProps extends PageSearchProps {}
 
-const Body: React.FC<BodyProps> = ({ searchTerm, onChange }) => {
+const Body = forwardRef<HTMLDivElement, BodyProps>((props, ref) => {
   const classes = useBodyStyles();
+
+  const { searchTerm, onChange } = props;
 
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -50,7 +53,7 @@ const Body: React.FC<BodyProps> = ({ searchTerm, onChange }) => {
   }, []);
 
   return (
-    <div className={classes.wrapper}>
+    <div className={classes.wrapper} ref={ref}>
       <SearchIcon className={classes.searchIcon} />
       <Search
         autoFocus
@@ -64,7 +67,7 @@ const Body: React.FC<BodyProps> = ({ searchTerm, onChange }) => {
       </IconButton>
     </div>
   );
-};
+});
 
 const PageSearch: React.FC<PageSearchProps> = ({
   searchTerm,
@@ -73,20 +76,20 @@ const PageSearch: React.FC<PageSearchProps> = ({
 }) => {
   const classes = useStyles();
 
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const [open, setOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
-  const handleToggle = (e: MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl((prevState) => (prevState ? null : e.currentTarget));
+  const handleClick = (event: MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+    setOpen((previousOpen) => !previousOpen);
   };
-
-  const open = !!anchorEl;
 
   return (
     <>
       <IconButton
         disabled={disabled}
         disableRipple
-        onClick={disabled ? undefined : handleToggle}
+        onClick={disabled ? undefined : handleClick}
         className={clsx(classes.btn, {
           [classes.fill]: !!searchTerm,
           [classes.open]: open,

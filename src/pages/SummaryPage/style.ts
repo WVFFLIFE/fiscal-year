@@ -1,9 +1,6 @@
 import { makeStyles } from '@mui/styles';
 
 export const useStyles = makeStyles((theme) => ({
-  offsetTop: {
-    marginTop: 10,
-  },
   offsetBottom: {
     marginBottom: 20,
   },
@@ -20,5 +17,12 @@ export const useStyles = makeStyles((theme) => ({
   },
   cooperativesPicker: {
     width: 350,
+  },
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    flex: 1,
+    marginTop: 10,
   },
 }));

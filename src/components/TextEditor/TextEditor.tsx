@@ -326,7 +326,7 @@ const TextEditor: React.FC<TextEditorProps> = ({
     >
       {!disabled && (
         <ControlsPanel
-          className={rootClasses?.controlPanel}
+          className={clsx(classes.controlPanel, rootClasses?.controlPanel)}
           controls={controls}
           currentCharactersLength={currentContentLength}
           maxCharactersLength={maxCharactersLength}

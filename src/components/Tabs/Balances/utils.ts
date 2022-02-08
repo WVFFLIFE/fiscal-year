@@ -25,7 +25,7 @@ function getRequestFieldName(options: Options) {
   }
 }
 
-type Request = { [key: string]: OptionalString | OptionalNumber };
+type Request = Record<string, OptionalNumber | OptionalString>;
 
 export function savingInterceptor<
   Output extends OptionalString | OptionalNumber,

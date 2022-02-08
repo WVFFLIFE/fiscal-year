@@ -6,6 +6,7 @@ export const useStyles = makeStyles((theme) => ({
   },
   label: {
     display: 'block',
+    height: 25,
     marginBottom: 8,
     fontSize: 14,
     lineHeight: '18px',

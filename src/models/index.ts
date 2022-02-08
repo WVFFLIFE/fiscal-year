@@ -92,7 +92,7 @@ export interface MockCooperative {
   ClosedPeriodEndDate: string;
 }
 
-export interface Column<T extends object = { [key: string]: any }> {
+export interface Column<T extends object = Record<string, any>> {
   label: string;
   field: keyof T;
   sortable?: boolean;

@@ -32,7 +32,7 @@ import SuccessDialogView from 'components/SuccessDialogView';
 
 import { useStyles } from './style';
 
-function getCodes<T extends { [key: string]: any }>(enumerable: T) {
+function getCodes<T extends Record<string, any>>(enumerable: T) {
   return Object.values(enumerable).filter((v) => typeof v === 'number');
 }
 
@@ -467,8 +467,8 @@ const LiabilityForm: React.FC<LiabilityFormProps> = ({
           onClose={handleCloseSuccessDialog}
           text={
             formType === 'create'
-              ? 'Entity was successfully created'
-              : 'Entity was successfully updated'
+              ? t('#tab.liabilities.entitycreated')
+              : t('#tab.liabilities.entityupdated')
           }
         />
       </Dialog>

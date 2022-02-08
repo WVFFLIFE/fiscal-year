@@ -1,24 +1,8 @@
 import { makeStyles } from '@mui/styles';
-import { alpha } from '@mui/system';
 
-export const useStyles = makeStyles((theme) => ({
+export const useStyles = makeStyles(() => ({
   subTitle: {
-    marginBottom: 20,
-  },
-  propertyMaintenanceRow: {
-    '&:first-child': {
-      background: alpha(theme.color.green, 0.1),
-    },
-  },
-  vatCalculationRow: {
-    '&:first-child': {
-      background: theme.color.greyLight2,
-    },
-  },
-  specFinCalcRow: {
-    '&:first-child': {
-      background: alpha('#DB76001A', 0.1),
-    },
+    marginRight: 20,
   },
   addBtn: {
     fontSize: 14,

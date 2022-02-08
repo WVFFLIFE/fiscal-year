@@ -20,6 +20,7 @@ interface StateModel {
   error: ErrorModel | null;
   src: string | null;
   saving: boolean;
+  updateImage: boolean;
 }
 
 const useConsumptionData = () => {
@@ -37,6 +38,7 @@ const useConsumptionData = () => {
     error: null,
     src: null,
     saving: false,
+    updateImage: true,
   });
 
   const handleProgress = async <ArgumentsType extends any[], ReturnType>(
@@ -220,12 +222,13 @@ const useConsumptionData = () => {
   };
 
   const handleSaveConsumptionMeter = useCallback(
-    async (options: { [key: string]: number | boolean }) => {
+    async (options: Record<string, number | boolean>) => {
       if (!consumptionData || !fiscalYear?.id) return;
       try {
         setState((prevState) => ({
           ...prevState,
           saving: true,
+          updateImage: false,
         }));
 
         const reqBody = {
@@ -240,26 +243,22 @@ const useConsumptionData = () => {
 
         const res = await Services.fiscalYearConsumptionUpdate(reqBody);
 
-        if (res.IsSuccess) {
-          await dispatch(updateFiscalYear(fiscalYear.id));
+        if (!res.IsSuccess) throw new Error(res.Message);
 
-          setState((prevState) => ({
-            ...prevState,
-            saving: false,
-          }));
-        } else {
-          setState((prevState) => ({
-            ...prevState,
-            saving: false,
-            error: { messages: [String(res.Message)] },
-          }));
-        }
+        await dispatch(updateFiscalYear(fiscalYear.id));
+
+        setState((prevState) => ({
+          ...prevState,
+          saving: false,
+          updateImage: true,
+        }));
       } catch (err) {
         console.error(err);
 
         setState((prevState) => ({
           ...prevState,
           saving: false,
+          updateImage: true,
           error: { messages: [String(err)] },
         }));
       }
@@ -287,11 +286,8 @@ const useConsumptionData = () => {
     }));
   };
 
-  // according to refresh button logic
-  // we'll update consumption image
-  // when fiscal year is new object
   useEffect(() => {
-    if (fiscalYear?.id) {
+    if (fiscalYear?.id && state.updateImage) {
       handleFetchConsumptionImage(fiscalYear.id);
     }
   }, [fiscalYear]);

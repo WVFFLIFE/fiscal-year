@@ -32,15 +32,9 @@ export const useStyles = makeStyles((theme) => ({
     textTransform: 'uppercase',
   },
   btn: {
-    minWidth: 'auto',
-    padding: '4px 16px',
     fontSize: 12,
     fontWeight: 600,
     lineHeight: '16px',
-    filter: 'drop-shadow(0px 2px 7px rgba(151, 151, 151, 0.4))',
-    background: '#fff',
-    borderRadius: 20,
-    color: theme.color.darkBlue,
     textTransform: 'uppercase',
   },
 }));
