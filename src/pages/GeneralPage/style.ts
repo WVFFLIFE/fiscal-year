@@ -1,8 +1,10 @@
 import { makeStyles } from '@mui/styles';
 
 export const useStyles = makeStyles((theme) => ({
-  offsetTop: {
-    marginTop: 10,
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
+    flex: 1,
   },
   refreshBtn: {
     padding: '6px 8px',
@@ -14,5 +16,11 @@ export const useStyles = makeStyles((theme) => ({
   },
   cooperativePicker: {
     width: 350,
+  },
+  stretchedContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    flex: 1,
+    marginTop: 10,
   },
 }));

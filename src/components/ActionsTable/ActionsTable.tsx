@@ -32,7 +32,8 @@ export type CheckboxProps<T extends object = DefaultTableData> = {
       className?: string;
       style?: CSSProperties;
       checked: boolean;
-      onClick(e: MouseEvent<HTMLTableRowElement>): void;
+      onClick?: (e: MouseEvent<HTMLTableRowElement>) => void;
+      onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
     };
   };
 };

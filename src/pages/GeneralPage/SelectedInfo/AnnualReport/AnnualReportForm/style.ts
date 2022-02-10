@@ -30,4 +30,7 @@ export const useStyles = makeStyles((theme) => ({
   checkboxLabel: {
     marginLeft: 10,
   },
+  alignLeft: {
+    textAlign: 'left',
+  },
 }));

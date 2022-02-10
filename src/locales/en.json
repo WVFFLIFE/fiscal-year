@@ -32,6 +32,8 @@
   "#common.somethingwentwrong": "Something went wrong. Try to refresh the page.",
   "#common.summary": "Summary",
   "#common.opencurrentcooperative": "Open current cooperative",
+  "#common.notification": "Notification",
+  "#common.selectedelements": "{{count}} elements",
   "#control.cooperativepicker.placeholder": "Select cooperative",
   "#control.fiscalyearpicker.placeholder": "Select fiscal year",
   "#control.cooperativepicker.selectupto": "You can select up to 5 items",

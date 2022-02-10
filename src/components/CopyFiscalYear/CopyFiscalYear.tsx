@@ -1,6 +1,5 @@
 import { useState, MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import useCopyFiscalYearData from './useCopyFiscalYearData';
 import useStateSelector from 'hooks/useStateSelector';
 import useDialogState from 'hooks/useSuccessDialogState';
 
@@ -11,7 +10,6 @@ import FromTemplateView from 'components/FromTemplateView';
 import CopyExistingView from './CopyExistingView';
 import Dialog from 'components/Dialog';
 import ActionButton from 'components/ActionButton';
-import DialogError from 'components/DialogError';
 import { CopyIcon, TemplateIcon, ArrowIcon } from 'components/Icons';
 
 import clsx from 'clsx';
@@ -27,7 +25,6 @@ const CopyFiscalYear = () => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const templateDialogState = useDialogState();
   const sourceDialogState = useDialogState();
-  const { requestState, handleInitError } = useCopyFiscalYearData();
 
   const handleOpenMenu = (e: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(e.currentTarget);
@@ -90,7 +87,6 @@ const CopyFiscalYear = () => {
       >
         <CopyExistingView onClose={sourceDialogState.close} />
       </Dialog>
-      <DialogError error={requestState.error} initError={handleInitError} />
     </>
   );
 };

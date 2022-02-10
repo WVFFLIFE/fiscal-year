@@ -3,6 +3,10 @@ import { makeStyles } from '@mui/styles';
 export const useStyles = makeStyles(() => ({
   subTitle: {
     marginRight: 20,
+    marginBottom: 20,
+  },
+  m0: {
+    marginBottom: 0,
   },
   addBtn: {
     fontSize: 14,

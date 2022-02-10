@@ -32,6 +32,8 @@
   "#common.somethingwentwrong": "Jotain meni pieleen. Päivitä sivu ja yritä uudelleen.",
   "#common.summary": "Yhteenveto",
   "#common.opencurrentcooperative": "Avaa yhtiön tilikauden tiedot",
+  "#common.notification": "Ilmoitus",
+  "#common.selectedelements": "elementtejä: {{count}}",
   "#control.cooperativepicker.placeholder": "Valitse yhtiö",
   "#control.fiscalyearpicker.placeholder": "Valitse tilikausi",
   "#control.cooperativepicker.selectupto": "Voit valita 1 - 5 yhtiötä",

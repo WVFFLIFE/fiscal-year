@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import useFromTemplateViewData from './useFromTemplateViewData';
 
+import DialogError from 'components/DialogError';
 import Dialog from 'components/Dialog';
 import InfoIcon from 'components/Icons/InfoIcon';
 import ActionButton from 'components/ActionButton';
@@ -43,6 +44,7 @@ const FromTemplateView: React.FC<FromTemplateViewProps> = ({
     successDialogState,
     handleCloseSuccessDialog,
     handleSave,
+    handleInitError,
   } = useFromTemplateViewData(type, onClose);
 
   const typeDictionary = generalDictionary[type];
@@ -87,6 +89,7 @@ const FromTemplateView: React.FC<FromTemplateViewProps> = ({
           </ApplyButton>
         </DialogFooter>
       </Dialog>
+      <DialogError error={requestState.error} initError={handleInitError} />
     </div>
   );
 };

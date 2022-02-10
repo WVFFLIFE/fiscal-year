@@ -1,4 +1,5 @@
 import { memo, Fragment } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { FolderModel } from 'services';
 
@@ -14,6 +15,7 @@ interface BreadcrumbsProps {
 
 const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ list, selectItem }) => {
   const classes = useStyles();
+  const { t } = useTranslation();
 
   return (
     <div className={classes.row}>
@@ -41,7 +43,7 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ list, selectItem }) => {
                     {item.Name}
                   </div>
                   <span className={classes.divider}></span>
-                  <div>{total} elements</div>
+                  <div>{t('#common.selectedelements', { count: total })}</div>
                 </>
               ) : (
                 <>

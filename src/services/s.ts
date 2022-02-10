@@ -361,17 +361,27 @@ export namespace Services {
       });
     };
 
-    copy = async (
-      fiscalYearId: string,
-      from: 'source' | 'template'
+    /**
+     *
+     * @param dstFiscalYearId - current selected cooperative`s id
+     * @param srcFiscalYearId - cooperative`s id to copy
+     */
+    copyFromSource = async (
+      dstFiscalYearId: string,
+      srcFiscalYearId: string
     ): Promise<Model.FiscalYear.Copy.Response> => {
-      return await this.executeTypeRequest(
-        'uds_FiscalYearCopy',
-        from === 'source' ? 1 : 2,
-        {
-          FiscalYearId: fiscalYearId,
-        }
-      );
+      return await this.executeTypeRequest('uds_FiscalYearCopy', 1, {
+        FiscalYearId: dstFiscalYearId,
+        SourceFiscalYearId: srcFiscalYearId,
+      });
+    };
+
+    copyFromTemplate = async (
+      fiscalYearId: string
+    ): Promise<Model.FiscalYear.Copy.Response> => {
+      return await this.executeTypeRequest('uds_FiscalYearCopy', 2, {
+        FiscalYearId: fiscalYearId,
+      });
     };
 
     validate = async (

@@ -2,6 +2,7 @@ import { makeStyles } from '@mui/styles';
 
 export const useStyles = makeStyles((theme) => ({
   root: {
+    flex: 1,
     boxShadow: '0px 5px 15px rgba(0, 0, 0, 0.1)',
   },
   tabs: {

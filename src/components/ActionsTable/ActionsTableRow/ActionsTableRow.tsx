@@ -49,7 +49,10 @@ const ActionsTableRow = <T extends object = DefaultTableData>(
           className={clsx(classes.cell, CheckboxProps?.Cell?.className)}
           style={CheckboxProps?.Cell?.style}
         >
-          <Checkbox checked={checkboxProps?.checked} />
+          <Checkbox
+            checked={checkboxProps?.checked}
+            onChange={checkboxProps?.onChange}
+          />
         </TableCell>
       )}
       {columns.map((column) => {

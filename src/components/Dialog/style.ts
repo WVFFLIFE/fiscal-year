@@ -2,9 +2,13 @@ import { makeStyles } from '@mui/styles';
 
 export const useStyles = makeStyles(() => ({
   dialog: {
-    '&[aria-hidden="true"] > div[aria-hidden="true"]': {
-      background: 'rgba(0,0,0,0)',
+    '& .MuiBackdrop-root': {
+      background: 'rgba(0,0,0,0.2)',
     },
+
+    // '&[aria-hidden="true"] > div[aria-hidden="true"]': {
+    //   background: 'rgba(0,0,0,0)',
+    // },
   },
   paper: {
     borderRadius: 0,

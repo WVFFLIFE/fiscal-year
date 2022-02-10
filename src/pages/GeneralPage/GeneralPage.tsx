@@ -45,7 +45,7 @@ const GeneralPage: React.FC = () => {
     : [];
 
   return (
-    <>
+    <div className={classes.root}>
       <FiltersWrapper>
         <Box padding={4} paddingX={2}>
           <CooperativesPicker
@@ -85,7 +85,7 @@ const GeneralPage: React.FC = () => {
         </Box>
       </FiltersWrapper>
       {filters.cooperatives.current && filters.fiscalYears.current ? (
-        <Container className={classes.offsetTop}>
+        <Container className={classes.stretchedContainer}>
           <SelectedInfo
             selectedCooperative={filters.cooperatives.current}
             fiscalYear={filters.fiscalYears.current}
@@ -98,7 +98,7 @@ const GeneralPage: React.FC = () => {
       )}
       <Backdrop loading={loading} />
       <DialogError error={error} initError={handleInitError} />
-    </>
+    </div>
   );
 };
 

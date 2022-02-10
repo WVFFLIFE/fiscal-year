@@ -68,7 +68,7 @@ export interface FolderModel {
 }
 
 export interface DocumentsListModel extends BaseResponseModel {
-  FolderExists: boolean;
+  FolderExist: boolean;
   HasFolder: boolean;
   Headers: AttributeHeaderModel[];
   Folder: FolderModel | null;

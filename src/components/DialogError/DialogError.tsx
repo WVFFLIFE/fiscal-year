@@ -57,6 +57,7 @@ const DialogError: React.FC<DialogErrorProps> = ({
 
   return (
     <Dialog
+      maxWidth="xs"
       open={open}
       handleClose={handleCloseModal}
       TransitionProps={{ onExited: initError }}

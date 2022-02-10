@@ -181,7 +181,7 @@ const useDocumentsData = () => {
             ...prevState,
             loading: false,
             hasFolder: res.HasFolder,
-            folderExists: res.FolderExists,
+            folderExists: res.FolderExist,
             breadcrumbsList: res.Folder
               ? updateBreadcrumbsList(
                   { ...res.Folder, Name: 'Home' },
@@ -231,7 +231,7 @@ const useDocumentsData = () => {
           ...prevState,
           loading: false,
           hasFolder: res.HasFolder,
-          folderExists: res.FolderExists,
+          folderExists: res.FolderExist,
           breadcrumbsList: res.Folder
             ? updateBreadcrumbsList(
                 { ...res.Folder, Name: 'Home' },

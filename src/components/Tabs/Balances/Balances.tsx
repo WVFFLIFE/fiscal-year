@@ -228,7 +228,7 @@ const Balances: FC = () => {
           width="100%"
           marginBottom={4}
         >
-          <SubTitle className={clsx(classes.subTitle, classes.initMargin)}>
+          <SubTitle className={clsx(classes.subTitle, classes.m0)}>
             {t('#tab.balances.specialfinancialcalculation.header')}
           </SubTitle>
           <ActionButton

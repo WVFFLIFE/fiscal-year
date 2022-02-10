@@ -14,6 +14,7 @@ import Dialog from 'components/Dialog';
 import SuccessDialogView from 'components/SuccessDialogView';
 import DialogError from 'components/DialogError';
 
+import clsx from 'clsx';
 import { useStyles } from './style';
 
 export interface AnnualReportFormProps {
@@ -121,7 +122,7 @@ const AnnualReportForm = () => {
       <div className={classes.btnsWrapper}>
         <ActionButton
           palette="darkBlue"
-          className={classes.loadBtn}
+          className={clsx(classes.loadBtn, classes.alignLeft)}
           onClick={handleLoadReports}
           disabled={state.creating || state.saving}
           loading={state.creating}
@@ -129,6 +130,7 @@ const AnnualReportForm = () => {
           {t('#dialog.annualreport.button.load')}
         </ActionButton>
         <ActionButton
+          className={classes.alignLeft}
           palette="darkBlue"
           onClick={handleSaveToDocuments}
           disabled={state.creating || state.saving}
@@ -141,7 +143,7 @@ const AnnualReportForm = () => {
         maxWidth="xs"
         open={successDialog.isOpen}
         handleClose={successDialog.close}
-        title={'Notification'}
+        title={t('#common.notification')}
       >
         <SuccessDialogView
           text={t('#dialog.annualreport.savetodocuments.success')}

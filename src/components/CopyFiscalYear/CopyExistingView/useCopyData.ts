@@ -1,7 +1,9 @@
 import { useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import useStateSelector from 'hooks/useStateSelector';
 
 import { ErrorModel, FiscalYearModel } from 'models';
+import { CopyFiscalYearResponseCode } from 'enums/responses';
 
 import {
   selectFiscalYearsList,
@@ -18,6 +20,8 @@ interface RequestState {
 }
 
 const useCopyData = (onClose: () => void) => {
+  const { t } = useTranslation();
+
   const { fiscalYearsList, nextFiscalYear } = useStateSelector((state) => ({
     fiscalYearsList: selectFiscalYearsList(state),
     nextFiscalYear: selectNextFiscalYear(state),
@@ -31,19 +35,30 @@ const useCopyData = (onClose: () => void) => {
     useState<FiscalYearModel | null>(nextFiscalYear && { ...nextFiscalYear });
 
   const handleCreateFromSource = async () => {
-    if (!selectedFiscalYear) return;
+    if (!selectedFiscalYear || !nextFiscalYear) return;
     try {
       setRequestState((prevState) => ({
         ...prevState,
         loading: true,
       }));
 
-      const res = await FiscalYearService.copy(selectedFiscalYear.Id, 'source');
+      const res = await FiscalYearService.copyFromSource(
+        nextFiscalYear.Id,
+        selectedFiscalYear.Id
+      );
 
       if (res.IsSuccess) {
         onClose();
       } else {
-        throw new Error(res.Message);
+        throw new Error(
+          res.ResponseCode ===
+          CopyFiscalYearResponseCode.AmbiguityFiscalYearNotFound
+            ? t('#error.fiscalyear.copy.ambiguityfiscalyearnotfound')
+            : res.ResponseCode ===
+              CopyFiscalYearResponseCode.PreviousFiscalYearNotFound
+            ? t('#error.fiscalyear.copy.previousfiscalyearnotfound')
+            : res.Message
+        );
       }
     } catch (err) {
       console.error(err);
@@ -51,7 +66,7 @@ const useCopyData = (onClose: () => void) => {
       setRequestState((prevState) => ({
         ...prevState,
         loading: false,
-        error: { messages: [String(err)] },
+        error: { messages: [(err as Error).message] },
       }));
     }
   };

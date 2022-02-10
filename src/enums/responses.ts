@@ -16,9 +16,11 @@ export enum ValidateFiscalYearResponseCode {
 }
 
 export enum CopyFiscalYearResponseCode {
-  OK,
-  PreviousFiscalYearNotFound,
-  AmbiguityFiscalYearNotFound,
+  OK = 0,
+  PreviousFiscalYearNotFound = 1,
+  AmbiguityFiscalYearNotFound = 2,
+  FiscalYearTemplateNotFound = 3,
+  FiscalYearClosed = 4,
 }
 
 export enum BaseFolderStatusCode {

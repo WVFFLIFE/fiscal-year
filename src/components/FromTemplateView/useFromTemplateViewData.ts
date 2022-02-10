@@ -51,7 +51,7 @@ const useFromTemplateViewData = (
 
         successDialogState.open();
       } else {
-        let res = await FiscalYearService.copy(fiscalYear.id, 'template');
+        let res = await FiscalYearService.copyFromTemplate(fiscalYear.id);
 
         if (!res.IsSuccess) {
           throw new Error(
@@ -92,11 +92,19 @@ const useFromTemplateViewData = (
     }
   };
 
+  const handleInitError = () => {
+    setRequestState((prevState) => ({
+      ...prevState,
+      error: null,
+    }));
+  };
+
   return {
     requestState,
     successDialogState,
     handleCloseSuccessDialog,
     handleSave,
+    handleInitError,
   };
 };
 
