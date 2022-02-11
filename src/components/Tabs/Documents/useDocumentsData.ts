@@ -1,4 +1,5 @@
 import { useMemo, useEffect, useCallback, useState, ChangeEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import useStateSelector from 'hooks/useStateSelector';
 import {
   ErrorModel,
@@ -75,6 +76,7 @@ const searchAccessorList: AccessorModel<DocumentModel | FolderModel>[] = [
 ];
 
 const useDocumentsData = () => {
+  const { t } = useTranslation();
   const { fiscalYear, searchTerm } = useStateSelector((state) => ({
     fiscalYear: state.generalPage.generalFiscalYear,
     searchTerm: state.generalPage.filters.searchTerm,
@@ -184,8 +186,9 @@ const useDocumentsData = () => {
             folderExists: res.FolderExist,
             breadcrumbsList: res.Folder
               ? updateBreadcrumbsList(
-                  { ...res.Folder, Name: 'Home' },
-                  prevState.breadcrumbsList
+                  { ...res.Folder, Name: t('#common.home') },
+                  prevState.breadcrumbsList,
+                  t('#common.home')
                 )
               : [],
           }));
@@ -234,8 +237,9 @@ const useDocumentsData = () => {
           folderExists: res.FolderExist,
           breadcrumbsList: res.Folder
             ? updateBreadcrumbsList(
-                { ...res.Folder, Name: 'Home' },
-                prevState.breadcrumbsList
+                { ...res.Folder, Name: t('#common.home') },
+                prevState.breadcrumbsList,
+                t('#common.home')
               )
             : [],
         }));

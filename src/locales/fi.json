@@ -34,6 +34,7 @@
   "#common.opencurrentcooperative": "Avaa yhtiön tilikauden tiedot",
   "#common.notification": "Ilmoitus",
   "#common.selectedelements": "elementtejä: {{count}}",
+  "#common.home": "Koti",
   "#control.cooperativepicker.placeholder": "Valitse yhtiö",
   "#control.fiscalyearpicker.placeholder": "Valitse tilikausi",
   "#control.cooperativepicker.selectupto": "Voit valita 1 - 5 yhtiötä",

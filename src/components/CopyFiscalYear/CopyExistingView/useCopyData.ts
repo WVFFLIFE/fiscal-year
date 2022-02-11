@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import useStateSelector from 'hooks/useStateSelector';
+import useAppDispatch from 'hooks/useAppDispatch';
 
 import { ErrorModel, FiscalYearModel } from 'models';
 import { CopyFiscalYearResponseCode } from 'enums/responses';
@@ -8,7 +9,10 @@ import { CopyFiscalYearResponseCode } from 'enums/responses';
 import {
   selectFiscalYearsList,
   selectNextFiscalYear,
+  selectFiscalYear,
 } from 'selectors/generalPageSelectors';
+
+import { updateFiscalYear } from 'features/generalPageSlice';
 
 import { Services, FiscalYear } from 'services/s';
 
@@ -22,10 +26,15 @@ interface RequestState {
 const useCopyData = (onClose: () => void) => {
   const { t } = useTranslation();
 
-  const { fiscalYearsList, nextFiscalYear } = useStateSelector((state) => ({
-    fiscalYearsList: selectFiscalYearsList(state),
-    nextFiscalYear: selectNextFiscalYear(state),
-  }));
+  const dispatch = useAppDispatch();
+
+  const { fiscalYear, fiscalYearsList, nextFiscalYear } = useStateSelector(
+    (state) => ({
+      fiscalYear: selectFiscalYear(state),
+      fiscalYearsList: selectFiscalYearsList(state),
+      nextFiscalYear: selectNextFiscalYear(state),
+    })
+  );
 
   const [requestState, setRequestState] = useState<RequestState>({
     loading: false,
@@ -35,7 +44,7 @@ const useCopyData = (onClose: () => void) => {
     useState<FiscalYearModel | null>(nextFiscalYear && { ...nextFiscalYear });
 
   const handleCreateFromSource = async () => {
-    if (!selectedFiscalYear || !nextFiscalYear) return;
+    if (!selectedFiscalYear || !nextFiscalYear || !fiscalYear?.id) return;
     try {
       setRequestState((prevState) => ({
         ...prevState,
@@ -49,6 +58,8 @@ const useCopyData = (onClose: () => void) => {
 
       if (res.IsSuccess) {
         onClose();
+
+        dispatch(updateFiscalYear(fiscalYear.id));
       } else {
         throw new Error(
           res.ResponseCode ===

@@ -34,6 +34,7 @@
   "#common.opencurrentcooperative": "Open current cooperative",
   "#common.notification": "Notification",
   "#common.selectedelements": "{{count}} elements",
+  "#common.home": "Home",
   "#control.cooperativepicker.placeholder": "Select cooperative",
   "#control.fiscalyearpicker.placeholder": "Select fiscal year",
   "#control.cooperativepicker.selectupto": "You can select up to 5 items",

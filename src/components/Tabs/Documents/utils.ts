@@ -177,13 +177,14 @@ function findFolderInRootFolder(
 
 export function updateBreadcrumbsList(
   rootFolder: FolderModel,
-  breadcrumbsList: FolderModel[]
+  breadcrumbsList: FolderModel[],
+  rootFolderName = 'Home'
 ) {
   if (breadcrumbsList.length <= 1) {
     return [
       {
         ...rootFolder,
-        Name: 'Home',
+        Name: rootFolderName,
         Folders: limitFoldersDepth(rootFolder.Folders),
       },
     ];
