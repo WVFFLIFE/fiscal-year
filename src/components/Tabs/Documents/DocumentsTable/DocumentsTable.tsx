@@ -1,4 +1,5 @@
 import { ChangeEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FolderModel, DocumentModel, EntityPublishModel } from 'models';
 import { SortModel, SortParamsType } from 'models';
 import _get from 'lodash/get';
@@ -75,6 +76,7 @@ const DocumentsTable: React.FC<DocumentsTableProps> = ({
   sortParams,
 }) => {
   const classes = useStyles();
+  const { t } = useTranslation();
 
   const selectedAll = !!(list.length && isSelectedAll(activeFolder, selected));
   const indeterminatedAll = selectedAll
