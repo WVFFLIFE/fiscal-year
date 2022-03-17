@@ -20,4 +20,8 @@ export const useStyles = makeStyles((theme) => ({
   rotatedArrowIcon: {
     transform: 'rotate(180deg)',
   },
+  warningIcon: {
+    fontSize: 42,
+    color: theme.color.orange,
+  },
 }));

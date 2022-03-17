@@ -2,6 +2,7 @@ import { createDraftSafeSelector } from '@reduxjs/toolkit';
 import { RootState } from 'store';
 
 import hasPrevFiscalYear from 'utils/hasPrevFiscalYear';
+import { getPrevFiscalYear } from 'utils/fiscalYear';
 
 export const selectFilters = (state: RootState) => state.generalPage.filters;
 
@@ -87,4 +88,10 @@ export const selectCooperativeLink = createDraftSafeSelector(
 export const selectSearchTerm = createDraftSafeSelector(
   selectFilters,
   (filters) => filters.searchTerm
+);
+export const selectPrevFiscalYear = createDraftSafeSelector(
+  selectFiscalYearsList,
+  selectNextFiscalYear,
+  (fiscalYearsList, nextFiscalYear) =>
+    getPrevFiscalYear(fiscalYearsList, nextFiscalYear ?? undefined)
 );

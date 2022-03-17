@@ -233,6 +233,7 @@
   "#tab.documents.parentfolderdeleted": "Yhtiöllä ei ole Sharepoint -kansiota. <br /> Luo Sharepoint -kansio, jotta voit lisätä dokumentteja.",
   "#tab.documents.jobisrunning": "Pääkansion luonti on aloitettu. <br /> Klikkaa Päivitä painiketta tarkistaaksesi, onko kansion luonti vielä kesken.",
   "#tab.documents.checkjobcreation": "Pääkansion luonti kestää hetken. Klikkaa hetken kuluttua Päivitä painiketta tarkistaaksesi, onko kansion luonti vielä kesken.",
+  "#tab.documents.publishedtoportal": "Julkaistu portaaliin",
   "#confirmation.lock.description": "Oletko varma, että haluat lukita tilikauden tiedot? Kaikki tilikauden tiedot lukitaan.",
   "#confirmation.unlock.description": "Oletko varma, että haluat avata tilikauden tiedot?",
   "#confirmation.copy.description": "Oletko varma, että haluat kopioida edellisen tilikauden tiedot toimintakertomukselle ja liitetietoihin? Kaikki jo syötetyt tiedot korvataan.",

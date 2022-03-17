@@ -8,6 +8,7 @@ import {
   OptionalString,
   DocumentTypeCode,
   PartyRoleType,
+  FiscalYearModel as RawFiscalYear,
 } from 'models';
 import _get from 'lodash/get';
 
@@ -29,6 +30,98 @@ function get<T extends object, K extends keyof T>(
   defaultValue: any = null
 ) {
   return _get(object, key, defaultValue);
+}
+
+interface PrevFiscalYearAccumulator {
+  diff: number | null;
+  prevFiscalYear: RawFiscalYear | null;
+}
+
+function isDateIntersectsWithFiscalYear(date: Date, fiscalYear: RawFiscalYear) {
+  if (!fiscalYear.StartDate || !fiscalYear.EndDate) return false;
+
+  let dateTime = date.getTime();
+  let startDateTime = new Date(fiscalYear.StartDate).getTime();
+  let endDateTime = new Date(fiscalYear.EndDate).getTime();
+
+  return dateTime >= startDateTime && dateTime <= endDateTime;
+}
+
+export function getCurrentFiscalYear(fiscalYearsList: RawFiscalYear[]) {
+  let todayDate = new Date();
+  return (
+    fiscalYearsList.find((fiscalYear) =>
+      isDateIntersectsWithFiscalYear(todayDate, fiscalYear)
+    ) ?? null
+  );
+}
+
+export function getLastFiscalYear(
+  fiscalYearsList: RawFiscalYear[]
+): RawFiscalYear | null {
+  let lastFiscalYear = null;
+
+  for (let fiscalYear of fiscalYearsList) {
+    if (!fiscalYear.EndDate) continue;
+
+    if (!lastFiscalYear) {
+      lastFiscalYear = { ...fiscalYear };
+      continue;
+    }
+
+    let lastFiscalYearEndDateTime = new Date(
+      lastFiscalYear.EndDate as string
+    ).getTime();
+    let nextFiscalYearEndDateTime = new Date(fiscalYear.EndDate).getTime();
+
+    if (nextFiscalYearEndDateTime > lastFiscalYearEndDateTime) {
+      lastFiscalYear = { ...fiscalYear };
+    }
+  }
+
+  return lastFiscalYear;
+}
+
+export function getPrevFiscalYear(
+  fiscalYearsList: RawFiscalYear[],
+  baseFiscalYear?: RawFiscalYear
+) {
+  let currentFiscalYear =
+    baseFiscalYear || getCurrentFiscalYear(fiscalYearsList);
+
+  if (!currentFiscalYear || !currentFiscalYear.StartDate)
+    return getLastFiscalYear(fiscalYearsList);
+
+  let currentStartDateTime = new Date(currentFiscalYear.StartDate).getTime();
+
+  const { prevFiscalYear } = fiscalYearsList.reduce(
+    (acc, next) => {
+      if (!next.EndDate) return acc;
+      let nextEndDateTime = new Date(next.EndDate).getTime();
+      let diff = currentStartDateTime - nextEndDateTime;
+
+      if (diff < 0) return acc;
+
+      if (!acc.diff) {
+        acc.diff = diff;
+        acc.prevFiscalYear = { ...next };
+
+        return acc;
+      }
+
+      if (acc.diff && diff < acc.diff) {
+        acc.diff = diff;
+        acc.prevFiscalYear = { ...next };
+
+        return acc;
+      }
+
+      return acc;
+    },
+    { diff: null, prevFiscalYear: null } as PrevFiscalYearAccumulator
+  );
+
+  return prevFiscalYear;
 }
 
 export interface CommonProductDataModel {

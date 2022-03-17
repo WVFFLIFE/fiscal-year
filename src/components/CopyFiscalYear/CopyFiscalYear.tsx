@@ -3,14 +3,23 @@ import { useTranslation } from 'react-i18next';
 import useStateSelector from 'hooks/useStateSelector';
 import useDialogState from 'hooks/useSuccessDialogState';
 
-import { selectIsClosedField } from 'selectors/generalPageSelectors';
+import {
+  selectIsClosedField,
+  selectPrevFiscalYear,
+} from 'selectors/generalPageSelectors';
 
 import Dropdown from 'components/Dropdown';
 import FromTemplateView from 'components/FromTemplateView';
 import CopyExistingView from './CopyExistingView';
 import Dialog from 'components/Dialog';
 import ActionButton from 'components/ActionButton';
-import { CopyIcon, TemplateIcon, ArrowIcon } from 'components/Icons';
+import ConfirmationWindow from 'components/ConfirmationWindow';
+import {
+  CopyIcon,
+  TemplateIcon,
+  ArrowIcon,
+  TriangleWarningIcon,
+} from 'components/Icons';
 
 import clsx from 'clsx';
 import { useStyles } from './style';
@@ -19,12 +28,14 @@ const CopyFiscalYear = () => {
   const classes = useStyles();
   const { t } = useTranslation();
 
-  const { isClosed } = useStateSelector((state) => ({
+  const { isClosed, prevFiscalYear } = useStateSelector((state) => ({
+    prevFiscalYear: selectPrevFiscalYear(state),
     isClosed: selectIsClosedField(state),
   }));
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const templateDialogState = useDialogState();
   const sourceDialogState = useDialogState();
+  const fiscalYearMissingDialogState = useDialogState();
 
   const handleOpenMenu = (e: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(e.currentTarget);
@@ -32,6 +43,16 @@ const CopyFiscalYear = () => {
 
   const handleCloseMenu = () => {
     setAnchorEl(null);
+  };
+
+  const handleClickCopyExistingFYButton = () => {
+    if (prevFiscalYear) {
+      sourceDialogState.open();
+    } else {
+      fiscalYearMissingDialogState.open();
+    }
+
+    handleCloseMenu();
   };
 
   return (
@@ -64,10 +85,7 @@ const CopyFiscalYear = () => {
         </Dropdown.Item>
         <Dropdown.Item
           className={classes.menuItem}
-          onClick={() => {
-            sourceDialogState.open();
-            handleCloseMenu();
-          }}
+          onClick={handleClickCopyExistingFYButton}
         >
           <CopyIcon className={classes.menuItemIcon} />
           {t('#common.copytheexistingfiscalyear')}
@@ -87,6 +105,18 @@ const CopyFiscalYear = () => {
       >
         <CopyExistingView onClose={sourceDialogState.close} />
       </Dialog>
+      <ConfirmationWindow
+        maxWidth="sm"
+        open={fiscalYearMissingDialogState.isOpen}
+        handleClose={fiscalYearMissingDialogState.close}
+        title={t('#common.copyfiscalyear')}
+        description={t('#error.fiscalyear.copy.previousfiscalyearnotfound')}
+        Icon={<TriangleWarningIcon className={classes.warningIcon} />}
+        ApplyBtnProps={{
+          label: t('#button.ok'),
+          onClick: fiscalYearMissingDialogState.close,
+        }}
+      />
     </>
   );
 };

@@ -78,7 +78,7 @@ const Balances: FC = () => {
           const text = toNumberFormat(data.surplusDeficitPreviousFY);
           return (
             <span className={classes.deficit}>
-              {text && <Highlight text={text} />}
+              {text ? <Highlight text={text} /> : '---'}
             </span>
           );
         },
@@ -124,7 +124,7 @@ const Balances: FC = () => {
           const text = toNumberFormat(data.surplusDeficitPreviousFY);
           return (
             <span className={classes.deficit}>
-              {text && <Highlight text={text} />}
+              {text ? <Highlight text={text} /> : '---'}
             </span>
           );
         },

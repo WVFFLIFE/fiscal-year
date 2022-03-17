@@ -9,7 +9,7 @@ import { CopyFiscalYearResponseCode } from 'enums/responses';
 import {
   selectFiscalYearsList,
   selectNextFiscalYear,
-  selectFiscalYear,
+  selectPrevFiscalYear,
 } from 'selectors/generalPageSelectors';
 
 import { updateFiscalYear } from 'features/generalPageSlice';
@@ -28,11 +28,11 @@ const useCopyData = (onClose: () => void) => {
 
   const dispatch = useAppDispatch();
 
-  const { fiscalYear, fiscalYearsList, nextFiscalYear } = useStateSelector(
+  const { fiscalYearsList, nextFiscalYear, prevFiscalYear } = useStateSelector(
     (state) => ({
-      fiscalYear: selectFiscalYear(state),
       fiscalYearsList: selectFiscalYearsList(state),
       nextFiscalYear: selectNextFiscalYear(state),
+      prevFiscalYear: selectPrevFiscalYear(state),
     })
   );
 
@@ -41,10 +41,11 @@ const useCopyData = (onClose: () => void) => {
     error: null,
   });
   const [selectedFiscalYear, setSelectedFiscalYear] =
-    useState<FiscalYearModel | null>(nextFiscalYear && { ...nextFiscalYear });
+    useState<FiscalYearModel | null>(prevFiscalYear);
 
   const handleCreateFromSource = async () => {
-    if (!selectedFiscalYear || !nextFiscalYear || !fiscalYear?.id) return;
+    if (!selectedFiscalYear || !nextFiscalYear || !selectedFiscalYear?.Id)
+      return;
     try {
       setRequestState((prevState) => ({
         ...prevState,
@@ -59,7 +60,7 @@ const useCopyData = (onClose: () => void) => {
       if (res.IsSuccess) {
         onClose();
 
-        dispatch(updateFiscalYear(fiscalYear.id));
+        dispatch(updateFiscalYear(selectedFiscalYear.Id));
       } else {
         throw new Error(
           res.ResponseCode ===

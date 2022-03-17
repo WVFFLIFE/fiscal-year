@@ -233,6 +233,7 @@
   "#tab.documents.parentfolderdeleted": "Main parent folder has been deleted. <br /> For further work with documents you need to create the parent folder again.",
   "#tab.documents.jobisrunning": "Previously the process of creating a parent folder has been started. <br /> Refresh the page to check the current status.",
   "#tab.documents.checkjobcreation": "It may take some time to create the parent folder. To check the creation of the folder you need to refresh the page after a while.",
+  "#tab.documents.publishedtoportal": "Published to portal",
   "#confirmation.lock.description": "Are you sure you want to lock fiscal year data? All current data will be unavailable to edit",
   "#confirmation.unlock.description": "Are you sure you want to unlock fiscal year data?",
   "#confirmation.copy.description": "Are you sure you want to copy previous fiscal year's data to current fiscal year? All current data will be replaced",
