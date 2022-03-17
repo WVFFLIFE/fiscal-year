@@ -119,7 +119,7 @@ const DocumentsTable: React.FC<DocumentsTableProps> = ({
                 {item.IsPublished ? (
                   <Tooltip
                     arrow
-                    title={t('#tab.documents.publishedtoportal')}
+                    title={t('#tab.documents.publishedtoportal') as string}
                     placement="top-start"
                   >
                     <PublishedIcon className={classes.publishedIcon} />
